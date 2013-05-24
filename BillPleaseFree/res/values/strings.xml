@@ -1,5 +1,12 @@
 <resources>
 
     <string name="app_name">Bill, Please!</string>
+    
+    <string name="menu_new_bill">new bill</string>
+    <string name="item">item</string>
+    <string name="subtotal">subtotal</string>
+    <string name="tax">tax</string>
+    <string name="tip">tax</string>
+    <string name="total">total</string>
 
 </resources>
