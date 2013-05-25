@@ -2,11 +2,21 @@
 
     <string name="app_name">Bill, Please!</string>
     
-    <string name="menu_new_bill">new bill</string>
-    <string name="item">item</string>
-    <string name="subtotal">subtotal</string>
-    <string name="tax">tax</string>
-    <string name="tip">tax</string>
-    <string name="total">total</string>
+    <string name="btn_lbl_new_bill">new bill</string>
+    <string name="btn_lbl_add_row">add</string>
+    <string name="btn_lbl_del_row">del</string>
+
+    <string name="str_row_item">item</string>
+    <string name="str_row_cost">cost</string>
+    <string name="str_row_share">share</string>
+    <string name="str_row_total">total</string>
+    
+    <string name="lbl_subtotal">subtotal</string>
+    <string name="lbl_tax">tax</string>
+    <string name="lbl_tip">tax</string>
+    <string name="lbl_total">total</string>
+    
+    <string name="str_conventional_unit">c.u.</string>
+    <string name="str_percent">%</string>
 
 </resources>

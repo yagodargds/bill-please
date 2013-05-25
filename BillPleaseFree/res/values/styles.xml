@@ -1,20 +1,42 @@
 <resources>
-
-    <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    -->
-    <style name="AppBaseTheme" parent="android:Theme.Light">
-        <!--
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        -->
+    <style name="AppTheme" parent="@android:style/Theme.NoTitleBar">
     </style>
 
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    <style name="main_lt">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/sky_blue_lightest</item>
     </style>
-
+    
+    <style name="action_bar_lt">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">@dimen/action_bar_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/sky_blue</item>
+    </style>
+    
+    <style name="icon_iv">
+        <item name="android:scaleType">centerInside</item>
+    </style>
+    
+    <style name="action_bar_icon_iv" parent="icon_iv">
+        <item name="android:layout_width">@dimen/action_bar_height</item>
+        <item name="android:layout_height">fill_parent</item>
+    </style>
+    
+    <dimen name="action_bar_height">40dp</dimen>
+    
+    <color name="sky_blue">#33A7FF</color>
+    <color name="sky_blue_light">#95D1FF</color>
+    <color name="sky_blue_lightest">#E3F3FF</color>
+    <color name="sky_blue_dark">#4D8EC0</color>
+    <color name="sky_blue_darkest">#1165A6</color>
+    
+    <color name="orange">#FFA225</color>
+    <color name="orange_light">#FFCE8E</color>
+    <color name="orange_lightest">#FFF2E1</color>
+    <color name="orange_dark">#C08B45</color>
+    <color name="orange_darkest">#A6640C</color>
+    
 </resources>
