@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/main_lt" >
+    style="@style/main_ll" >
 
-    <LinearLayout
-        style="@style/action_bar_lt" >
+    <LinearLayout 
+        style="@style/action_bar_ll" >
 
         <ImageView
             style="@style/action_bar_icon_iv"
             android:src="@drawable/ic_launcher" />
 
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            style="@style/action_bar_tv"
             android:layout_weight="1"
-            android:gravity="center_vertical"
             android:text="@string/app_name" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btn_new_bill"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="@string/btn_lbl_new_bill" />
-        
+            style="@style/img_btn_view"
+            android:contentDescription="@string/btn_lbl_new_bill"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@android:drawable/ic_input_add" />
+
     </LinearLayout>
-    
+
 </LinearLayout>

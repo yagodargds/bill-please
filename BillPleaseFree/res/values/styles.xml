@@ -2,30 +2,65 @@
     <style name="AppTheme" parent="@android:style/Theme.NoTitleBar">
     </style>
 
-    <style name="main_lt">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">fill_parent</item>
+    <style name="linear_layout">
+         <item name="android:layout_width">fill_parent</item>
+         <item name="android:layout_height">fill_parent</item>
+    </style>
+    
+    <style name="vertical_ll" parent="linear_layout">
         <item name="android:orientation">vertical</item>
+    </style>
+    
+    <style name="horizontal_ll" parent="linear_layout">
+        <item name="android:orientation">horizontal</item>
+    </style>
+    
+    <style name="main_ll" parent="vertical_ll">
         <item name="android:background">@color/sky_blue_lightest</item>
     </style>
     
-    <style name="action_bar_lt">
-        <item name="android:layout_width">fill_parent</item>
+    <style name="action_bar_ll" parent="horizontal_ll">
         <item name="android:layout_height">@dimen/action_bar_height</item>
-        <item name="android:orientation">horizontal</item>
         <item name="android:background">@color/sky_blue</item>
     </style>
     
-    <style name="icon_iv">
+    <style name="action_bar_menu_ll" parent="vertical_ll">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    
+    <style name="view" parent="linear_layout">
+        <item name="android:layout_margin">@dimen/view_margin</item>
+    </style>
+    
+    <style name="icon_iv" parent="view">
         <item name="android:scaleType">centerInside</item>
     </style>
     
     <style name="action_bar_icon_iv" parent="icon_iv">
         <item name="android:layout_width">@dimen/action_bar_height</item>
-        <item name="android:layout_height">fill_parent</item>
+    </style>
+    
+    <style name="text_view" parent="view">
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    
+    <style name="action_bar_tv" parent="text_view">
+        <item name="android:textColor">@color/sky_blue_lightest</item>
+        <item name="android:typeface">serif</item>
+    </style>
+    
+    <style name="btn_view" parent="view">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    
+    <style name="img_btn_view" parent="btn_view">
+        <item name="android:adjustViewBounds">true</item>
     </style>
     
     <dimen name="action_bar_height">40dp</dimen>
+    <dimen name="view_margin">2.5dp</dimen>
     
     <color name="sky_blue">#33A7FF</color>
     <color name="sky_blue_light">#95D1FF</color>
