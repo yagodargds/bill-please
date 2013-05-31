@@ -1,66 +1,128 @@
 <resources>
     <style name="AppTheme" parent="@android:style/Theme.NoTitleBar">
     </style>
-
-    <style name="linear_layout">
+    
+    <style name="app_v">
          <item name="android:layout_width">fill_parent</item>
          <item name="android:layout_height">fill_parent</item>
     </style>
     
-    <style name="vertical_ll" parent="linear_layout">
+    <style name="vertical_linear_layout_v" parent="app_v">
         <item name="android:orientation">vertical</item>
     </style>
     
-    <style name="horizontal_ll" parent="linear_layout">
+    <style name="horizontal_linear_layout_v" parent="app_v">
         <item name="android:orientation">horizontal</item>
     </style>
     
-    <style name="main_ll" parent="vertical_ll">
-        <item name="android:background">@color/sky_blue_lightest</item>
+    <style name="text_v" parent="app_v">
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:typeface">serif</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
     </style>
     
-    <style name="action_bar_ll" parent="horizontal_ll">
-        <item name="android:layout_height">@dimen/action_bar_height</item>
-        <item name="android:background">@color/sky_blue</item>
-    </style>
-    
-    <style name="action_bar_menu_ll" parent="vertical_ll">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-    
-    <style name="view" parent="linear_layout">
+    <style name="icon_v" parent="app_v">
         <item name="android:layout_margin">@dimen/view_margin</item>
     </style>
     
-    <style name="icon_iv" parent="view">
-        <item name="android:scaleType">centerInside</item>
+    <style name="app_llv" parent="vertical_linear_layout_v">
+        <item name="android:background">@color/sky_blue_lightest</item>
     </style>
     
-    <style name="action_bar_icon_iv" parent="icon_iv">
-        <item name="android:layout_width">@dimen/action_bar_height</item>
+    <style name="app_row_llv" parent="horizontal_linear_layout_v">
+        <item name="android:layout_height">@dimen/app_row_height</item>
     </style>
     
-    <style name="text_view" parent="view">
+    <style name="app_input_llv" parent="horizontal_linear_layout_v">
+        <item name="android:layout_width">@dimen/app_input_width</item>
+    </style>
+    
+    <style name="edit_text_v" parent="text_v">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    
+    <style name="app_name_tv" parent="text_v">
+        <item name="android:textSize">@dimen/app_name_text_size</item>
         <item name="android:gravity">center_vertical</item>
-    </style>
-    
-    <style name="action_bar_tv" parent="text_view">
         <item name="android:textColor">@color/sky_blue_lightest</item>
-        <item name="android:typeface">serif</item>
     </style>
     
-    <style name="btn_view" parent="view">
+    <style name="all_totals_tv" parent="text_v">
+        <item name="android:textColor">@color/sky_blue_lightest</item>
+    </style>
+    
+    <style name="bill_row_tv" parent="text_v">
+        <item name="android:textColor">@color/sky_blue_darkest</item>
+    </style>
+    
+    
+    
+    <style name="image_button_v" parent="icon_v">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item> <!-- TODO -->
     </style>
     
-    <style name="img_btn_view" parent="btn_view">
-        <item name="android:adjustViewBounds">true</item>
+    <style name="total_tv" parent="all_totals_tv">
+        <item name="android:textSize">@dimen/total_text_size</item>
     </style>
     
-    <dimen name="action_bar_height">40dp</dimen>
-    <dimen name="view_margin">2.5dp</dimen>
+    <style name="et_number_view" parent="edit_text_v">
+        <item name="android:inputType">numberDecimal</item>
+    </style>
+    
+    
+    
+    
+    
+    <style name="top_bottom_ll" parent="app_row_llv">
+        <item name="android:background">@color/sky_blue</item>
+    </style>
+    
+    
+    
+    <style name="action_bar_icon_iv" parent="icon_v">
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:layout_width">@dimen/app_row_height</item>
+    </style>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <style name="bill_row_input_tv" parent="bill_row_tv">
+        <item name="android:layout_width">@dimen/app_input_width</item>
+    </style>
+    
+    <style name="total_input_tv" parent="all_totals_tv">
+        <item name="android:layout_width">@dimen/cost_share_width</item>
+    </style>
+    
+    <style name="bottom_descr_input_tv" parent="all_totals_tv">
+        <item name="android:layout_width">@dimen/descr_input_width</item>
+    </style>
+    
+    <style name="bill_row_descr_input_tv" parent="bill_row_tv">
+        <item name="android:layout_width">@dimen/descr_input_width</item>
+    </style>
+    
+    <style name="total_tv2" parent="all_totals_tv">
+        <item name="android:layout_width">@dimen/total_del_width</item>
+    </style>
+    
+    <dimen name="app_row_height">40dp</dimen>
+    <dimen name="app_input_width">50dp</dimen>
+    <dimen name="descr_input_width">15dp</dimen>
+    <dimen name="cost_share_width">70dp</dimen>
+    <dimen name="total_del_width">70dp</dimen>
+    <dimen name="view_margin">1.5dp</dimen>
+    
+    <dimen name="app_name_text_size">18dp</dimen>
+    <dimen name="text_size">12dp</dimen>
+    <dimen name="total_text_size">14dp</dimen>
     
     <color name="sky_blue">#33A7FF</color>
     <color name="sky_blue_light">#95D1FF</color>

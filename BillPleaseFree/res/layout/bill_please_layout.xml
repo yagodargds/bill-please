@@ -1,27 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/main_ll" >
+    style="@style/app_llv" >
 
     <LinearLayout 
-        style="@style/action_bar_ll" >
+        style="@style/top_bottom_ll" >
 
         <ImageView
             style="@style/action_bar_icon_iv"
             android:src="@drawable/ic_launcher" />
 
         <TextView
-            style="@style/action_bar_tv"
+            style="@style/app_name_tv"
             android:layout_weight="1"
             android:text="@string/app_name" />
 
         <ImageButton
-            android:id="@+id/btn_new_bill"
-            style="@style/img_btn_view"
-            android:contentDescription="@string/btn_lbl_new_bill"
-            android:gravity="center_vertical|center_horizontal"
+            android:id="@+id/btn_add_row"
+            style="@style/image_button_v"
+            android:contentDescription="@string/btn_lbl_add_row"
             android:src="@android:drawable/ic_input_add" />
+        
+        <ImageButton
+            android:id="@+id/btn_new_bill"
+            style="@style/image_button_v"
+            android:contentDescription="@string/btn_lbl_new_bill"
+            android:src="@android:drawable/ic_dialog_alert" />
 
     </LinearLayout>
 
+    <ScrollView
+        style="@style/app_v"
+        android:layout_weight="1" >
+        
+        <LinearLayout
+            android:id="@+id/ll_bill_rows"
+            style="@style/vertical_linear_layout_v" >
+
+            <LinearLayout 
+                style="@style/app_row_llv" >
+
+                <EditText
+                    android:id="@+id/et_empty_item"
+                    style="@style/edit_text_v"
+                    android:layout_weight="1"
+                    android:text="@string/str_row_item" >
+
+                </EditText>
+
+                <LinearLayout 
+                    style="@style/bill_row_input_tv" >
+
+                    <EditText
+                        android:id="@+id/et_cost"
+                        style="@style/et_number_view"
+                        android:layout_weight="1"
+                        android:text="@string/str_row_cost" >
+                    </EditText>
+
+                    <!-- <TextView
+                        style="@style/bill_row_descr_input_tv"
+                        android:text="@string/str_conventional_unit" /> -->
+                </LinearLayout>
+
+                <LinearLayout 
+                    style="@style/bill_row_input_tv" >
+
+                    <EditText
+                        android:id="@+id/et_share"
+                        style="@style/et_number_view"
+                        android:layout_weight="1"
+                        android:text="@string/str_row_share" >
+                    </EditText>
+                    
+                </LinearLayout>
+
+                <!-- <LinearLayout 
+                    style="@style/bill_row_input_tv" >
+
+                    <EditText
+                        android:id="@+id/et_total"
+                        style="@style/et_number_view"
+                        android:layout_weight="1"
+                        android:text="@string/str_row_total" >
+                    </EditText>
+
+                    <TextView
+                        style="@style/bill_row_descr_input_tv"
+                        android:text="@string/str_conventional_unit" />
+                    
+                </LinearLayout> -->
+                
+                <ImageButton
+                    android:id="@+id/btn_del_row"
+                    style="@style/image_button_v"
+                    android:contentDescription="@string/btn_lbl_del_row"
+                    android:src="@android:drawable/ic_delete" />
+                 
+            </LinearLayout>
+            
+        </LinearLayout>
+        
+    </ScrollView>
+    
+    <LinearLayout 
+        style="@style/top_bottom_ll" >
+
+        <TextView
+            style="@style/all_totals_tv"
+            android:layout_weight="1"
+            android:text="@string/lbl_subtotal" />
+        
+        <TextView
+            style="@style/total_input_tv" />
+        
+        <LinearLayout 
+            style="@style/total_tv2" >
+
+            <TextView
+                android:id="@+id/lbl_subtotal_sum"
+                style="@style/total_tv2"
+                android:layout_weight="1"
+                android:text="@string/str_zero" />
+
+            <!-- <TextView
+                style="@style/bottom_descr_input_tv"
+                android:text="@string/str_conventional_unit" /> -->
+            
+        </LinearLayout>
+
+    </LinearLayout>
+    
+    <LinearLayout 
+        style="@style/top_bottom_ll" >
+
+        <TextView
+            style="@style/all_totals_tv"
+            android:layout_weight="1"
+            android:text="@string/lbl_tax" />
+
+        <LinearLayout 
+            style="@style/total_input_tv" >
+
+            <EditText
+                android:id="@+id/et_tax_percent"
+                style="@style/et_number_view"
+                android:layout_weight="1"
+                android:text="@string/str_tax_def" >
+            </EditText>
+
+            <TextView
+                style="@style/bottom_descr_input_tv"
+                android:text="@string/str_percent" />
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            style="@style/total_tv2" >
+
+            <TextView
+                android:id="@+id/lbl_tax_sum"
+                style="@style/total_tv2"
+                android:layout_weight="1"
+                android:text="@string/str_zero" />
+
+            <!-- <TextView
+                style="@style/bottom_descr_input_tv"
+                android:text="@string/str_conventional_unit" /> -->
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        style="@style/top_bottom_ll" >
+
+        <TextView
+            style="@style/all_totals_tv"
+            android:layout_weight="1"
+            android:text="@string/lbl_tip" />
+        
+        <LinearLayout 
+            style="@style/total_input_tv" >
+
+            <EditText
+                android:id="@+id/ed_tip_percent"
+                style="@style/et_number_view"
+                android:layout_weight="1"
+                android:text="@string/str_tip_def" >
+            </EditText>
+
+            <TextView
+                style="@style/bottom_descr_input_tv"
+                android:text="@string/str_percent" />
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            style="@style/total_tv2" >
+
+            <TextView
+                android:id="@+id/lbl_tip_sum"
+                style="@style/total_tv2"
+                android:layout_weight="1"
+                android:text="@string/str_zero" />
+
+            <!-- <TextView
+                style="@style/bottom_descr_input_tv"
+                android:text="@string/str_conventional_unit" /> -->
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        style="@style/top_bottom_ll" >
+
+        <TextView
+            style="@style/all_totals_tv"
+            android:layout_weight="1"
+            android:text="@string/lbl_total"
+            android:textSize="20dp" />
+
+        <TextView 
+            style="@style/total_input_tv" />
+
+        <LinearLayout 
+            style="@style/total_tv2" >
+
+            <TextView
+                android:id="@+id/lbl_total_sum"
+                style="@style/total_tv2"
+                android:layout_weight="1"
+                android:text="@string/str_zero" />
+
+            <!-- <TextView
+                style="@style/bottom_descr_input_tv"
+                android:text="@string/str_conventional_unit" /> -->
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+    
 </LinearLayout>
