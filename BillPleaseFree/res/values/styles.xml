@@ -22,7 +22,9 @@
     </style>
     
     <style name="icon_v" parent="app_v">
+        <item name="android:layout_width">@dimen/app_row_height</item>
         <item name="android:layout_margin">@dimen/view_margin</item>
+        <item name="android:scaleType">centerInside</item>
     </style>
     
     <style name="app_llv" parent="vertical_linear_layout_v">
@@ -47,69 +49,45 @@
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
     
-    <style name="all_totals_tv" parent="text_v">
+    <style name="totals_tv" parent="text_v">
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
     
-    <style name="bill_row_tv" parent="text_v">
-        <item name="android:textColor">@color/sky_blue_darkest</item>
-    </style>
-    
-    
-    
-    <style name="image_button_v" parent="icon_v">
-        <item name="android:layout_width">wrap_content</item>
+    <style name="button_icon_v" parent="icon_v">
         <item name="android:background">@android:color/transparent</item> <!-- TODO -->
     </style>
     
-    <style name="total_tv" parent="all_totals_tv">
+    
+    
+    
+    
+    
+    <style name="bill_row_etv" parent="edit_text_v">
+        <item name="android:textColor">@color/sky_blue_darkest</item>
+    </style>
+
+    <style name="total_tv" parent="totals_tv">
         <item name="android:textSize">@dimen/total_text_size</item>
     </style>
     
-    <style name="et_number_view" parent="edit_text_v">
+    <style name="et_number_view" parent="bill_row_etv">
         <item name="android:inputType">numberDecimal</item>
+        <item name="android:layout_width">@dimen/app_input_width</item>
     </style>
-    
-    
-    
-    
     
     <style name="top_bottom_ll" parent="app_row_llv">
         <item name="android:background">@color/sky_blue</item>
     </style>
     
-    
-    
-    <style name="action_bar_icon_iv" parent="icon_v">
-        <item name="android:scaleType">centerInside</item>
-        <item name="android:layout_width">@dimen/app_row_height</item>
-    </style>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <style name="bill_row_input_tv" parent="bill_row_tv">
-        <item name="android:layout_width">@dimen/app_input_width</item>
-    </style>
-    
-    <style name="total_input_tv" parent="all_totals_tv">
+    <style name="total_input_tv" parent="totals_tv">
         <item name="android:layout_width">@dimen/cost_share_width</item>
     </style>
     
-    <style name="bottom_descr_input_tv" parent="all_totals_tv">
+    <style name="bottom_descr_input_tv" parent="totals_tv">
         <item name="android:layout_width">@dimen/descr_input_width</item>
     </style>
     
-    <style name="bill_row_descr_input_tv" parent="bill_row_tv">
-        <item name="android:layout_width">@dimen/descr_input_width</item>
-    </style>
-    
-    <style name="total_tv2" parent="all_totals_tv">
+    <style name="total_tv2" parent="totals_tv">
         <item name="android:layout_width">@dimen/total_del_width</item>
     </style>
     

@@ -12,15 +12,12 @@
     <string name="str_row_total">total</string>
     
     <string name="lbl_subtotal">subtotal</string>
-    <string name="lbl_tax">tax</string>
-    <string name="lbl_tip">tip</string>
+    <string name="lbl_tax">tax, %</string>
+    <string name="lbl_tip">tip, %</string>
     <string name="lbl_total">total</string>
     
     <string name="str_zero">0</string>
     <string name="str_tax_def">0</string>
     <string name="str_tip_def">10</string>
     
-    <string name="str_conventional_unit">c.u.</string>
-    <string name="str_percent">%</string>
-
 </resources>
