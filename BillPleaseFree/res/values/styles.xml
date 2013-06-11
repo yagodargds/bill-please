@@ -35,12 +35,8 @@
         <item name="android:layout_height">@dimen/app_row_height</item>
     </style>
     
-    <style name="app_input_llv" parent="horizontal_linear_layout_v">
-        <item name="android:layout_width">@dimen/app_input_width</item>
-    </style>
-    
     <style name="edit_text_v" parent="text_v">
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item> <!-- TODO -->
     </style>
     
     <style name="app_name_tv" parent="text_v">
@@ -49,58 +45,59 @@
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
     
-    <style name="totals_tv" parent="text_v">
+    <style name="footer_row_tv" parent="text_v">
+        <item name="android:textSize">@dimen/footer_row_text_size</item>
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
     
     <style name="button_icon_v" parent="icon_v">
+        <item name="android:onClick">@string/on_btn_click_method_name</item>
         <item name="android:background">@android:color/transparent</item> <!-- TODO -->
     </style>
     
-    
-    
-    
-    
-    
-    <style name="bill_row_etv" parent="edit_text_v">
-        <item name="android:textColor">@color/sky_blue_darkest</item>
-    </style>
-
-    <style name="total_tv" parent="totals_tv">
-        <item name="android:textSize">@dimen/total_text_size</item>
+    <style name="header_footer_row_llv" parent="app_row_llv">
+        <item name="android:background">@color/sky_blue</item>
     </style>
     
-    <style name="et_number_view" parent="bill_row_etv">
+    <style name="number_etv" parent="edit_text_v">
         <item name="android:inputType">numberDecimal</item>
         <item name="android:layout_width">@dimen/app_input_width</item>
     </style>
     
-    <style name="top_bottom_ll" parent="app_row_llv">
-        <item name="android:background">@color/sky_blue</item>
+    <style name="bill_row_etv" parent="edit_text_v">
+        <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
     
-    <style name="total_input_tv" parent="totals_tv">
-        <item name="android:layout_width">@dimen/cost_share_width</item>
+    <style name="footer_row_total_number_tv" parent="footer_row_tv">
+        <item name="android:layout_width">@dimen/total_number_width</item>
     </style>
     
-    <style name="bottom_descr_input_tv" parent="totals_tv">
-        <item name="android:layout_width">@dimen/descr_input_width</item>
+    <style name="footer_total_row_tv" parent="footer_row_tv">
+        <item name="android:textSize">@dimen/footer_total_row_text_size</item>
     </style>
     
-    <style name="total_tv2" parent="totals_tv">
-        <item name="android:layout_width">@dimen/total_del_width</item>
+	<style name="bill_row_number_etv" parent="number_etv">
+        <item name="android:textColor">@color/sky_blue_darkest</item>
+    </style>
+    
+    <style name="footer_number_etv" parent="number_etv">
+        <item name="android:textSize">@dimen/footer_row_text_size</item>
+        <item name="android:textColor">@color/sky_blue_lightest</item>
+    </style>
+    
+    <style name="footer_total_row_number_tv" parent="footer_total_row_tv">
+        <item name="android:layout_width">@dimen/total_number_width</item>
     </style>
     
     <dimen name="app_row_height">40dp</dimen>
     <dimen name="app_input_width">50dp</dimen>
-    <dimen name="descr_input_width">15dp</dimen>
-    <dimen name="cost_share_width">70dp</dimen>
-    <dimen name="total_del_width">70dp</dimen>
+    <dimen name="total_number_width">90dp</dimen>
     <dimen name="view_margin">1.5dp</dimen>
     
     <dimen name="app_name_text_size">18dp</dimen>
     <dimen name="text_size">12dp</dimen>
-    <dimen name="total_text_size">14dp</dimen>
+    <dimen name="footer_row_text_size">13dp</dimen>
+    <dimen name="footer_total_row_text_size">14dp</dimen>
     
     <color name="sky_blue">#33A7FF</color>
     <color name="sky_blue_light">#95D1FF</color>
