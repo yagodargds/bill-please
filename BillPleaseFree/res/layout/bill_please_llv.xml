@@ -35,36 +35,7 @@
         
         <LinearLayout
             android:id="@+id/ll_bill_rows"
-            style="@style/vertical_linear_layout_v" >
-
-            <LinearLayout
-                style="@style/app_row_llv" >
-
-                <EditText
-                    android:id="@+id/et_empty_item"
-                    style="@style/bill_row_etv"
-                    android:layout_weight="1"
-                    android:text="@string/str_row_item" />
-
-                <EditText
-                        android:id="@+id/et_cost"
-                        style="@style/bill_row_number_etv"
-                        android:text="@string/str_row_cost" />
-
-                <EditText
-                        android:id="@+id/et_share"
-                        style="@style/bill_row_number_etv"
-                        android:text="@string/str_row_share" />
-                
-                <ImageButton
-                    android:id="@+id/btn_del_row"
-                    style="@style/button_icon_v"
-                    android:contentDescription="@string/btn_lbl_del_row"
-                    android:src="@android:drawable/ic_delete" />
-                 
-            </LinearLayout>
-            
-        </LinearLayout>
+            style="@style/vertical_linear_layout_v" />
         
     </ScrollView>
     
@@ -115,7 +86,7 @@
             android:text="@string/lbl_tip" />
         
         <EditText
-                android:id="@+id/ed_tip_percent"
+                android:id="@+id/et_tip_percent"
                 style="@style/footer_number_etv"
                 android:text="@string/str_tip_def" />
         
