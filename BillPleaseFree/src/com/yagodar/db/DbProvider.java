@@ -76,7 +76,7 @@ public class DbProvider extends SQLiteOpenHelper {
 	}
 
 	private String getDbName(SQLiteDatabase db) {
-		return db.getPath().substring(db.getPath().lastIndexOf("/"));
+		return db.getPath().substring(db.getPath().lastIndexOf("/") + 1);
 	}
 	
 	private static DbProvider INSTANCE;

@@ -6,18 +6,14 @@
     <string name="btn_lbl_add_row">add</string>
     <string name="btn_lbl_del_row">del</string>
 
-    <string name="str_row_item">item</string>
-    <string name="str_row_cost">cost</string>
-    <string name="str_row_share">share</string>
+    <string name="field_item_name">item</string>
+    <string name="field_cost_name">cost</string>
+    <string name="field_share_name">share</string>
     
     <string name="lbl_subtotal">subtotal</string>
     <string name="lbl_tax">tax (%)</string>
     <string name="lbl_tip">tip (%)</string>
     <string name="lbl_total">total</string>
-    
-    <string name="str_zero">0</string>
-    <string name="str_tax_def">0</string>
-    <string name="str_tip_def">10</string>
     
     <string name="on_btn_click_method_name">onButtonClick</string>
     

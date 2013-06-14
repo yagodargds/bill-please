@@ -52,8 +52,7 @@
         
         <TextView
                 android:id="@+id/lbl_subtotal_sum"
-                style="@style/footer_row_total_number_tv"
-                android:text="@string/str_zero" />
+                style="@style/footer_row_total_number_tv" />
         
     </LinearLayout>
     
@@ -67,13 +66,11 @@
 
         <EditText
                 android:id="@+id/et_tax_percent"
-                style="@style/footer_number_etv"
-                android:text="@string/str_tax_def" />
+                style="@style/footer_number_etv" />
         
         <TextView
                 android:id="@+id/lbl_tax_sum"
-                style="@style/footer_row_total_number_tv"
-                android:text="@string/str_zero" />
+                style="@style/footer_row_total_number_tv" />
         
     </LinearLayout>
     
@@ -87,13 +84,11 @@
         
         <EditText
                 android:id="@+id/et_tip_percent"
-                style="@style/footer_number_etv"
-                android:text="@string/str_tip_def" />
+                style="@style/footer_number_etv" />
         
         <TextView
                 android:id="@+id/lbl_tip_sum"
-                style="@style/footer_row_total_number_tv"
-                android:text="@string/str_zero" />
+                style="@style/footer_row_total_number_tv" />
         
     </LinearLayout>
     
@@ -103,16 +98,14 @@
         <TextView
             style="@style/footer_total_row_tv"
             android:layout_weight="1"
-            android:text="@string/lbl_total"
-            android:textSize="20dp" />
+            android:text="@string/lbl_total" />
 
         <TextView 
             style="@style/footer_number_etv" />
 
         <TextView
                 android:id="@+id/lbl_total_sum"
-                style="@style/footer_total_row_number_tv"
-                android:text="@string/str_zero" />
+                style="@style/footer_total_row_number_tv" />
         
     </LinearLayout>
     

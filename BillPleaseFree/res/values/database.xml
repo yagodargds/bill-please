@@ -2,4 +2,9 @@
 <resources>
     <string name="db_name">bill_please.db</string>
     <integer name="db_version">1</integer>
+    
+    <integer name="def_cost">0</integer>
+    <integer name="def_share">1</integer>
+    <integer name="def_tax">0</integer>
+    <integer name="def_tip">10</integer>
 </resources>
