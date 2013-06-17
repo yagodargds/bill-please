@@ -6,7 +6,6 @@
     <string name="btn_lbl_add_row">add</string>
     <string name="btn_lbl_del_row">del</string>
 
-    <string name="field_item_name">item</string>
     <string name="field_cost_name">cost</string>
     <string name="field_share_name">share</string>
     

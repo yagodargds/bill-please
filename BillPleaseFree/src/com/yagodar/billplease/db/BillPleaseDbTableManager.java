@@ -30,7 +30,7 @@ public class BillPleaseDbTableManager extends DbTableManager {
 		return billRows;
 	}
 	
-	public long addBillRow(String defItemName, int defCost, int defShare) {
+	public long addBillRow(String defItemName, double defCost, int defShare) {
 		ContentValues values = new ContentValues();
 		values.put(Column.ITEM.toString(), defItemName);
 		values.put(Column.COST.toString(), defCost);
@@ -39,22 +39,31 @@ public class BillPleaseDbTableManager extends DbTableManager {
 		return insert(null, values);
 	}
 	
-	public long setBillRowItemName(long rowTag, String itemName) {
-		return setBillRow(rowTag, itemName, getBillRowCost(rowTag), getBillRowShare(rowTag));
+	public int setBillRowItemName(long rowTag, String itemName) {
+		ContentValues values = new ContentValues();
+		values.put(Column.ITEM.toString(), itemName);
+		
+		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
 	
-	public long setBillRowCost(long rowTag, int cost) {
-		return setBillRow(rowTag, getBillRowItemName(rowTag), cost, getBillRowShare(rowTag));
+	public int setBillRowCost(long rowTag, int cost) {
+		ContentValues values = new ContentValues();
+		values.put(Column.COST.toString(), cost);
+		
+		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
 	
-	public long setBillRowShare(long rowTag, int share) {
-		return setBillRow(rowTag, getBillRowItemName(rowTag), getBillRowCost(rowTag), share);
+	public int setBillRowShare(long rowTag, int share) {
+		ContentValues values = new ContentValues();
+		values.put(Column.SHARE.toString(), share);
+		
+		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
 	
 	public String getBillRowItemName(long rowTag) {
 		String result = "";
 		
-		Cursor cs = query(new String[] { Column.ITEM.toString() }, Column.ROW_TAG.toString() + "=" + rowTag, null, null, null, null, null);
+		Cursor cs = query(new String[] { Column.ITEM.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
 		if(cs != null) {
 			if(cs.moveToNext()) {
 				result = cs.getString(0);
@@ -69,7 +78,7 @@ public class BillPleaseDbTableManager extends DbTableManager {
 	public int getBillRowCost(long rowTag) {
 		int result = 0;
 		
-		Cursor cs = query(new String[] { Column.COST.toString() }, Column.ROW_TAG.toString() + "=" + rowTag, null, null, null, null, null);
+		Cursor cs = query(new String[] { Column.COST.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
 		if(cs != null) {
 			if(cs.moveToNext()) {
 				result = cs.getInt(0);
@@ -84,7 +93,7 @@ public class BillPleaseDbTableManager extends DbTableManager {
 	public int getBillRowShare(long rowTag) {
 		int result = 0;
 		
-		Cursor cs = query(new String[] { Column.SHARE.toString() }, Column.ROW_TAG.toString() + "=" + rowTag, null, null, null, null, null);
+		Cursor cs = query(new String[] { Column.SHARE.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
 		if(cs != null) {
 			if(cs.moveToNext()) {
 				result = cs.getInt(0);
@@ -97,7 +106,7 @@ public class BillPleaseDbTableManager extends DbTableManager {
 	}
 	
 	public long delBillRow(long rowTag) {
-		return delete(Column.ROW_TAG.toString() + "=" + rowTag, null);
+		return delete(Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
 	
 	public long delAllBillRows() {
@@ -117,16 +126,6 @@ public class BillPleaseDbTableManager extends DbTableManager {
 	
 	private BillPleaseDbTableManager() {
 		super(BillPleaseDbTableManager.class.getSimpleName());
-	}
-	
-	private long setBillRow(long rowTag, String itemName, int cost, int share) {
-		ContentValues values = new ContentValues();
-		values.put(Column.ROW_TAG.toString(), rowTag);
-		values.put(Column.ITEM.toString(), itemName);
-		values.put(Column.COST.toString(), cost);
-		values.put(Column.SHARE.toString(), share);
-		
-		return replace(null, values);
 	}
 	
 	public class BillRow {
@@ -159,18 +158,18 @@ public class BillPleaseDbTableManager extends DbTableManager {
 	private enum Column {
 		ROW_TAG(" INTEGER PRIMARY KEY, "),
 		ITEM(" TEXT NOT NULL, "),
-		COST(" INTEGER DEFAULT 0, "),
-		SHARE(" INTEGER DEFAULT 0");
+		COST(" REAL DEFAULT 0.0, "),
+		SHARE(" INTEGER DEFAULT 1");
 
 		Column(String columnSqlStrPostfix) {
-			this.columnSqlStrPostfix = columnSqlStrPostfix;
+			this.columnDatatype = columnSqlStrPostfix;
 		}
 
 		public String getColumnSqlStr() {
-			return toString() + columnSqlStrPostfix;
+			return toString() + columnDatatype;
 		}
 
-		private final String columnSqlStrPostfix;
+		private final String columnDatatype;
 	}
 
 	private static BillPleaseDbTableManager INSTANCE; 

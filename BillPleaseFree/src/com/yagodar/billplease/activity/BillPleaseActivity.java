@@ -68,16 +68,11 @@ public class BillPleaseActivity extends Activity {
 	private void addNewBillRow() {
 		LinearLayout llBillRows = (LinearLayout) findViewById(R.id.ll_bill_rows);
 		if(llBillRows != null) {
-			LinearLayout newBillRow = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
+			String defItemName = getResources().getString(R.string.def_item_name);
+			String defCost = getResources().getString(R.string.def_cost_double);
+			int defShare = getResources().getInteger(R.integer.def_share);
 			
-			long rowTag = BillPleaseDbTableManager.getInstance().addBillRow(((EditText) newBillRow.findViewById(R.id.et_item)).getText().toString(), getResources().getInteger(R.integer.def_cost), getResources().getInteger(R.integer.def_share));
-			
-			newBillRow.setTag(rowTag);
-			for (int i = 0; i < newBillRow.getChildCount(); i++) {
-				newBillRow.getChildAt(i).setTag(rowTag);
-			}
-			
-			llBillRows.addView(newBillRow);
+			drawBillRow(llBillRows, BillPleaseDbTableManager.getInstance().addBillRow(defItemName, Double.parseDouble(defCost), defShare), defItemName, defCost, String.valueOf(defShare));
 		}
 	}
 	
@@ -89,12 +84,13 @@ public class BillPleaseActivity extends Activity {
 			EtOnTouchListener etOnTouchListener = new EtOnTouchListener();
 			
 			for (BillRow billRowDb : BillPleaseDbTableManager.getInstance().getBillRows()) {
-				LinearLayout billRowLl = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
+				/*LinearLayout billRowLl = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
 
 				billRowLl.setTag(billRowDb.getRowTag());
 
 				EditText etItem = (EditText) billRowLl.findViewById(R.id.et_item);
 				etItem.setText(billRowDb.getItemName());
+				
 				etItem.setTag(billRowDb.getRowTag());
 				etItem.setOnTouchListener(etOnTouchListener);
 				etItem.addTextChangedListener(new EtTextWatcher(R.id.et_item, billRowDb.getRowTag()));
@@ -117,9 +113,41 @@ public class BillPleaseActivity extends Activity {
 
 				billRowLl.findViewById(R.id.btn_del_row).setTag(billRowDb.getRowTag());
 				
-				llBillRows.addView(billRowLl);
+				llBillRows.addView(billRowLl);*/
 			}
 		}
+	}
+	
+	private void drawBillRow(LinearLayout llBillRows, long rowTag, String itemName, String cost, String share) {
+		LinearLayout billRowLl = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
+
+		billRowLl.setTag(rowTag);
+
+		EditText etItem = (EditText) billRowLl.findViewById(R.id.et_item);
+		etItem.setText(itemName);
+		etItem.setTag(rowTag);
+		etItem.setOnTouchListener(etOnTouchListener);
+		etItem.addTextChangedListener(new EtTextWatcher(R.id.et_item, rowTag));//TODO
+
+		EditText etCost = (EditText) billRowLl.findViewById(R.id.et_cost);
+		if(billRowDb.getCost() != getResources().getInteger(R.integer.def_cost)) {
+			etCost.setText("" + billRowDb.getCost());
+		}
+		etCost.setTag(billRowDb.getRowTag());
+		etCost.setOnTouchListener(etOnTouchListener);
+		etCost.addTextChangedListener(new EtTextWatcher(R.id.et_cost, billRowDb.getRowTag()));
+
+		EditText etShare = (EditText) billRowLl.findViewById(R.id.et_share);
+		if(billRowDb.getShare() != getResources().getInteger(R.integer.def_share)) {
+			etShare.setText("" + billRowDb.getShare());
+		}
+		etShare.setTag(billRowDb.getRowTag());
+		etShare.setOnTouchListener(etOnTouchListener);
+		etShare.addTextChangedListener(new EtTextWatcher(R.id.et_share, billRowDb.getRowTag()));
+
+		billRowLl.findViewById(R.id.btn_del_row).setTag(billRowDb.getRowTag());
+		
+		llBillRows.addView(billRowLl);
 	}
 	
 	private class EtOnTouchListener implements OnTouchListener {
@@ -129,8 +157,9 @@ public class BillPleaseActivity extends Activity {
 			case R.id.et_item:
 			case R.id.et_cost:
 			case R.id.et_share:
-				((EditText)v).setText("");
+				//((EditText)v).setText("");
 				((EditText)v).requestFocus();
+				((EditText)v).setSelection(0);
 				break;
 			default:
 				break;

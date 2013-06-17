@@ -64,6 +64,22 @@ abstract public class DbTableManager {
 		return rowId;
 	}
 	
+	protected int update(ContentValues values, String whereClause, String[] whereArgs) {
+		int rowsAffected = 0;
+		
+		try {
+			rowsAffected = dbProvider.getWritableDatabase().update(tableName, values, whereClause, whereArgs);
+		}
+		catch(SQLiteException sqle) {
+			Log.e(tableName, "SQLiteException while update on table " + tableName + "!", sqle);
+		}
+		catch(Exception e) {
+			Log.e(tableName, "Exception while update on table " + tableName + "!", e);
+		}
+		
+		return rowsAffected;
+	}
+	
 	protected Cursor query(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
 		Cursor cs = null;
 		
@@ -102,4 +118,5 @@ abstract public class DbTableManager {
 	protected static final String CREATE_TABLE_QUERY_PREFIX = "CREATE TABLE ";
 	protected static final String CREATE_TABLE_QUERY_OPEN_BRACKET = " (";
 	protected static final String CREATE_TABLE_QUERY_CLOSE_BRACKET = ");";
+	protected static final String QUERY_EQUALITY_SYMBOL = "=";
 }

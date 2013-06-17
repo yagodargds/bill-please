@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="db_name">bill_please.db</string>
-    <integer name="db_version">1</integer>
+    <integer name="db_version">2</integer>
     
-    <integer name="def_cost">0</integer>
+    <string name="def_item_name">item</string>
+    <string name="def_cost_double">0.0</string>
     <integer name="def_share">1</integer>
-    <integer name="def_tax">0</integer>
-    <integer name="def_tip">10</integer>
+    <string name="def_tax_double">0.0</string>
+    <string name="def_tip_double">10.0</string>
 </resources>
