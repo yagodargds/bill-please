@@ -1,12 +1,14 @@
 package com.yagodar.billplease.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -42,7 +44,7 @@ public class BillPleaseActivity extends Activity {
 			break;
 		case R.id.btn_del_row:
 			BillPleaseDbTableManager.getInstance().delBillRow((Long) button.getTag());
-			llBillRows.removeView(llBillRows.findViewWithTag((Long) button.getTag()));
+			llBillRows.removeView(llBillRows.findViewWithTag(button.getTag()));
 			break;
 		case R.id.btn_new_bill:
 			BillPleaseDbTableManager.getInstance().delAllBillRows();
@@ -53,19 +55,7 @@ public class BillPleaseActivity extends Activity {
 		}
 	}
 
-	public void onEditTextClick(View editText) {
-		switch(editText.getId()) {
-		case R.id.et_item:
-		case R.id.et_cost:
-		case R.id.et_share:
-			((EditText) editText).setText("");
-			break;
-		default:
-			break;
-		}
-	}
-	
-	private void addNewBillRow() {
+    private void addNewBillRow() {
 		String defItemName = getResources().getString(R.string.def_item_name);
 		drawBillRow(BillPleaseDbTableManager.getInstance().addBillRow(	defItemName, 
 																		Double.parseDouble(getResources().getString(R.string.def_cost_double)), 
@@ -130,8 +120,6 @@ public class BillPleaseActivity extends Activity {
 	private class EtOnTouchListener implements OnTouchListener {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
-			((EditText)v).requestFocus();
-			
 			boolean valueChanged = false;
 			
 			switch(v.getId()) {
@@ -149,90 +137,113 @@ public class BillPleaseActivity extends Activity {
 			}
 			
 			if(!valueChanged) {
-				((EditText)v).setSelection(0);
+                v.requestFocus();
+                ((EditText)v).setSelection(0);
+                ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput((EditText) v, 0);
+                return true;
 			}
-
-			return true;
+            else {
+                return false;
+            }
 		}
 	}
 	
 	private class EtTextWatcher implements TextWatcher {
 		@Override
-		public void afterTextChanged(Editable s) {}
-
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {//TODO
-			switch(owner.getId()) {
-			case R.id.et_item:
-				if(!BillPleaseDbTableManager.getInstance().isBillRowItemNameChanged(ownerRowTag)) {
-					BillPleaseDbTableManager.getInstance().setBillRowItemNameChanged(ownerRowTag);
-					firstChangingCharacter = true;
-					BillPleaseDbTableManager.getInstance().setBillRowItemName(ownerRowTag, s.toString());
-					owner.setText(s.toString());
-				}
-				break;
-			case R.id.et_cost:
-				if(!BillPleaseDbTableManager.getInstance().isBillRowCostChanged(ownerRowTag)) {
-					BillPleaseDbTableManager.getInstance().setBillRowCostChanged(ownerRowTag);
-					firstChangingCharacter = true;
-					owner.setText(s.toString());
-				}
-				break;
-			case R.id.et_share:
-				if(!BillPleaseDbTableManager.getInstance().isBillRowShareChanged(ownerRowTag)) {
-					BillPleaseDbTableManager.getInstance().setBillRowShareChanged(ownerRowTag);
-					firstChangingCharacter = true;
-					owner.setText(s.toString());
-				}
-				break;
-			default:
-				break;
-			}
-		}
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			switch(owner.getId()) {
 			case R.id.et_item:
-				if(firstChangingCharacter) {
-					firstChangingCharacter = false;//TODO не так!
-				}
-				else {
-					BillPleaseDbTableManager.getInstance().setBillRowItemName(ownerRowTag, s.toString());
-				}
+                if(!BillPleaseDbTableManager.getInstance().isBillRowItemNameChanged(ownerRowTag)) {
+                    BillPleaseDbTableManager.getInstance().setBillRowItemNameChanged(ownerRowTag, true);
+
+                    owner.setText(s.toString().substring(start, count));
+                    owner.setSelection(count);
+                }
+                else {
+                    if(s.length() == 0) {
+                        owner.setText(getResources().getString(R.string.def_item_name));
+                        owner.setSelection(0);
+
+                        BillPleaseDbTableManager.getInstance().setBillRowItemNameChanged(ownerRowTag, false);
+                    }
+                    else {
+				        BillPleaseDbTableManager.getInstance().setBillRowItemName(ownerRowTag, s.toString());
+                    }
+                }
 				break;
 			case R.id.et_cost:
-				int cost = getResources().getInteger(R.integer.def_share);
-				try {
-					cost = Integer.parseInt(s.toString());
-				}
-				catch(Exception e){}
-				
-				BillPleaseDbTableManager.getInstance().setBillRowCost(ownerRowTag, cost);
-				break;
+                if(!BillPleaseDbTableManager.getInstance().isBillRowCostChanged(ownerRowTag)) {
+                    BillPleaseDbTableManager.getInstance().setBillRowCostChanged(ownerRowTag, true);
+
+                    owner.setText(s.toString().substring(start, count));
+                    owner.setSelection(count);
+                }
+                else {
+                    if(s.length() == 0) {
+                        owner.setText(getResources().getString(R.string.draw_def_cost));
+                        owner.setSelection(0);
+
+                        BillPleaseDbTableManager.getInstance().setBillRowCostChanged(ownerRowTag, false);
+                    }
+                    else {
+                        double value = 0.0;
+                        try {
+                            value = Double.parseDouble(s.toString());
+                        }
+                        catch(Exception e){
+                            try {
+                                value = Double.parseDouble(getResources().getString(R.string.def_cost_double));
+                            }
+                            catch(Exception ignored){}
+                        }
+
+                        BillPleaseDbTableManager.getInstance().setBillRowCost(ownerRowTag, value);
+                    }
+                }
+                break;
 			case R.id.et_share:
-				int share = getResources().getInteger(R.integer.def_share);
-				try {
-					share = Integer.parseInt(s.toString());
-				}
-				catch(Exception e){}
-				
-				BillPleaseDbTableManager.getInstance().setBillRowShare(ownerRowTag, share);
-				break;
+                if(!BillPleaseDbTableManager.getInstance().isBillRowShareChanged(ownerRowTag)) {
+                    BillPleaseDbTableManager.getInstance().setBillRowShareChanged(ownerRowTag, true);
+
+                    owner.setText(s.toString().substring(start, count));
+                    owner.setSelection(count);
+                }
+                else {
+                    if(s.length() == 0) {
+                        owner.setText(getResources().getString(R.string.draw_def_share));
+                        owner.setSelection(0);
+
+                        BillPleaseDbTableManager.getInstance().setBillRowShareChanged(ownerRowTag, false);
+                    }
+                    else {
+                        int value = getResources().getInteger(R.integer.def_share);
+                        try {
+                            value = Integer.parseInt(s.toString());
+                        }
+                        catch(Exception ignored){}
+
+                        BillPleaseDbTableManager.getInstance().setBillRowShare(ownerRowTag, value);
+                    }
+                }
+                break;
 			default:
 				break;
 			}
 		}
+
+        @Override
+        public void afterTextChanged(Editable s) {}
 		
 		public EtTextWatcher(EditText owner) {
 			this.owner = owner;
 			this.ownerRowTag = (Long) owner.getTag();
-			firstChangingCharacter = false;
 		}
 		
 		private EditText owner;
 		private long ownerRowTag;
-		private boolean firstChangingCharacter;
 	}
 	
 	private LinearLayout llBillRows;

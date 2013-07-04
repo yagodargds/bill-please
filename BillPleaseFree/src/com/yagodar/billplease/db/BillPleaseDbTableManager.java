@@ -52,9 +52,9 @@ public class BillPleaseDbTableManager extends DbTableManager {
 		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
 	
-	public int setBillRowItemNameChanged(long rowTag) {
+	public int setBillRowItemNameChanged(long rowTag, boolean isChanged) {
 		ContentValues values = new ContentValues();
-		values.put(Column.ITEM_CHANGED.toString(), 1);
+		values.put(Column.ITEM_CHANGED.toString(), isChanged ? 1 : 0);
 		
 		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
@@ -66,9 +66,9 @@ public class BillPleaseDbTableManager extends DbTableManager {
 		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
 	
-	public int setBillRowCostChanged(long rowTag) {
+	public int setBillRowCostChanged(long rowTag, boolean isChanged) {
 		ContentValues values = new ContentValues();
-		values.put(Column.COST_CHANGED.toString(), 1);
+		values.put(Column.COST_CHANGED.toString(), isChanged ? 1 : 0);
 		
 		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
@@ -80,9 +80,9 @@ public class BillPleaseDbTableManager extends DbTableManager {
 		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
 	
-	public int setBillRowShareChanged(long rowTag) {
+	public int setBillRowShareChanged(long rowTag, boolean isChanged) {
 		ContentValues values = new ContentValues();
-		values.put(Column.SHARE_CHANGED.toString(), 1);
+		values.put(Column.SHARE_CHANGED.toString(), isChanged ? 1 : 0);
 		
 		return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
 	}
