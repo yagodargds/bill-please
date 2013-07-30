@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/app_row_llv" >
+
+    <EditText
+        android:id="@+id/et_item"
+        style="@style/bill_row_etv"
+        android:layout_weight="1" />
+
+    <EditText
+        android:id="@+id/et_cost"
+        style="@style/bill_row_number_etv" />
+
+    <EditText
+        android:id="@+id/et_share"
+        style="@style/bill_row_number_etv" />
+
+    <ImageButton
+        android:id="@+id/btn_del_row"
+        style="@style/button_icon_v"
+        android:contentDescription="@string/btn_lbl_del_row"
+        android:src="@android:drawable/ic_delete" />
+
+</LinearLayout>
