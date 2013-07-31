@@ -36,6 +36,11 @@ public class BillPleaseActivity extends Activity {
 			finish();
 		}
 	}
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        //Skipped. Not in need. Everything is redraws in onCreate(). P.S. If use it, may be bugs with draw EditText views.
+    }
 	
 	public void onButtonClick(View button) {
 		switch(button.getId()) {
@@ -60,9 +65,9 @@ public class BillPleaseActivity extends Activity {
 		drawBillRow(BillPleaseDbTableManager.getInstance().addBillRow(	defItemName, 
 																		Double.parseDouble(getResources().getString(R.string.def_cost_double)), 
 																		getResources().getInteger(R.integer.def_share)), 
-					defItemName, 
-					getResources().getString(R.string.draw_def_cost), 
-					getResources().getString(R.string.draw_def_share));
+                                                                        defItemName,
+                                                                        getResources().getString(R.string.draw_def_cost),
+                                                                        getResources().getString(R.string.draw_def_share));
 	}
 
 	private void recoverBill() {
