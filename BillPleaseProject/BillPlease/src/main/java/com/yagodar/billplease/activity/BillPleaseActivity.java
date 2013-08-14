@@ -24,7 +24,8 @@ public class BillPleaseActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.bill_please_llv);
-		
+
+
 		llBillRows = ((LinearLayout) findViewById(R.id.ll_bill_rows));
 		if(llBillRows != null) {
 			etOnTouchListener = new EtOnTouchListener();

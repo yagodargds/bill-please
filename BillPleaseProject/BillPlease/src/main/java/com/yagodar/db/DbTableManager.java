@@ -6,10 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
+import com.yagodar.billplease.db.BillPleaseContract;
+
 abstract public class DbTableManager {
 	protected DbTableManager(String tableName) {
 		this.tableName = tableName;
-	}
+    }
 	
 	protected void onDbCreate(SQLiteDatabase db) {
 		db.execSQL(getDropTableSqlStr());
