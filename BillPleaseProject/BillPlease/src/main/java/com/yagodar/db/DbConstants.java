@@ -3,10 +3,14 @@ package com.yagodar.db;
 /**
  * Created by Yagodar on 13.08.13.
  */
-public interface BaseContract {
-    public static final String SEP_COMMA = ",";
+public interface DbConstants {
+    public static final String BRACKET_OPEN = "(";
+    public static final String BRACKET_CLOSE = ")";
 
-    public static final String SYMB_EQUALITY = "=";
+    public static final String SEP_COMMA = ",";
+    public static final String SEP_DOT_COMMA = ";";
+
+    public static final String OP_EQUALITY = "=";
 
     public static final String TYPE_INTEGER = " INTEGER";
     public static final String TYPE_DOUBLE = " DOUBLE";
