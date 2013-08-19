@@ -13,10 +13,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.yagodar.billplease.R;
-import com.yagodar.billplease.db.BillPleaseDbTableManager;
 import com.yagodar.billplease.db.BillPleaseDbTableManager.BillRow;
-import com.yagodar.db.DbProvider;
-import com.yagodar.db.DbTableManagersHolder;
 
 public class BillPleaseActivity extends Activity {
 	@Override
