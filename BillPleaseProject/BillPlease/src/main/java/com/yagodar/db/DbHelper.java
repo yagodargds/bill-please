@@ -13,13 +13,13 @@ public abstract class DbHelper extends SQLiteOpenHelper {
         super(context, name, factory, version);
     }
 
+    public static final String OP_EQUALITY = "=";
+
     protected static final String BRACKET_OPEN = "(";
     protected static final String BRACKET_CLOSE = ")";
 
     protected static final String SEP_COMMA = ",";
     protected static final String SEP_DOT_COMMA = ";";
-
-    protected static final String OP_EQUALITY = "=";
 
     protected static final String TYPE_INTEGER = " INTEGER";
     protected static final String TYPE_TEXT = " TEXT";

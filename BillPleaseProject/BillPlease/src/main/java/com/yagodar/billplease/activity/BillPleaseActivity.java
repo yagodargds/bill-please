@@ -13,21 +13,20 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.yagodar.billplease.R;
-import com.yagodar.billplease.db.BillPleaseDbTableManager.BillRow;
+import com.yagodar.billplease.db.BillPleaseDb;
 
 public class BillPleaseActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.bill_please_llv);
 
 
 		llBillRows = ((LinearLayout) findViewById(R.id.ll_bill_rows));
 		if(llBillRows != null) {
 			etOnTouchListener = new EtOnTouchListener();
-			DbTableManagersHolder.getInstance().addDbTableManager(getResources().getString(R.string.db_name), BillPleaseDbTableManager.getInstance());
-			DbProvider.newInstance(this, getResources().getString(R.string.db_name), getResources().getInteger(R.integer.db_version));
+            billPleaseDb = new BillPleaseDb(this);
 			recoverBill();
 		}
 		else {
@@ -39,18 +38,18 @@ public class BillPleaseActivity extends Activity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         //Skipped. Not in need. Everything is redraws in onCreate(). P.S. If use it, may be bugs with draw EditText views.
     }
-	
+
 	public void onButtonClick(View button) {
 		switch(button.getId()) {
 		case R.id.btn_add_row:
 			addNewBillRow();
 			break;
 		case R.id.btn_del_row:
-			BillPleaseDbTableManager.getInstance().delBillRow((Long) button.getTag());
+			billPleaseDb.delPersonalBillRecord((Long) button.getTag());
 			llBillRows.removeView(llBillRows.findViewWithTag(button.getTag()));
 			break;
 		case R.id.btn_new_bill:
-			BillPleaseDbTableManager.getInstance().delAllBillRows();
+			billPleaseDb.delAllPersonalBillRecords();
 			((LinearLayout) findViewById(R.id.ll_bill_rows)).removeAllViews();
 			break;
 		default:
@@ -59,27 +58,24 @@ public class BillPleaseActivity extends Activity {
 	}
 
     private void addNewBillRow() {
-		String defItemName = getResources().getString(R.string.def_item_name);
-		drawBillRow(BillPleaseDbTableManager.getInstance().addBillRow(	defItemName, 
-																		Double.parseDouble(getResources().getString(R.string.def_cost_double)), 
-																		getResources().getInteger(R.integer.def_share)), 
-                                                                        defItemName,
-                                                                        getResources().getString(R.string.draw_def_cost),
-                                                                        getResources().getString(R.string.draw_def_share));
-	}
+        drawBillRow(billPleaseDb.addPersonalBillRecord(),
+                getResources().getString(R.string.def_item_name),
+                getResources().getString(R.string.draw_def_cost),
+                getResources().getString(R.string.draw_def_share));
+    }
 
 	private void recoverBill() {
 		llBillRows.removeAllViews();
-		
-		for (BillRow billRowDb : BillPleaseDbTableManager.getInstance().getBillRows()) {
+
+		for (BillPleaseDb.PersonalBillRecord billRowDb : billPleaseDb.getAllPersonalBillRecords()) {
 			String itemName = getResources().getString(R.string.def_item_name);
 			String costStr = getResources().getString(R.string.draw_def_cost);
 			String shareStr = getResources().getString(R.string.draw_def_share);
-			
+
 			if(billRowDb.isItemNameChanged()) {
 				itemName = billRowDb.getItemName();
 			}
-			
+
 			if(billRowDb.isCostChanged()) {
 				costStr = String.valueOf(billRowDb.getCost());
 			}
@@ -87,11 +83,11 @@ public class BillPleaseActivity extends Activity {
 			if(billRowDb.isShareChanged()) {
 				shareStr = String.valueOf(billRowDb.getShare());
 			}
-			
-			drawBillRow(billRowDb.getRowTag(), itemName, costStr, shareStr);
+
+			drawBillRow(billRowDb.getTag(), itemName, costStr, shareStr);
 		}
 	}
-	
+
 	private void drawBillRow(long rowTag, String itemName, String cost, String share) {
 		LinearLayout billRowLl = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
 
@@ -116,29 +112,29 @@ public class BillPleaseActivity extends Activity {
 		etShare.addTextChangedListener(new EtTextWatcher(etShare));
 
 		billRowLl.findViewById(R.id.btn_del_row).setTag(rowTag);
-		
+
 		llBillRows.addView(billRowLl);
 	}
-	
+
 	private class EtOnTouchListener implements OnTouchListener {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			boolean valueChanged = false;
-			
+
 			switch(v.getId()) {
 			case R.id.et_item:
-				valueChanged = BillPleaseDbTableManager.getInstance().isBillRowItemNameChanged((Long) v.getTag());
+				valueChanged = billPleaseDb.isPersonalBillRecordItemNameChanged((Long) v.getTag());
 				break;
 			case R.id.et_cost:
-				valueChanged = BillPleaseDbTableManager.getInstance().isBillRowCostChanged((Long) v.getTag());
+				valueChanged = billPleaseDb.isPersonalBillRecordCostChanged((Long) v.getTag());
 				break;
 			case R.id.et_share:
-				valueChanged = BillPleaseDbTableManager.getInstance().isBillRowShareChanged((Long) v.getTag());
+				valueChanged = billPleaseDb.isPersonalBillRecordShareChanged((Long) v.getTag());
 				break;
 			default:
 				break;
 			}
-			
+
 			if(!valueChanged) {
                 v.requestFocus();
                 ((EditText)v).setSelection(0);
@@ -150,7 +146,7 @@ public class BillPleaseActivity extends Activity {
             }
 		}
 	}
-	
+
 	private class EtTextWatcher implements TextWatcher {
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -159,8 +155,8 @@ public class BillPleaseActivity extends Activity {
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			switch(owner.getId()) {
 			case R.id.et_item:
-                if(!BillPleaseDbTableManager.getInstance().isBillRowItemNameChanged(ownerRowTag)) {
-                    BillPleaseDbTableManager.getInstance().setBillRowItemNameChanged(ownerRowTag, true);
+                if(!billPleaseDb.isPersonalBillRecordItemNameChanged(ownerRowTag)) {
+                    billPleaseDb.setPersonalBillRecordItemNameChanged(ownerRowTag, true);
 
                     owner.setText(s.toString().substring(start, count));
                     owner.setSelection(count);
@@ -170,16 +166,16 @@ public class BillPleaseActivity extends Activity {
                         owner.setText(getResources().getString(R.string.def_item_name));
                         owner.setSelection(0);
 
-                        BillPleaseDbTableManager.getInstance().setBillRowItemNameChanged(ownerRowTag, false);
+                        billPleaseDb.setPersonalBillRecordItemNameChanged(ownerRowTag, false);
                     }
                     else {
-				        BillPleaseDbTableManager.getInstance().setBillRowItemName(ownerRowTag, s.toString());
+				        billPleaseDb.setPersonalBillRecordItemName(ownerRowTag, s.toString());
                     }
                 }
 				break;
 			case R.id.et_cost:
-                if(!BillPleaseDbTableManager.getInstance().isBillRowCostChanged(ownerRowTag)) {
-                    BillPleaseDbTableManager.getInstance().setBillRowCostChanged(ownerRowTag, true);
+                if(!billPleaseDb.isPersonalBillRecordCostChanged(ownerRowTag)) {
+                    billPleaseDb.setPersonalBillRecordCostChanged(ownerRowTag, true);
 
                     owner.setText(s.toString().substring(start, count));
                     owner.setSelection(count);
@@ -189,7 +185,7 @@ public class BillPleaseActivity extends Activity {
                         owner.setText(getResources().getString(R.string.draw_def_cost));
                         owner.setSelection(0);
 
-                        BillPleaseDbTableManager.getInstance().setBillRowCostChanged(ownerRowTag, false);
+                        billPleaseDb.setPersonalBillRecordCostChanged(ownerRowTag, false);
                     }
                     else {
                         double value = 0.0;
@@ -203,13 +199,13 @@ public class BillPleaseActivity extends Activity {
                             catch(Exception ignored){}
                         }
 
-                        BillPleaseDbTableManager.getInstance().setBillRowCost(ownerRowTag, value);
+                        billPleaseDb.setPersonalBillRecordCost(ownerRowTag, value);
                     }
                 }
                 break;
 			case R.id.et_share:
-                if(!BillPleaseDbTableManager.getInstance().isBillRowShareChanged(ownerRowTag)) {
-                    BillPleaseDbTableManager.getInstance().setBillRowShareChanged(ownerRowTag, true);
+                if(!billPleaseDb.isPersonalBillRecordShareChanged(ownerRowTag)) {
+                    billPleaseDb.setPersonalBillRecordShareChanged(ownerRowTag, true);
 
                     owner.setText(s.toString().substring(start, count));
                     owner.setSelection(count);
@@ -219,7 +215,7 @@ public class BillPleaseActivity extends Activity {
                         owner.setText(getResources().getString(R.string.draw_def_share));
                         owner.setSelection(0);
 
-                        BillPleaseDbTableManager.getInstance().setBillRowShareChanged(ownerRowTag, false);
+                        billPleaseDb.setPersonalBillRecordShareChanged(ownerRowTag, false);
                     }
                     else {
                         int value = getResources().getInteger(R.integer.def_share);
@@ -228,7 +224,7 @@ public class BillPleaseActivity extends Activity {
                         }
                         catch(Exception ignored){}
 
-                        BillPleaseDbTableManager.getInstance().setBillRowShare(ownerRowTag, value);
+                        billPleaseDb.setPersonalBillRecordShare(ownerRowTag, value);
                     }
                 }
                 break;
@@ -239,16 +235,18 @@ public class BillPleaseActivity extends Activity {
 
         @Override
         public void afterTextChanged(Editable s) {}
-		
+
 		public EtTextWatcher(EditText owner) {
 			this.owner = owner;
 			this.ownerRowTag = (Long) owner.getTag();
 		}
-		
+
 		private EditText owner;
 		private long ownerRowTag;
 	}
-	
+
 	private LinearLayout llBillRows;
-	private EtOnTouchListener etOnTouchListener; 
+	private EtOnTouchListener etOnTouchListener;
+
+    private BillPleaseDb billPleaseDb;
 }

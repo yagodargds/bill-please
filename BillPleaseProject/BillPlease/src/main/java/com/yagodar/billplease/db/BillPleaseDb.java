@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.yagodar.db.BaseDb;
 import com.yagodar.db.DbHelper;
 
 import java.util.ArrayList;
@@ -11,15 +12,129 @@ import java.util.ArrayList;
 /**
  * Created by Yagodar on 19.08.13.
  */
-public class BillPleaseDb {
+public class BillPleaseDb extends BaseDb {
     public BillPleaseDb(Context context) {
-        dbHelper = new BillPleaseDbHelper(context);
+        super(new BillPleaseDbHelper(context));
+    }
+
+    public long addPersonalBillRecord() {
+        return addPersonalBillRecord((ContentValues) null);
+    }
+
+    public long addPersonalBillRecord(PersonalBillRecord personalBillRecord) {
+        long tag = -1;
+
+        if(personalBillRecord != null) {
+            tag = addPersonalBillRecord(personalBillRecord.getItemName(), personalBillRecord.getCost(), personalBillRecord.getShare(), personalBillRecord.getChangesMask());
+        }
+
+        return tag;
+    }
+
+    public long addPersonalBillRecord(String itemName, double cost, int share, byte changesMask) {
+        ContentValues values = new ContentValues();
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_ITEM_NAME, itemName);
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_COST, cost);
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_SHARE, share);
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK, changesMask);
+
+        return addPersonalBillRecord(values);
+    }
+
+    public ArrayList<Long> addAllPersonalBillRecords(ArrayList<PersonalBillRecord> personalBillRecords) {
+        ArrayList<Long> tags = new ArrayList<Long>();
+
+        if(personalBillRecords != null && personalBillRecords.size() > 0) {
+            for (PersonalBillRecord personalBillRecord : personalBillRecords) {
+                tags.add(addPersonalBillRecord(personalBillRecord));
+            }
+        }
+
+        return tags;
+    }
+
+    public int setPersonalBillRecordItemName(long tag, String itemName) {
+        ContentValues values = new ContentValues();
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_ITEM_NAME, itemName);
+
+        return setPersonalBillRecordValues(tag, values);
+    }
+
+    public int setPersonalBillRecordCost(long tag, double cost) {
+        ContentValues values = new ContentValues();
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_COST, cost);
+
+        return setPersonalBillRecordValues(tag, values);
+    }
+
+    public int setPersonalBillRecordShare(long tag, int share) {
+        ContentValues values = new ContentValues();
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_SHARE, share);
+
+        return setPersonalBillRecordValues(tag, values);
+    }
+
+    public int setPersonalBillRecordItemNameChanged(long tag, boolean isChanged) {
+        byte newChangesMask;
+
+        if(isChanged) {
+            //1zz = Xzz | 100
+            newChangesMask = (byte) (getPersonalBillRecordChangesMask(tag) | PersonalBillRecord.ITEM_NAME_CHANGED_MASK);
+        }
+        else {
+            //0zz = Xzz & ~(100)
+            newChangesMask = (byte) (getPersonalBillRecordChangesMask(tag) & (~PersonalBillRecord.ITEM_NAME_CHANGED_MASK));
+        }
+
+        return setPersonalBillRecordChangesMask(tag, newChangesMask);
+    }
+
+    public int setPersonalBillRecordCostChanged(long tag, boolean isChanged) {
+        byte newChangesMask;
+
+        if(isChanged) {
+            //z1z = zXz | 010
+            newChangesMask = (byte) (getPersonalBillRecordChangesMask(tag) | PersonalBillRecord.COST_CHANGED_MASK);
+        }
+        else {
+            //z0z = zXz & ~(010)
+            newChangesMask = (byte) (getPersonalBillRecordChangesMask(tag) & (~PersonalBillRecord.COST_CHANGED_MASK));
+        }
+
+        return setPersonalBillRecordChangesMask(tag, newChangesMask);
+    }
+
+    public int setPersonalBillRecordShareChanged(long tag, boolean isChanged) {
+        byte newChangesMask;
+
+        if(isChanged) {
+            //zz1 = zzX | 001
+            newChangesMask = (byte) (getPersonalBillRecordChangesMask(tag) | PersonalBillRecord.SHARE_CHANGED_MASK);
+        }
+        else {
+            //zz0 = zzX & ~(001)
+            newChangesMask = (byte) (getPersonalBillRecordChangesMask(tag) & (~PersonalBillRecord.SHARE_CHANGED_MASK));
+        }
+
+        return setPersonalBillRecordChangesMask(tag, newChangesMask);
+    }
+
+    public boolean isPersonalBillRecordItemNameChanged(long tag) {
+        return isItemNameChanged(getPersonalBillRecordChangesMask(tag));
+    }
+
+    public boolean isPersonalBillRecordCostChanged(long tag) {
+        return isCostChanged(getPersonalBillRecordChangesMask(tag));
+    }
+
+    public boolean isPersonalBillRecordShareChanged(long tag) {
+        return isShareChanged(getPersonalBillRecordChangesMask(tag));
     }
 
     public ArrayList<PersonalBillRecord> getAllPersonalBillRecords() {
         ArrayList<PersonalBillRecord> records = new ArrayList<PersonalBillRecord>();
 
-        Cursor cs = dbHelper.getReadableDatabase().query(null, null, null, null, null, null, null);
+        Cursor cs = query(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, null, null, null, null, null, null, null);
         if(cs != null) {
             while(cs.moveToNext()) {
                 records.add(new PersonalBillRecord(cs.getLong(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill._ID)),
@@ -35,181 +150,70 @@ public class BillPleaseDb {
         return records;
     }
 
-
-
-
-
-
-
-
-    public long addBillRow(String defItemName, double defCost, int defShare) {
-        ContentValues values = new ContentValues();
-        values.put(Column.ITEM.toString(), defItemName);
-        values.put(Column.COST.toString(), defCost);
-        values.put(Column.SHARE.toString(), defShare);
-
-        return insert(null, values);
+    public long delPersonalBillRecord(long tag) {
+        return delete(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, BillPleaseDbContract.TablePersonalBill._ID + DbHelper.OP_EQUALITY + tag, null);
     }
 
-    public int setBillRowItemName(long rowTag, String itemName) {
-        ContentValues values = new ContentValues();
-        values.put(Column.ITEM.toString(), itemName);
-
-        return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
+    public long delAllPersonalBillRecords() {
+        return delete(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, null, null);
     }
 
-    public int setBillRowItemNameChanged(long rowTag, boolean isChanged) {
-        ContentValues values = new ContentValues();
-        values.put(Column.ITEM_CHANGED.toString(), isChanged ? 1 : 0);
-
-        return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
+    private long addPersonalBillRecord(ContentValues values) {
+        return insert(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, null, values);
     }
 
-    public int setBillRowCost(long rowTag, double cost) {
+    private int setPersonalBillRecordChangesMask(long tag, byte changesMask) {
         ContentValues values = new ContentValues();
-        values.put(Column.COST.toString(), cost);
+        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK, changesMask);
 
-        return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
+        return setPersonalBillRecordValues(tag, values);
     }
 
-    public int setBillRowCostChanged(long rowTag, boolean isChanged) {
-        ContentValues values = new ContentValues();
-        values.put(Column.COST_CHANGED.toString(), isChanged ? 1 : 0);
+    private byte getPersonalBillRecordChangesMask(long tag) {
+        byte changesMask = 0;
 
-        return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
-    }
-
-    public int setBillRowShare(long rowTag, int share) {
-        ContentValues values = new ContentValues();
-        values.put(Column.SHARE.toString(), share);
-
-        return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
-    }
-
-    public int setBillRowShareChanged(long rowTag, boolean isChanged) {
-        ContentValues values = new ContentValues();
-        values.put(Column.SHARE_CHANGED.toString(), isChanged ? 1 : 0);
-
-        return update(values, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
-    }
-
-    public String getBillRowItemName(long rowTag) {
-        String result = "";
-
-        Cursor cs = query(new String[] { Column.ITEM.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
+        Cursor cs = query(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, new String[] { BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK }, BillPleaseDbContract.TablePersonalBill._ID + DbHelper.OP_EQUALITY + tag, null, null, null, null, null);
         if(cs != null) {
-            if(cs.moveToNext()) {
-                result = cs.getString(0);
+            while(cs.moveToNext()) {
+                changesMask = (byte) cs.getInt(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK));
             }
 
             cs.close();
         }
 
-        return result;
+        return changesMask;
     }
 
-    public boolean isBillRowItemNameChanged(long rowTag) {
-        boolean result = false;
-
-        Cursor cs = query(new String[] { Column.ITEM_CHANGED.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
-        if(cs != null) {
-            if(cs.moveToNext()) {
-                result = cs.getInt(0) == 1 ? true : false;
-            }
-
-            cs.close();
-        }
-
-        return result;
+    private int setPersonalBillRecordValues(long tag, ContentValues values) {
+        return update(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, values, BillPleaseDbContract.TablePersonalBill._ID + DbHelper.OP_EQUALITY + tag, null);
     }
 
-    public double getBillRowCost(long rowTag) {
-        int result = 0;
-
-        Cursor cs = query(new String[] { Column.COST.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
-        if(cs != null) {
-            if(cs.moveToNext()) {
-                result = cs.getInt(0);
-            }
-
-            cs.close();
-        }
-
-        return result;
+    private static boolean isItemNameChanged(byte changesMask) {
+        //Xzz & 100 == 100
+        return (changesMask & PersonalBillRecord.ITEM_NAME_CHANGED_MASK) == PersonalBillRecord.ITEM_NAME_CHANGED_MASK;
     }
 
-    public boolean isBillRowCostChanged(long rowTag) {
-        boolean result = false;
-
-        Cursor cs = query(new String[] { Column.COST_CHANGED.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
-        if(cs != null) {
-            if(cs.moveToNext()) {
-                result = cs.getInt(0) == 1 ? true : false;
-            }
-
-            cs.close();
-        }
-
-        return result;
+    private static boolean isCostChanged(byte changesMask) {
+        //zXz & 010 == 010
+        return (changesMask & PersonalBillRecord.COST_CHANGED_MASK) == PersonalBillRecord.COST_CHANGED_MASK;
     }
 
-    public int getBillRowShare(long rowTag) {
-        int result = 0;
-
-        Cursor cs = query(new String[] { Column.SHARE.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
-        if(cs != null) {
-            if(cs.moveToNext()) {
-                result = cs.getInt(0);
-            }
-
-            cs.close();
-        }
-
-        return result;
+    private static boolean isShareChanged(byte changesMask) {
+        //zzX & 001 == 001
+        return (changesMask & PersonalBillRecord.SHARE_CHANGED_MASK) == PersonalBillRecord.SHARE_CHANGED_MASK;
     }
-
-    public boolean isBillRowShareChanged(long rowTag) {
-        boolean result = false;
-
-        Cursor cs = query(new String[] { Column.SHARE_CHANGED.toString() }, Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null, null, null, null, null);
-        if(cs != null) {
-            if(cs.moveToNext()) {
-                result = cs.getInt(0) == 1 ? true : false;
-            }
-
-            cs.close();
-        }
-
-        return result;
-    }
-
-    public long delBillRow(long rowTag) {
-        return delete(Column.ROW_TAG.toString() + QUERY_EQUALITY_SYMBOL + rowTag, null);
-    }
-
-    public long delAllBillRows() {
-        return delete(null, null);
-    }
-
-
-
-
-
-
-
-
 
     public class PersonalBillRecord {
-        private PersonalBillRecord(long rowTag, String itemName, double cost, int share, byte changesMask) {
-            this.rowTag = rowTag;
+        private PersonalBillRecord(long tag, String itemName, double cost, int share, byte changesMask) {
+            this.tag = tag;
             this.itemName = itemName;
             this.cost = cost;
             this.share = share;
             this.changesMask = changesMask;
         }
 
-        public long getRowTag() {
-            return rowTag;
+        public long getTag() {
+            return tag;
         }
 
         public String getItemName() {
@@ -225,21 +229,22 @@ public class BillPleaseDb {
         }
 
         public boolean isItemNameChanged() {
-            //Xzz & 100 == 100
-            return (changesMask & ITEM_NAME_CHANGED_MASK) == ITEM_NAME_CHANGED_MASK;
+            return BillPleaseDb.isItemNameChanged(changesMask);
         }
 
         public boolean isCostChanged() {
-            //zXz & 010 == 010
-            return (changesMask & COST_CHANGED_MASK) == COST_CHANGED_MASK;
+            return BillPleaseDb.isCostChanged(changesMask);
         }
 
         public boolean isShareChanged() {
-            //zzX & 001 == 001
-            return (changesMask & SHARE_CHANGED_MASK) == SHARE_CHANGED_MASK;
+            return BillPleaseDb.isShareChanged(changesMask);
         }
 
-        private long rowTag;
+        public byte getChangesMask() {
+            return changesMask;
+        }
+
+        private long tag;
         private String itemName;
         private double cost;
         private int share;
@@ -249,6 +254,4 @@ public class BillPleaseDb {
         private static final byte COST_CHANGED_MASK = 2; //0b010
         private static final byte SHARE_CHANGED_MASK = 1; //0b001
     }
-
-    private DbHelper dbHelper;
 }
