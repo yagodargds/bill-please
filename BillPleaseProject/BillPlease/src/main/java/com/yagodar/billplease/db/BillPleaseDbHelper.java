@@ -3,14 +3,14 @@ package com.yagodar.billplease.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yagodar.db.DbHelper;
+import com.yagodar.db.BaseDbHelper;
 
 /**
  * Created by Yagodar on 19.08.13.
  */
-public class BillPleaseDbHelper extends DbHelper {
-    public BillPleaseDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+public class BillPleaseDbHelper extends BaseDbHelper<BillPleaseDbManager> {
+    protected BillPleaseDbHelper(Context context, String dbName, SQLiteDatabase.CursorFactory csFactory, int dbVersion) {
+        super(context, dbName, csFactory, dbVersion);
     }
 
     @Override
@@ -42,6 +42,6 @@ public class BillPleaseDbHelper extends DbHelper {
     private static final String SQL_DELETE_PERSONAL_BILL = EXPR_DROP_TABLE_IF_EXISTS
             + BillPleaseDbContract.TablePersonalBill.TABLE_NAME;
 
-    private static final String DATABASE_NAME = "bill_please.db";
-    private static final int DATABASE_VERSION = 1;
+
+
 }

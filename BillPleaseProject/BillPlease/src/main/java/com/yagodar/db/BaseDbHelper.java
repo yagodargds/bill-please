@@ -1,17 +1,26 @@
 package com.yagodar.db;
 
 import android.content.Context;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * Created by Yagodar on 13.08.13.
  */
-public abstract class DbHelper extends SQLiteOpenHelper {
-    public DbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+public abstract class BaseDbHelper<T extends BaseDbManager> extends SQLiteOpenHelper {
+    protected BaseDbHelper(Context context, String dbName, SQLiteDatabase.CursorFactory csFactory, int dbVersion) {
+        super(context, dbName, csFactory, dbVersion);
     }
+
+    protected void setDbManager(T dbManager) {
+        this.dbManager = dbManager;
+    }
+
+    protected T getDbManager() {
+        return dbManager;
+    }
+
+    private T dbManager;
 
     public static final String OP_EQUALITY = "=";
 

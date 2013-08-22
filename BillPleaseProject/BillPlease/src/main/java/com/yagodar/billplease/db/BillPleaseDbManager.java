@@ -4,17 +4,28 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.yagodar.db.BaseDb;
-import com.yagodar.db.DbHelper;
+import com.yagodar.db.BaseDbManager;
+import com.yagodar.db.BaseDbHelper;
 
 import java.util.ArrayList;
 
 /**
  * Created by Yagodar on 19.08.13.
  */
-public class BillPleaseDb extends BaseDb {
-    public BillPleaseDb(Context context) {
-        super(new BillPleaseDbHelper(context));
+public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
+    private BillPleaseDbManager(Context context) {
+        super(new BillPleaseDbHelper(context, DATABASE_NAME, null, DATABASE_VERSION));
+        this.context = context;
+
+        addDbTableManager(new PersonalBillDbTableManager());
+    }
+
+    public BillPleaseDbManager getInstance(Context context) {
+        if(INSTANCE == null || this.context == null || !this.context.equals(context)) {
+            INSTANCE = new BillPleaseDbManager(context);
+        }
+
+        return INSTANCE;
     }
 
     public long addPersonalBillRecord() {
@@ -151,7 +162,7 @@ public class BillPleaseDb extends BaseDb {
     }
 
     public long delPersonalBillRecord(long tag) {
-        return delete(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, BillPleaseDbContract.TablePersonalBill._ID + DbHelper.OP_EQUALITY + tag, null);
+        return delete(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, BillPleaseDbContract.TablePersonalBill._ID + BaseDbHelper.OP_EQUALITY + tag, null);
     }
 
     public long delAllPersonalBillRecords() {
@@ -172,7 +183,7 @@ public class BillPleaseDb extends BaseDb {
     private byte getPersonalBillRecordChangesMask(long tag) {
         byte changesMask = 0;
 
-        Cursor cs = query(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, new String[] { BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK }, BillPleaseDbContract.TablePersonalBill._ID + DbHelper.OP_EQUALITY + tag, null, null, null, null, null);
+        Cursor cs = query(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, new String[] { BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK }, BillPleaseDbContract.TablePersonalBill._ID + BaseDbHelper.OP_EQUALITY + tag, null, null, null, null, null);
         if(cs != null) {
             while(cs.moveToNext()) {
                 changesMask = (byte) cs.getInt(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK));
@@ -185,7 +196,7 @@ public class BillPleaseDb extends BaseDb {
     }
 
     private int setPersonalBillRecordValues(long tag, ContentValues values) {
-        return update(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, values, BillPleaseDbContract.TablePersonalBill._ID + DbHelper.OP_EQUALITY + tag, null);
+        return update(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, values, BillPleaseDbContract.TablePersonalBill._ID + BaseDbHelper.OP_EQUALITY + tag, null);
     }
 
     private static boolean isItemNameChanged(byte changesMask) {
@@ -229,15 +240,15 @@ public class BillPleaseDb extends BaseDb {
         }
 
         public boolean isItemNameChanged() {
-            return BillPleaseDb.isItemNameChanged(changesMask);
+            return BillPleaseDbManager.isItemNameChanged(changesMask);
         }
 
         public boolean isCostChanged() {
-            return BillPleaseDb.isCostChanged(changesMask);
+            return BillPleaseDbManager.isCostChanged(changesMask);
         }
 
         public boolean isShareChanged() {
-            return BillPleaseDb.isShareChanged(changesMask);
+            return BillPleaseDbManager.isShareChanged(changesMask);
         }
 
         public byte getChangesMask() {
@@ -254,4 +265,11 @@ public class BillPleaseDb extends BaseDb {
         private static final byte COST_CHANGED_MASK = 2; //0b010
         private static final byte SHARE_CHANGED_MASK = 1; //0b001
     }
+
+    private final Context context;
+
+    private static BillPleaseDbManager INSTANCE;
+
+    private static final String DATABASE_NAME = "bill_please.db";
+    private static final int DATABASE_VERSION = 1;
 }

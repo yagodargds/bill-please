@@ -2,8 +2,6 @@ package com.yagodar.billplease.db;
 
 import android.provider.BaseColumns;
 
-import com.yagodar.db.DbHelper;
-
 /**
  * Created by Yagodar on 13.08.13.
  */

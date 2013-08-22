@@ -2,15 +2,35 @@ package com.yagodar.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.util.Log;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Created by Yagodar on 20.08.13.
  */
-public abstract class BaseDb {
-    protected BaseDb(DbHelper dbHelper) {
+public abstract class BaseDbManager<T extends BaseDbHelper> {
+    protected BaseDbManager(T dbHelper) {
         this.dbHelper = dbHelper;
+        this.dbHelper.setDbManager(this);
+        this.dbTableManagers = new HashMap<String, BaseDbTableManager>();
+    }
+
+    protected void addDbTableManager(String tableName, BaseDbTableManager dbTableManager) {
+        dbTableManagers.put(tableName, dbTableManager);
+    }
+
+    protected void removeDbTableManager(String tableName) {
+        dbTableManagers.remove(tableName);
+    }
+
+    protected BaseDbTableManager getDbTableManager(String tableName) {
+        return dbTableManagers.get(tableName);
+    }
+
+    protected Collection<BaseDbTableManager> getAllDbTableManagers() {
+        return dbTableManagers.values();
     }
 
     protected long insert(String tableName, String nullColumnHack, ContentValues values) {
@@ -78,7 +98,8 @@ public abstract class BaseDb {
         return rowsAffected;
     }
 
-    private DbHelper dbHelper;
-    
-    private static final String LOG_TAG = BaseDb.class.getSimpleName();
+    private final BaseDbHelper dbHelper;
+    private final HashMap<String, BaseDbTableManager> dbTableManagers;
+
+    private static final String LOG_TAG = BaseDbManager.class.getSimpleName();
 }

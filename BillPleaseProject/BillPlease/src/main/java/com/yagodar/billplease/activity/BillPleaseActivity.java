@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.yagodar.billplease.R;
-import com.yagodar.billplease.db.BillPleaseDb;
+import com.yagodar.billplease.db.BillPleaseDbManager;
 
 public class BillPleaseActivity extends Activity {
 	@Override
@@ -26,7 +26,7 @@ public class BillPleaseActivity extends Activity {
 		llBillRows = ((LinearLayout) findViewById(R.id.ll_bill_rows));
 		if(llBillRows != null) {
 			etOnTouchListener = new EtOnTouchListener();
-            billPleaseDb = new BillPleaseDb(this);
+            billPleaseDbManager = new BillPleaseDbManager(this);
 			recoverBill();
 		}
 		else {
@@ -45,11 +45,11 @@ public class BillPleaseActivity extends Activity {
 			addNewBillRow();
 			break;
 		case R.id.btn_del_row:
-			billPleaseDb.delPersonalBillRecord((Long) button.getTag());
+			billPleaseDbManager.delPersonalBillRecord((Long) button.getTag());
 			llBillRows.removeView(llBillRows.findViewWithTag(button.getTag()));
 			break;
 		case R.id.btn_new_bill:
-			billPleaseDb.delAllPersonalBillRecords();
+			billPleaseDbManager.delAllPersonalBillRecords();
 			((LinearLayout) findViewById(R.id.ll_bill_rows)).removeAllViews();
 			break;
 		default:
@@ -58,7 +58,7 @@ public class BillPleaseActivity extends Activity {
 	}
 
     private void addNewBillRow() {
-        drawBillRow(billPleaseDb.addPersonalBillRecord(),
+        drawBillRow(billPleaseDbManager.addPersonalBillRecord(),
                 getResources().getString(R.string.def_item_name),
                 getResources().getString(R.string.draw_def_cost),
                 getResources().getString(R.string.draw_def_share));
@@ -67,7 +67,7 @@ public class BillPleaseActivity extends Activity {
 	private void recoverBill() {
 		llBillRows.removeAllViews();
 
-		for (BillPleaseDb.PersonalBillRecord billRowDb : billPleaseDb.getAllPersonalBillRecords()) {
+		for (BillPleaseDbManager.PersonalBillRecord billRowDb : billPleaseDbManager.getAllPersonalBillRecords()) {
 			String itemName = getResources().getString(R.string.def_item_name);
 			String costStr = getResources().getString(R.string.draw_def_cost);
 			String shareStr = getResources().getString(R.string.draw_def_share);
@@ -123,13 +123,13 @@ public class BillPleaseActivity extends Activity {
 
 			switch(v.getId()) {
 			case R.id.et_item:
-				valueChanged = billPleaseDb.isPersonalBillRecordItemNameChanged((Long) v.getTag());
+				valueChanged = billPleaseDbManager.isPersonalBillRecordItemNameChanged((Long) v.getTag());
 				break;
 			case R.id.et_cost:
-				valueChanged = billPleaseDb.isPersonalBillRecordCostChanged((Long) v.getTag());
+				valueChanged = billPleaseDbManager.isPersonalBillRecordCostChanged((Long) v.getTag());
 				break;
 			case R.id.et_share:
-				valueChanged = billPleaseDb.isPersonalBillRecordShareChanged((Long) v.getTag());
+				valueChanged = billPleaseDbManager.isPersonalBillRecordShareChanged((Long) v.getTag());
 				break;
 			default:
 				break;
@@ -155,8 +155,8 @@ public class BillPleaseActivity extends Activity {
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			switch(owner.getId()) {
 			case R.id.et_item:
-                if(!billPleaseDb.isPersonalBillRecordItemNameChanged(ownerRowTag)) {
-                    billPleaseDb.setPersonalBillRecordItemNameChanged(ownerRowTag, true);
+                if(!billPleaseDbManager.isPersonalBillRecordItemNameChanged(ownerRowTag)) {
+                    billPleaseDbManager.setPersonalBillRecordItemNameChanged(ownerRowTag, true);
 
                     owner.setText(s.toString().substring(start, count));
                     owner.setSelection(count);
@@ -166,16 +166,16 @@ public class BillPleaseActivity extends Activity {
                         owner.setText(getResources().getString(R.string.def_item_name));
                         owner.setSelection(0);
 
-                        billPleaseDb.setPersonalBillRecordItemNameChanged(ownerRowTag, false);
+                        billPleaseDbManager.setPersonalBillRecordItemNameChanged(ownerRowTag, false);
                     }
                     else {
-				        billPleaseDb.setPersonalBillRecordItemName(ownerRowTag, s.toString());
+				        billPleaseDbManager.setPersonalBillRecordItemName(ownerRowTag, s.toString());
                     }
                 }
 				break;
 			case R.id.et_cost:
-                if(!billPleaseDb.isPersonalBillRecordCostChanged(ownerRowTag)) {
-                    billPleaseDb.setPersonalBillRecordCostChanged(ownerRowTag, true);
+                if(!billPleaseDbManager.isPersonalBillRecordCostChanged(ownerRowTag)) {
+                    billPleaseDbManager.setPersonalBillRecordCostChanged(ownerRowTag, true);
 
                     owner.setText(s.toString().substring(start, count));
                     owner.setSelection(count);
@@ -185,7 +185,7 @@ public class BillPleaseActivity extends Activity {
                         owner.setText(getResources().getString(R.string.draw_def_cost));
                         owner.setSelection(0);
 
-                        billPleaseDb.setPersonalBillRecordCostChanged(ownerRowTag, false);
+                        billPleaseDbManager.setPersonalBillRecordCostChanged(ownerRowTag, false);
                     }
                     else {
                         double value = 0.0;
@@ -199,13 +199,13 @@ public class BillPleaseActivity extends Activity {
                             catch(Exception ignored){}
                         }
 
-                        billPleaseDb.setPersonalBillRecordCost(ownerRowTag, value);
+                        billPleaseDbManager.setPersonalBillRecordCost(ownerRowTag, value);
                     }
                 }
                 break;
 			case R.id.et_share:
-                if(!billPleaseDb.isPersonalBillRecordShareChanged(ownerRowTag)) {
-                    billPleaseDb.setPersonalBillRecordShareChanged(ownerRowTag, true);
+                if(!billPleaseDbManager.isPersonalBillRecordShareChanged(ownerRowTag)) {
+                    billPleaseDbManager.setPersonalBillRecordShareChanged(ownerRowTag, true);
 
                     owner.setText(s.toString().substring(start, count));
                     owner.setSelection(count);
@@ -215,7 +215,7 @@ public class BillPleaseActivity extends Activity {
                         owner.setText(getResources().getString(R.string.draw_def_share));
                         owner.setSelection(0);
 
-                        billPleaseDb.setPersonalBillRecordShareChanged(ownerRowTag, false);
+                        billPleaseDbManager.setPersonalBillRecordShareChanged(ownerRowTag, false);
                     }
                     else {
                         int value = getResources().getInteger(R.integer.def_share);
@@ -224,7 +224,7 @@ public class BillPleaseActivity extends Activity {
                         }
                         catch(Exception ignored){}
 
-                        billPleaseDb.setPersonalBillRecordShare(ownerRowTag, value);
+                        billPleaseDbManager.setPersonalBillRecordShare(ownerRowTag, value);
                     }
                 }
                 break;
@@ -248,5 +248,5 @@ public class BillPleaseActivity extends Activity {
 	private LinearLayout llBillRows;
 	private EtOnTouchListener etOnTouchListener;
 
-    private BillPleaseDb billPleaseDb;
+    private BillPleaseDbManager billPleaseDbManager;
 }
