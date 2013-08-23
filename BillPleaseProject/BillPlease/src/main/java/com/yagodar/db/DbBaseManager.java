@@ -10,27 +10,30 @@ import java.util.HashMap;
 /**
  * Created by Yagodar on 20.08.13.
  */
-public abstract class BaseDbManager<T extends BaseDbHelper> {
-    protected BaseDbManager(T dbHelper) {
+public abstract class DbBaseManager<T extends DbBaseHelper> {
+    protected DbBaseManager(T dbHelper) {
         this.dbHelper = dbHelper;
         this.dbHelper.setDbManager(this);
-        this.dbTableManagers = new HashMap<String, BaseDbTableManager>();
+        this.dbTableManagers = new HashMap<String, DbTableBaseManager>();
     }
 
-    protected void addDbTableManager(String tableName, BaseDbTableManager dbTableManager) {
-        dbTableManagers.put(tableName, dbTableManager);
+    public DbTableBaseManager getDbTableManager(String tableName) {
+        return dbTableManagers.get(tableName);
+    }
+
+    public Collection<DbTableBaseManager> getAllDbTableManagers() {
+        return dbTableManagers.values();
+    }
+
+    protected void addDbTableManager(DbTableBaseManager dbTableManager) {
+        if(dbTableManager != null) {
+            dbTableManagers.put(dbTableManager.getTableName(), dbTableManager);
+            dbTableManager.setDbManager(this);
+        }
     }
 
     protected void removeDbTableManager(String tableName) {
         dbTableManagers.remove(tableName);
-    }
-
-    protected BaseDbTableManager getDbTableManager(String tableName) {
-        return dbTableManagers.get(tableName);
-    }
-
-    protected Collection<BaseDbTableManager> getAllDbTableManagers() {
-        return dbTableManagers.values();
     }
 
     protected long insert(String tableName, String nullColumnHack, ContentValues values) {
@@ -98,8 +101,8 @@ public abstract class BaseDbManager<T extends BaseDbHelper> {
         return rowsAffected;
     }
 
-    private final BaseDbHelper dbHelper;
-    private final HashMap<String, BaseDbTableManager> dbTableManagers;
+    private final DbBaseHelper dbHelper;
+    private final HashMap<String, DbTableBaseManager> dbTableManagers;
 
-    private static final String LOG_TAG = BaseDbManager.class.getSimpleName();
+    private static final String LOG_TAG = DbBaseManager.class.getSimpleName();
 }

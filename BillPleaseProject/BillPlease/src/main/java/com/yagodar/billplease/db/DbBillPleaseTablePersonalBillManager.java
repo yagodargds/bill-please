@@ -1,35 +1,23 @@
 package com.yagodar.billplease.db;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
-import com.yagodar.db.BaseDbManager;
-import com.yagodar.db.BaseDbHelper;
+import com.yagodar.db.DbBaseHelper;
+import com.yagodar.db.DbTableBaseManager;
 
 import java.util.ArrayList;
 
 /**
- * Created by Yagodar on 19.08.13.
+ * Created by Yagodar on 22.08.13.
  */
-public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
-    private BillPleaseDbManager(Context context) {
-        super(new BillPleaseDbHelper(context, DATABASE_NAME, null, DATABASE_VERSION));
-        this.context = context;
-
-        addDbTableManager(new PersonalBillDbTableManager());
-    }
-
-    public BillPleaseDbManager getInstance(Context context) {
-        if(INSTANCE == null || this.context == null || !this.context.equals(context)) {
-            INSTANCE = new BillPleaseDbManager(context);
-        }
-
-        return INSTANCE;
+public class DbBillPleaseTablePersonalBillManager extends DbTableBaseManager<DbBillPleaseManager> {
+    protected DbBillPleaseTablePersonalBillManager() {
+        super(DbBillPleaseTablePersonalBillContract.getInstance());
     }
 
     public long addPersonalBillRecord() {
-        return addPersonalBillRecord((ContentValues) null);
+        return insert(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_ITEM_NAME, null);
     }
 
     public long addPersonalBillRecord(PersonalBillRecord personalBillRecord) {
@@ -44,10 +32,10 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
 
     public long addPersonalBillRecord(String itemName, double cost, int share, byte changesMask) {
         ContentValues values = new ContentValues();
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_ITEM_NAME, itemName);
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_COST, cost);
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_SHARE, share);
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK, changesMask);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_ITEM_NAME, itemName);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_COST, cost);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_SHARE, share);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_CHANGES_MASK, changesMask);
 
         return addPersonalBillRecord(values);
     }
@@ -66,21 +54,21 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
 
     public int setPersonalBillRecordItemName(long tag, String itemName) {
         ContentValues values = new ContentValues();
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_ITEM_NAME, itemName);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_ITEM_NAME, itemName);
 
         return setPersonalBillRecordValues(tag, values);
     }
 
     public int setPersonalBillRecordCost(long tag, double cost) {
         ContentValues values = new ContentValues();
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_COST, cost);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_COST, cost);
 
         return setPersonalBillRecordValues(tag, values);
     }
 
     public int setPersonalBillRecordShare(long tag, int share) {
         ContentValues values = new ContentValues();
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_SHARE, share);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_SHARE, share);
 
         return setPersonalBillRecordValues(tag, values);
     }
@@ -145,14 +133,14 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
     public ArrayList<PersonalBillRecord> getAllPersonalBillRecords() {
         ArrayList<PersonalBillRecord> records = new ArrayList<PersonalBillRecord>();
 
-        Cursor cs = query(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, null, null, null, null, null, null, null);
+        Cursor cs = query(null, null, null, null, null, null, null);
         if(cs != null) {
             while(cs.moveToNext()) {
-                records.add(new PersonalBillRecord(cs.getLong(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill._ID)),
-                        cs.getString(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_ITEM_NAME)),
-                        cs.getDouble(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_COST)),
-                        cs.getInt(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_SHARE)),
-                        (byte) cs.getInt(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK))));
+                records.add(new PersonalBillRecord(cs.getLong(cs.getColumnIndex(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_TAG)),
+                        cs.getString(cs.getColumnIndex(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_ITEM_NAME)),
+                        cs.getDouble(cs.getColumnIndex(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_COST)),
+                        cs.getInt(cs.getColumnIndex(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_SHARE)),
+                        (byte) cs.getInt(cs.getColumnIndex(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_CHANGES_MASK))));
             }
 
             cs.close();
@@ -162,20 +150,21 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
     }
 
     public long delPersonalBillRecord(long tag) {
-        return delete(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, BillPleaseDbContract.TablePersonalBill._ID + BaseDbHelper.OP_EQUALITY + tag, null);
+        return delete(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_TAG + DbBaseHelper.SYMB_OP_EQUALITY + tag, null);
     }
 
     public long delAllPersonalBillRecords() {
-        return delete(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, null, null);
+        return delete(null, null);
     }
 
+
     private long addPersonalBillRecord(ContentValues values) {
-        return insert(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, null, values);
+        return insert(null, values);
     }
 
     private int setPersonalBillRecordChangesMask(long tag, byte changesMask) {
         ContentValues values = new ContentValues();
-        values.put(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK, changesMask);
+        values.put(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_CHANGES_MASK, changesMask);
 
         return setPersonalBillRecordValues(tag, values);
     }
@@ -183,10 +172,10 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
     private byte getPersonalBillRecordChangesMask(long tag) {
         byte changesMask = 0;
 
-        Cursor cs = query(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, new String[] { BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK }, BillPleaseDbContract.TablePersonalBill._ID + BaseDbHelper.OP_EQUALITY + tag, null, null, null, null, null);
+        Cursor cs = query(new String[] { DbBillPleaseTablePersonalBillContract.COLUMN_NAME_CHANGES_MASK }, DbBillPleaseTablePersonalBillContract.COLUMN_NAME_TAG + DbBaseHelper.SYMB_OP_EQUALITY + tag, null, null, null, null, null);
         if(cs != null) {
             while(cs.moveToNext()) {
-                changesMask = (byte) cs.getInt(cs.getColumnIndex(BillPleaseDbContract.TablePersonalBill.COLUMN_NAME_CHANGES_MASK));
+                changesMask = (byte) cs.getInt(cs.getColumnIndex(DbBillPleaseTablePersonalBillContract.COLUMN_NAME_CHANGES_MASK));
             }
 
             cs.close();
@@ -196,7 +185,7 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
     }
 
     private int setPersonalBillRecordValues(long tag, ContentValues values) {
-        return update(BillPleaseDbContract.TablePersonalBill.TABLE_NAME, values, BillPleaseDbContract.TablePersonalBill._ID + BaseDbHelper.OP_EQUALITY + tag, null);
+        return update(values, DbBillPleaseTablePersonalBillContract.COLUMN_NAME_TAG + DbBaseHelper.SYMB_OP_EQUALITY + tag, null);
     }
 
     private static boolean isItemNameChanged(byte changesMask) {
@@ -240,15 +229,15 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
         }
 
         public boolean isItemNameChanged() {
-            return BillPleaseDbManager.isItemNameChanged(changesMask);
+            return DbBillPleaseTablePersonalBillManager.isItemNameChanged(changesMask);
         }
 
         public boolean isCostChanged() {
-            return BillPleaseDbManager.isCostChanged(changesMask);
+            return DbBillPleaseTablePersonalBillManager.isCostChanged(changesMask);
         }
 
         public boolean isShareChanged() {
-            return BillPleaseDbManager.isShareChanged(changesMask);
+            return DbBillPleaseTablePersonalBillManager.isShareChanged(changesMask);
         }
 
         public byte getChangesMask() {
@@ -265,11 +254,4 @@ public class BillPleaseDbManager extends BaseDbManager<BillPleaseDbHelper> {
         private static final byte COST_CHANGED_MASK = 2; //0b010
         private static final byte SHARE_CHANGED_MASK = 1; //0b001
     }
-
-    private final Context context;
-
-    private static BillPleaseDbManager INSTANCE;
-
-    private static final String DATABASE_NAME = "bill_please.db";
-    private static final int DATABASE_VERSION = 1;
 }
