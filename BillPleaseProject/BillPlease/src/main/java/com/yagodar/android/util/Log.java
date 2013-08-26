@@ -1,4 +1,4 @@
-package com.yagodar.util;
+package com.yagodar.android.util;
 
 import java.io.BufferedWriter;
 import java.io.File;

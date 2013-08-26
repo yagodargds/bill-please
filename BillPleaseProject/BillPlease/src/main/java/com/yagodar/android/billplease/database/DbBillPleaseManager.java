@@ -1,8 +1,8 @@
-package com.yagodar.billplease.db;
+package com.yagodar.android.billplease.database;
 
 import android.content.Context;
 
-import com.yagodar.db.DbBaseManager;
+import com.yagodar.android.database.sqlite.DbBaseManager;
 
 /**
  * Created by Yagodar on 19.08.13.
@@ -10,20 +10,17 @@ import com.yagodar.db.DbBaseManager;
 public class DbBillPleaseManager extends DbBaseManager<DbBillPleaseHelper> {
     private DbBillPleaseManager(Context context) {
         super(new DbBillPleaseHelper(context, DATABASE_NAME, null, DATABASE_VERSION));
-        this.context = context;
 
         addDbTableManager(new DbBillPleaseTablePersonalBillManager());
     }
 
     public static DbBillPleaseManager getInstance(Context context) {
-        if(INSTANCE == null || INSTANCE.context == null || !INSTANCE.context.equals(context)) {
+        if(INSTANCE == null || !INSTANCE.isContextEquals(context)) {
             INSTANCE = new DbBillPleaseManager(context);
         }
 
         return INSTANCE;
     }
-
-    private final Context context;
 
     private static DbBillPleaseManager INSTANCE;
 

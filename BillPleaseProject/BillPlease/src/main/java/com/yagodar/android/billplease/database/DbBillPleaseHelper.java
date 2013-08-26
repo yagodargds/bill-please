@@ -1,10 +1,10 @@
-package com.yagodar.billplease.db;
+package com.yagodar.android.billplease.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yagodar.db.DbBaseHelper;
-import com.yagodar.db.DbTableBaseManager;
+import com.yagodar.android.database.sqlite.DbBaseHelper;
+import com.yagodar.android.database.sqlite.DbTableBaseManager;
 
 /**
  * Created by Yagodar on 19.08.13.

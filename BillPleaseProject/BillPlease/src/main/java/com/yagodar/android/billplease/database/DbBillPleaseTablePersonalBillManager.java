@@ -1,10 +1,10 @@
-package com.yagodar.billplease.db;
+package com.yagodar.android.billplease.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.yagodar.db.DbBaseHelper;
-import com.yagodar.db.DbTableBaseManager;
+import com.yagodar.android.database.sqlite.DbBaseHelper;
+import com.yagodar.android.database.sqlite.DbTableBaseManager;
 
 import java.util.ArrayList;
 

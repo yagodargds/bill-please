@@ -1,4 +1,4 @@
-package com.yagodar.billplease.activity;
+package com.yagodar.android.billplease.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,10 +12,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.yagodar.billplease.R;
-import com.yagodar.billplease.db.DbBillPleaseManager;
-import com.yagodar.billplease.db.DbBillPleaseTablePersonalBillContract;
-import com.yagodar.billplease.db.DbBillPleaseTablePersonalBillManager;
+import com.yagodar.android.billplease.R;
+import com.yagodar.android.billplease.database.DbBillPleaseManager;
+import com.yagodar.android.billplease.database.DbBillPleaseTablePersonalBillContract;
+import com.yagodar.android.billplease.database.DbBillPleaseTablePersonalBillManager;
 
 public class BillPleaseActivity extends Activity {
 	@Override
