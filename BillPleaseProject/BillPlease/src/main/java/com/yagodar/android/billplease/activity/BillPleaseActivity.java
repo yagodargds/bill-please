@@ -117,6 +117,12 @@ public class BillPleaseActivity extends Activity {
 		llBillRows.addView(billRowLl);
 	}
 
+    private void showSoftKeyboard(View view) {
+        if (view.requestFocus()) {
+            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
 	private class EtOnTouchListener implements OnTouchListener {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
@@ -137,9 +143,8 @@ public class BillPleaseActivity extends Activity {
 			}
 
 			if(!valueChanged) {
-                v.requestFocus();
+                showSoftKeyboard(v);
                 ((EditText)v).setSelection(0);
-                ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput((EditText) v, 0);
                 return true;
 			}
             else {
