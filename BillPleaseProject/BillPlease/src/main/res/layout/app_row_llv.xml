@@ -4,16 +4,16 @@
 
     <EditText
         android:id="@+id/et_item"
-        style="@style/bill_row_etv"
+        style="@style/item_name_etv"
         android:layout_weight="1" />
 
     <EditText
         android:id="@+id/et_cost"
-        style="@style/bill_row_number_etv" />
+        style="@style/cost_val_etv" />
 
     <EditText
         android:id="@+id/et_share"
-        style="@style/bill_row_number_etv" />
+        style="@style/share_val_etv" />
 
     <ImageButton
         android:id="@+id/btn_del_row"

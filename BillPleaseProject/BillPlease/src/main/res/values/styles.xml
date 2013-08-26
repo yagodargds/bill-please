@@ -28,6 +28,7 @@
     </style>
     
     <style name="app_llv" parent="vertical_linear_layout_v">
+        <item name="android:baselineAligned">false</item>
         <item name="android:background">@color/sky_blue_lightest</item>
     </style>
     
@@ -59,12 +60,20 @@
         <item name="android:background">@color/sky_blue</item>
     </style>
     
-    <style name="number_etv" parent="edit_text_v">
-        <item name="android:inputType">numberDecimal</item>
+    <style name="input_etv" parent="edit_text_v">
         <item name="android:layout_width">@dimen/app_input_width</item>
     </style>
+
+    <style name="number_etv" parent="input_etv">
+        <item name="android:inputType">number</item>
+    </style>
+
+    <style name="number_decimal_etv" parent="input_etv">
+        <item name="android:inputType">numberDecimal</item>
+    </style>
     
-    <style name="bill_row_etv" parent="edit_text_v">
+    <style name="item_name_etv" parent="edit_text_v">
+        <item name="android:inputType">textShortMessage</item>
         <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
     
@@ -76,7 +85,11 @@
         <item name="android:textSize">@dimen/footer_total_row_text_size</item>
     </style>
     
-	<style name="bill_row_number_etv" parent="number_etv">
+	<style name="cost_val_etv" parent="number_decimal_etv">
+        <item name="android:textColor">@color/sky_blue_darkest</item>
+    </style>
+
+    <style name="share_val_etv" parent="number_etv">
         <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
     
