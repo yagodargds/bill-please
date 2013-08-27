@@ -126,30 +126,36 @@ public class BillPleaseActivity extends Activity {
 	private class EtOnTouchListener implements OnTouchListener {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
-			boolean valueChanged = false;
+            boolean valueChanged = false;
 
-			switch(v.getId()) {
-			case R.id.et_item:
-				valueChanged = dbBillPleaseTablePersonalBillManager.isPersonalBillRecordItemNameChanged((Long) v.getTag());
-				break;
-			case R.id.et_cost:
-				valueChanged = dbBillPleaseTablePersonalBillManager.isPersonalBillRecordCostChanged((Long) v.getTag());
-				break;
-			case R.id.et_share:
-				valueChanged = dbBillPleaseTablePersonalBillManager.isPersonalBillRecordShareChanged((Long) v.getTag());
-				break;
-			default:
-				break;
-			}
-
-			if(!valueChanged) {
-                showSoftKeyboard(v);
-                ((EditText)v).setSelection(0);
-                return true;
-			}
-            else {
-                return false;
+            switch(v.getId()) {
+                case R.id.et_item:
+                    valueChanged = dbBillPleaseTablePersonalBillManager.isPersonalBillRecordItemNameChanged((Long) v.getTag());
+                    break;
+                case R.id.et_cost:
+                    valueChanged = dbBillPleaseTablePersonalBillManager.isPersonalBillRecordCostChanged((Long) v.getTag());
+                    break;
+                case R.id.et_share:
+                    valueChanged = dbBillPleaseTablePersonalBillManager.isPersonalBillRecordShareChanged((Long) v.getTag());
+                    break;
+                default:
+                    break;
             }
+
+            if(!valueChanged) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        showSoftKeyboard(v);
+                        ((EditText)v).setSelection(0);
+                        break;
+                    default:
+                        break;
+                }
+
+                return true;
+            }
+
+            return false;
 		}
 	}
 
