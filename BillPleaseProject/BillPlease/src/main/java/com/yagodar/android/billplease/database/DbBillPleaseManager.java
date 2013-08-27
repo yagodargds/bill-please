@@ -11,7 +11,7 @@ public class DbBillPleaseManager extends DbBaseManager<DbBillPleaseHelper> {
     private DbBillPleaseManager(Context context) {
         super(new DbBillPleaseHelper(context, DATABASE_NAME, null, DATABASE_VERSION));
 
-        addDbTableManager(new DbBillPleaseTablePersonalBillManager());
+        addDbTableManager(new DbBillPleaseTableBillManager());
     }
 
     public static DbBillPleaseManager getInstance(Context context) {
@@ -25,5 +25,5 @@ public class DbBillPleaseManager extends DbBaseManager<DbBillPleaseHelper> {
     private static DbBillPleaseManager INSTANCE;
 
     private static final String DATABASE_NAME = "bill_please.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 }

@@ -5,8 +5,8 @@ import com.yagodar.android.database.sqlite.DbTableBaseContract;
 /**
  * Created by Yagodar on 23.08.13.
  */
-public class DbBillPleaseTablePersonalBillContract extends DbTableBaseContract {
-    private DbBillPleaseTablePersonalBillContract() {
+public class DbBillPleaseTableBillContract extends DbTableBaseContract {
+    private DbBillPleaseTableBillContract() {
         super(TABLE_NAME);
 
         addDbTableColumn(COLUMN_NAME_TAG, true);
@@ -16,9 +16,9 @@ public class DbBillPleaseTablePersonalBillContract extends DbTableBaseContract {
         addDbTableColumn(COLUMN_NAME_CHANGES_MASK, DEF_VAL_CHANGES_MASK);
     }
 
-    public static DbBillPleaseTablePersonalBillContract getInstance() {
+    public static DbBillPleaseTableBillContract getInstance() {
         if(INSTANCE == null) {
-            INSTANCE = new DbBillPleaseTablePersonalBillContract();
+            INSTANCE = new DbBillPleaseTableBillContract();
         }
 
         return INSTANCE;
@@ -30,12 +30,12 @@ public class DbBillPleaseTablePersonalBillContract extends DbTableBaseContract {
     protected static final String COLUMN_NAME_SHARE = "share";
     protected static final String COLUMN_NAME_CHANGES_MASK = "changes_mask";
 
-    private static final String TABLE_NAME = "personal_bill";
+    private static final String TABLE_NAME = "bill";
 
     private static final String DEF_VAL_ITEM_NAME = "-";
     private static final double DEF_VAL_COST = 0.0;
     private static final int DEF_VAL_SHARE = 1;
     private static final byte DEF_VAL_CHANGES_MASK = 0;
 
-    private static DbBillPleaseTablePersonalBillContract INSTANCE;
+    private static DbBillPleaseTableBillContract INSTANCE;
 }

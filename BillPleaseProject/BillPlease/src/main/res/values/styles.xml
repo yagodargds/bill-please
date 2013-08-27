@@ -111,7 +111,10 @@
     <dimen name="text_size">12dp</dimen>
     <dimen name="footer_row_text_size">13dp</dimen>
     <dimen name="footer_total_row_text_size">14dp</dimen>
-    
+
+    <color name="bill_record_picked">@color/orange_light</color>
+    <color name="bill_record_not_picked">@android:color/transparent</color>
+
     <color name="sky_blue">#33A7FF</color>
     <color name="sky_blue_light">#95D1FF</color>
     <color name="sky_blue_lightest">#E3F3FF</color>
