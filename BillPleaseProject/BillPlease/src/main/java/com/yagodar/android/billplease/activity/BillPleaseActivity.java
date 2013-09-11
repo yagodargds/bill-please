@@ -2,39 +2,88 @@ package com.yagodar.android.billplease.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.yagodar.android.billplease.R;
+import com.yagodar.android.billplease.custom.BillRecordEditText;
 import com.yagodar.android.billplease.database.DbBillPleaseManager;
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillContract;
-import com.yagodar.android.billplease.database.DbBillPleaseTableBillManager;
+import com.yagodar.android.billplease.database.DbBillPleaseTableBillRecordEtChangingContract;
+import com.yagodar.android.database.sqlite.DbTableBaseManager;
+import com.yagodar.android.database.sqlite.custom.DbEditText;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class BillPleaseActivity extends Activity {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if(exDbEt != null) {
+                hideFocus();
+                return true;
+            }
+        }
 
-		setContentView(R.layout.bill_please_llv);
+        return super.onKeyDown(keyCode, event);
+    }
 
-		llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_rows));
-		if(llBillRecords != null) {
-			billPleaseOnTouchListener = new BillPleaseOnTouchListener();
-            dbBillPleaseTableBillManager = (DbBillPleaseTableBillManager) DbBillPleaseManager.getInstance(this).getDbTableManager(DbBillPleaseTableBillContract.getInstance().getTableName());
-			recoverBill();
-		}
-		else {
-			finish();
-		}
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.bill_please_llv);
+
+        llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_rows));
+        if(llBillRecords != null) {
+            etHidden = findViewById(R.id.et_hidden);
+            dbEtTax = (DbEditText) findViewById(R.id.et_tax);
+            dbEtTip = (DbEditText) findViewById(R.id.et_tip);
+
+            billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
+            etHidden.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+            dbEtTax.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+            dbEtTip.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+
+            billPleaseTextWatcher = new BillPleaseTextWatcher();
+            dbEtTax.addTextChangedListener(billPleaseTextWatcher);
+            dbEtTip.addTextChangedListener(billPleaseTextWatcher);
+
+            billPleaseOnTouchListener = new BillPleaseOnTouchListener();
+            TypedArray resIds = getResources().obtainTypedArray(R.array.not_et_btn_res_ids);
+            int resId;
+            for(int i = 0; i < resIds.length(); i++) {
+                resId = resIds.getResourceId(i, 0);
+                if(resId != 0) {
+                    findViewById(resId).setOnTouchListener(billPleaseOnTouchListener);
+                }
+            }
+            resIds.recycle();
+
+            exMotionEvent = NONE_MOTION_EVENT;
+
+            dbBillPleaseManager = DbBillPleaseManager.getInstance(this);
+            dbBillPleaseTableBillManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillContract.getInstance());
+            dbBillPleaseTableBillRecordEtChangingManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillRecordEtChangingContract.getInstance());
+
+            recoverBill();
+
+            hideFocus();
+
+            timer = new Timer();
+        }
+        else {
+            finish();
+        }
+    }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -47,20 +96,20 @@ public class BillPleaseActivity extends Activity {
 			addBillRecord();
 			break;
 		case R.id.btn_del_row:
-            if(lastEtOfPickedBillRecord != null && button.getTag().equals(lastEtOfPickedBillRecord.getTag())) {
-                hideSoftKeyboard(lastEtOfPickedBillRecord);
-                lastEtOfPickedBillRecord = null;
+            if(exDbEt != null && button.getTag().equals(exDbEt.getTag())) {
+                hideSoftKeyboard(exDbEt);
+                hideFocus();
             }
 
-			dbBillPleaseTableBillManager.delRecord((Long) button.getTag());
-			llBillRecords.removeView(llBillRecords.findViewWithTag(button.getTag()));
+            delBillRecord((Long) button.getTag());
 			break;
 		case R.id.btn_new_bill:
-            hideSoftKeyboard(lastEtOfPickedBillRecord);
-            lastEtOfPickedBillRecord = null;
+            if(exDbEt != null) {
+                hideSoftKeyboard(exDbEt);
+                hideFocus();
+            }
 
-			dbBillPleaseTableBillManager.delAllRecords();
-			((LinearLayout) findViewById(R.id.ll_bill_rows)).removeAllViews();
+            delAllBillRecords();
 			break;
 		default:
 			break;
@@ -68,225 +117,184 @@ public class BillPleaseActivity extends Activity {
 	}
 
     private void addBillRecord() {
-        drawBillRecord(dbBillPleaseTableBillManager.addRecord(),
-                getResources().getString(R.string.def_item_name),
-                getResources().getString(R.string.draw_def_cost),
-                getResources().getString(R.string.draw_def_share));
+        long dbRecordId = dbBillPleaseManager.addNewBillRecord();
+
+        if(dbRecordId != -1) {
+            drawBillRecord(dbRecordId);
+        }
     }
 
 	private void recoverBill() {
 		llBillRecords.removeAllViews();
 
-		for (DbBillPleaseTableBillManager.BillRecord billRowDb : dbBillPleaseTableBillManager.getAllRecords()) {
-			String itemName = getResources().getString(R.string.def_item_name);
-			String costStr = getResources().getString(R.string.draw_def_cost);
-			String shareStr = getResources().getString(R.string.draw_def_share);
-
-			if(billRowDb.isItemNameChanged()) {
-				itemName = billRowDb.getItemName();
-			}
-
-			if(billRowDb.isCostChanged()) {
-				costStr = String.valueOf(billRowDb.getCost());
-			}
-
-			if(billRowDb.isShareChanged()) {
-				shareStr = String.valueOf(billRowDb.getShare());
-			}
-
-			drawBillRecord(billRowDb.getTag(), itemName, costStr, shareStr);
+		for (DbTableBaseManager.DbTableRecord dbRecord : dbBillPleaseTableBillManager.getAllRecords()) {
+			drawBillRecord(dbRecord.getId());
 		}
 	}
 
-	private void drawBillRecord(long rowTag, String itemName, String cost, String share) {
-		LinearLayout billRowLl = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
-
-		billRowLl.setTag(rowTag);
-
-		EditText etItem = (EditText) billRowLl.findViewById(R.id.et_item);
-		etItem.setText(itemName);
-		etItem.setTag(rowTag);
-		etItem.setOnTouchListener(billPleaseOnTouchListener);
-		etItem.addTextChangedListener(new EtTextWatcher(etItem));
-
-		EditText etCost = (EditText) billRowLl.findViewById(R.id.et_cost);
-		etCost.setText(cost);
-		etCost.setTag(rowTag);
-		etCost.setOnTouchListener(billPleaseOnTouchListener);
-		etCost.addTextChangedListener(new EtTextWatcher(etCost));
-
-		EditText etShare = (EditText) billRowLl.findViewById(R.id.et_share);
-		etShare.setText(share);
-		etShare.setTag(rowTag);
-		etShare.setOnTouchListener(billPleaseOnTouchListener);
-		etShare.addTextChangedListener(new EtTextWatcher(etShare));
-
-		billRowLl.findViewById(R.id.btn_del_row).setTag(rowTag);
-
-		llBillRecords.addView(billRowLl);
-	}
-
-    private void showSoftKeyboard(View view) {
-        if(view != null && view.requestFocus()) {
-            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        }
+    private void delBillRecord(long dbRecordId) {
+        dbBillPleaseManager.delBillRecord(dbRecordId);
+        llBillRecords.removeView(llBillRecords.findViewWithTag(dbRecordId));
     }
+
+    private void delAllBillRecords() {
+        dbBillPleaseManager.delAllBillRecords();
+        llBillRecords.removeAllViews();
+    }
+
+	private void drawBillRecord(long recordId) {
+		LinearLayout billRecordLl = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
+
+		billRecordLl.setTag(recordId);
+
+        BillRecordEditText<String> etItemName = (BillRecordEditText) billRecordLl.findViewById(R.id.et_item_name);
+        etItemName.setDbRecordId(recordId);
+        etItemName.initDbManagerBase(dbBillPleaseTableBillManager, DbBillPleaseTableBillContract.COLUMN_NAME_ITEM_NAME);
+        etItemName.initDbManagerChanging(dbBillPleaseTableBillRecordEtChangingManager, DbBillPleaseTableBillRecordEtChangingContract.COLUMN_NAME_IS_CHANGED);
+        etItemName.pullFromDb();
+        etItemName.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+        etItemName.addTextChangedListener(billPleaseTextWatcher);
+
+        BillRecordEditText<Double> etCost = (BillRecordEditText) billRecordLl.findViewById(R.id.et_cost);
+        etCost.setDbRecordId(recordId);
+        etCost.initDbManagerBase(dbBillPleaseTableBillManager, DbBillPleaseTableBillContract.COLUMN_NAME_COST);
+        etCost.initDbManagerChanging(dbBillPleaseTableBillRecordEtChangingManager, DbBillPleaseTableBillRecordEtChangingContract.COLUMN_NAME_IS_CHANGED);
+        etCost.pullFromDb();
+        etCost.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+        etCost.addTextChangedListener(billPleaseTextWatcher);
+
+        BillRecordEditText<Integer> etShare = (BillRecordEditText) billRecordLl.findViewById(R.id.et_share);
+        etShare.setDbRecordId(recordId);
+        etShare.initDbManagerBase(dbBillPleaseTableBillManager, DbBillPleaseTableBillContract.COLUMN_NAME_SHARE);
+        etShare.initDbManagerChanging(dbBillPleaseTableBillRecordEtChangingManager, DbBillPleaseTableBillRecordEtChangingContract.COLUMN_NAME_IS_CHANGED);
+        etShare.pullFromDb();
+        etShare.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+        etShare.addTextChangedListener(billPleaseTextWatcher);
+
+		billRecordLl.findViewById(R.id.btn_del_row).setTag(recordId);
+
+		llBillRecords.addView(billRecordLl);
+	}
 
     private void hideSoftKeyboard(View view) {
         if(view != null) {
-            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 
-    private class BillPleaseOnTouchListener implements OnTouchListener {
+    private void hideFocus() {
+        etHidden.requestFocus();
+    }
+
+    private class BillPleaseOnFocusChangeListener implements View.OnFocusChangeListener {
         @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            boolean isBillRecordValueChanged = false;
-            boolean setBillRecordPicked = false;
-
-            switch(v.getId()) {
-                case R.id.et_item:
-                    isBillRecordValueChanged = dbBillPleaseTableBillManager.isItemNameChanged((Long) v.getTag());
-                    setBillRecordPicked = true;
-                    break;
+        public void onFocusChange(View view, boolean hasFocus) {
+            switch(view.getId()) {
+                case R.id.et_item_name:
                 case R.id.et_cost:
-                    isBillRecordValueChanged = dbBillPleaseTableBillManager.isCostChanged((Long) v.getTag());
-                    setBillRecordPicked = true;
-                    break;
                 case R.id.et_share:
-                    isBillRecordValueChanged = dbBillPleaseTableBillManager.isShareChanged((Long) v.getTag());
-                    setBillRecordPicked = true;
-                    break;
-                default:
-                    break;
-            }
+                    if(hasFocus) {
+                        llBillRecords.findViewWithTag(view.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_picked));
 
-            switch(event.getAction()) {
-                case MotionEvent.ACTION_UP:
-                    if(setBillRecordPicked) {
-                        if(lastEtOfPickedBillRecord != null) {
-                            llBillRecords.findViewWithTag(lastEtOfPickedBillRecord.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_not_picked));
+                        if(!((BillRecordEditText) view).isChanged()) {
+                            ((BillRecordEditText) view).setText("");
                         }
 
-                        lastEtOfPickedBillRecord = v;
-                        llBillRecords.findViewWithTag(v.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_picked));
+                        exDbEt = (BillRecordEditText) view;
                     }
-
-                    if(!isBillRecordValueChanged) {
-                        showSoftKeyboard(v);
-                        ((EditText)v).setSelection(0);
+                    else {
+                        timer.cancel();
+                        ((BillRecordEditText) view).pushToDb();
+                        ((BillRecordEditText) view).pullFromDb();
+                        ((BillRecordEditText) view).resetInputRegistered();
+                        llBillRecords.findViewWithTag(view.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_not_picked));
                     }
-
+                    break;
+                case R.id.et_tax:
+                case R.id.et_tip:
+                    if(hasFocus) {
+                        exDbEt = (DbEditText) view;
+                    }
+                    else {
+                        timer.cancel();
+                        ((DbEditText) view).pushToDb();
+                        ((DbEditText) view).pullFromDb();
+                        ((DbEditText) view).resetInputRegistered();
+                    }
+                    break;
+                case R.id.et_hidden:
+                    if(hasFocus) {
+                        hideSoftKeyboard(exDbEt);
+                        exDbEt = null;
+                    }
                     break;
                 default:
                     break;
             }
-
-            return !isBillRecordValueChanged;
         }
     }
 
-	private class EtTextWatcher implements TextWatcher {
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			switch(owner.getId()) {
-			case R.id.et_item:
-                if(!dbBillPleaseTableBillManager.isItemNameChanged(ownerRowTag)) {
-                    dbBillPleaseTableBillManager.setItemNameChanged(ownerRowTag, true);
-
-                    owner.setText(s.toString().substring(start, count));
-                    owner.setSelection(count);
-                }
-                else {
-                    if(s.length() == 0) {
-                        owner.setText(getResources().getString(R.string.def_item_name));
-                        owner.setSelection(0);
-
-                        dbBillPleaseTableBillManager.setItemNameChanged(ownerRowTag, false);
+    private class BillPleaseOnTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+            switch(view.getId()) {
+                case R.id.sv_bill_rows:
+                    if(exMotionEvent == MotionEvent.ACTION_DOWN && event.getAction() == MotionEvent.ACTION_UP) {
+                        hideFocus();
                     }
-                    else {
-				        dbBillPleaseTableBillManager.setItemName(ownerRowTag, s.toString());
-                    }
-                }
-				break;
-			case R.id.et_cost:
-                if(!dbBillPleaseTableBillManager.isCostChanged(ownerRowTag)) {
-                    dbBillPleaseTableBillManager.setCostChanged(ownerRowTag, true);
+                    break;
+                default:
+                    hideFocus();
+                    break;
+            }
 
-                    owner.setText(s.toString().substring(start, count));
-                    owner.setSelection(count);
-                }
-                else {
-                    if(s.length() == 0) {
-                        owner.setText(getResources().getString(R.string.draw_def_cost));
-                        owner.setSelection(0);
+            exMotionEvent = event.getAction();
 
-                        dbBillPleaseTableBillManager.setCostChanged(ownerRowTag, false);
-                    }
-                    else {
-                        double value = 0.0;
-                        try {
-                            value = Double.parseDouble(s.toString());
-                        }
-                        catch(Exception e){
-                            try {
-                                value = Double.parseDouble(getResources().getString(R.string.def_cost_double));
-                            }
-                            catch(Exception ignored){}
-                        }
+            return false;
+        }
+    }
 
-                        dbBillPleaseTableBillManager.setCost(ownerRowTag, value);
-                    }
-                }
-                break;
-			case R.id.et_share:
-                if(!dbBillPleaseTableBillManager.isShareChanged(ownerRowTag)) {
-                    dbBillPleaseTableBillManager.setShareChanged(ownerRowTag, true);
+    private class BillPleaseTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-                    owner.setText(s.toString().substring(start, count));
-                    owner.setSelection(count);
-                }
-                else {
-                    if(s.length() == 0) {
-                        owner.setText(getResources().getString(R.string.draw_def_share));
-                        owner.setSelection(0);
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            timer.cancel();
+            timer = new Timer();
 
-                        dbBillPleaseTableBillManager.setShareChanged(ownerRowTag, false);
-                    }
-                    else {
-                        int value = getResources().getInteger(R.integer.def_share);
-                        try {
-                            value = Integer.parseInt(s.toString());
-                        }
-                        catch(Exception ignored){}
-
-                        dbBillPleaseTableBillManager.setShare(ownerRowTag, value);
-                    }
-                }
-                break;
-			default:
-				break;
-			}
-		}
+            try {
+                timer.schedule(new PushToDbTimerTask(), getResources().getInteger(R.integer.push_to_db_delay_millisecs));
+            }
+            catch(Exception ignored) {}
+        }
 
         @Override
         public void afterTextChanged(Editable s) {}
+    }
 
-		public EtTextWatcher(EditText owner) {
-			this.owner = owner;
-			this.ownerRowTag = (Long) owner.getTag();
-		}
-
-		private EditText owner;
-		private long ownerRowTag;
-	}
+    private class PushToDbTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            if(exDbEt != null) {
+                exDbEt.pushToDb();
+            }
+        }
+    }
 
 	private LinearLayout llBillRecords;
-    private View lastEtOfPickedBillRecord;
+    private DbEditText exDbEt;
+    private View etHidden;
+    private DbEditText dbEtTax;
+    private DbEditText dbEtTip;
+    private int exMotionEvent;
+    private BillPleaseOnFocusChangeListener billPleaseOnFocusChangeListener;
     private BillPleaseOnTouchListener billPleaseOnTouchListener;
+    private BillPleaseTextWatcher billPleaseTextWatcher;
+    private DbBillPleaseManager dbBillPleaseManager;
+    private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillManager;
+    private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillRecordEtChangingManager;
+    private Timer timer;
 
-    private DbBillPleaseTableBillManager dbBillPleaseTableBillManager;
+    private static final int NONE_MOTION_EVENT = -1;
 }

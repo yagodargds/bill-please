@@ -6,9 +6,6 @@
     <string name="btn_lbl_add_row">add</string>
     <string name="btn_lbl_del_row">del</string>
 
-    <string name="draw_def_cost">cost</string>
-    <string name="draw_def_share">share</string>
-    
     <string name="lbl_subtotal">subtotal</string>
     <string name="lbl_tax">tax (%)</string>
     <string name="lbl_tip">tip (%)</string>

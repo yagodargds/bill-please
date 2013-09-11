@@ -64,6 +64,10 @@
         <item name="android:layout_width">@dimen/app_input_width</item>
     </style>
 
+    <style name="hidden_etv" parent="edit_text_v">
+        <item name="android:layout_width">@dimen/app_hidden_input_width</item>
+    </style>
+
     <style name="number_etv" parent="input_etv">
         <item name="android:inputType">number</item>
     </style>
@@ -103,6 +107,7 @@
     </style>
     
     <dimen name="app_row_height">40dp</dimen>
+    <dimen name="app_hidden_input_width">0dp</dimen>
     <dimen name="app_input_width">50dp</dimen>
     <dimen name="total_number_width">90dp</dimen>
     <dimen name="view_margin">1.5dp</dimen>
@@ -126,5 +131,26 @@
     <color name="orange_lightest">#FFF2E1</color>
     <color name="orange_dark">#C08B45</color>
     <color name="orange_darkest">#A6640C</color>
-    
+
+    <array name="not_et_btn_res_ids">
+        <item>@id/iv_icon</item>
+        <item>@id/tv_app_name</item>
+
+        <item>@id/sv_bill_rows</item>
+
+        <item>@id/tv_subtotal_lbl</item>
+        <item>@id/tv_subtotal_empty</item>
+        <item>@id/tv_subtotal_sum</item>
+
+        <item>@id/tv_tax_lbl</item>
+        <item>@id/tv_tax_sum</item>
+
+        <item>@id/tv_tip_lbl</item>
+        <item>@id/tv_tip_sum</item>
+
+        <item>@id/tv_total_lbl</item>
+        <item>@id/tv_total_empty</item>
+        <item>@id/tv_total_sum</item>
+    </array>
+
 </resources>

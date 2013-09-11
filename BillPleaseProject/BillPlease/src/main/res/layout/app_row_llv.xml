@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     style="@style/app_row_llv" >
 
-    <EditText
-        android:id="@+id/et_item"
+    <com.yagodar.android.billplease.custom.BillRecordEditText
+        android:id="@+id/et_item_name"
+        android:contentDescription="@string/descr_item_name"
         style="@style/item_name_etv"
         android:layout_weight="1" />
 
-    <EditText
+    <com.yagodar.android.billplease.custom.BillRecordEditText
         android:id="@+id/et_cost"
+        android:contentDescription="@string/descr_cost"
         style="@style/cost_val_etv" />
 
-    <EditText
+    <com.yagodar.android.billplease.custom.BillRecordEditText
         android:id="@+id/et_share"
+        android:contentDescription="@string/descr_share"
         style="@style/share_val_etv" />
 
     <ImageButton
