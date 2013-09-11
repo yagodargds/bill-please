@@ -25,6 +25,7 @@ public class DbBillPleaseManager extends DbBaseManager<DbBillPleaseHelper> {
 
         dbTableManagers.add(new DbTableBaseManager<DbBillPleaseManager>(DbBillPleaseTableBillContract.getInstance()));
         dbTableManagers.add(new DbTableBaseManager<DbBillPleaseManager>(DbBillPleaseTableBillRecordEtChangingContract.getInstance()));
+        dbTableManagers.add(new DbTableBaseManager<DbBillPleaseManager>(DbBillPleaseTableBillTaxTipContract.getInstance()));
 
         return dbTableManagers;
     }
@@ -103,5 +104,5 @@ public class DbBillPleaseManager extends DbBaseManager<DbBillPleaseHelper> {
     private static DbBillPleaseManager INSTANCE;
 
     private static final String DATABASE_NAME = "bill_please.db";
-    private static final int DATABASE_VERSION = 16;
+    private static final int DATABASE_VERSION = 20;
 }

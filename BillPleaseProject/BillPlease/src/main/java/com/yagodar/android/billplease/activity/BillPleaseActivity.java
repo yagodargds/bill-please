@@ -17,6 +17,7 @@ import com.yagodar.android.billplease.custom.BillRecordEditText;
 import com.yagodar.android.billplease.database.DbBillPleaseManager;
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillContract;
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillRecordEtChangingContract;
+import com.yagodar.android.billplease.database.DbBillPleaseTableBillTaxTipContract;
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.custom.DbEditText;
 
@@ -42,45 +43,25 @@ public class BillPleaseActivity extends Activity {
 
         setContentView(R.layout.bill_please_llv);
 
-        llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_rows));
-        if(llBillRecords != null) {
-            etHidden = findViewById(R.id.et_hidden);
-            dbEtTax = (DbEditText) findViewById(R.id.et_tax);
-            dbEtTip = (DbEditText) findViewById(R.id.et_tip);
-
-            billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
-            etHidden.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
-            dbEtTax.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
-            dbEtTip.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
-
-            billPleaseTextWatcher = new BillPleaseTextWatcher();
-            dbEtTax.addTextChangedListener(billPleaseTextWatcher);
-            dbEtTip.addTextChangedListener(billPleaseTextWatcher);
-
-            billPleaseOnTouchListener = new BillPleaseOnTouchListener();
-            TypedArray resIds = getResources().obtainTypedArray(R.array.not_et_btn_res_ids);
-            int resId;
-            for(int i = 0; i < resIds.length(); i++) {
-                resId = resIds.getResourceId(i, 0);
-                if(resId != 0) {
-                    findViewById(resId).setOnTouchListener(billPleaseOnTouchListener);
-                }
-            }
-            resIds.recycle();
+        try {
+            timer = new Timer();
 
             exMotionEvent = NONE_MOTION_EVENT;
+
+            billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
+            billPleaseOnTouchListener = new BillPleaseOnTouchListener();
+            billPleaseTextWatcher = new BillPleaseTextWatcher();
 
             dbBillPleaseManager = DbBillPleaseManager.getInstance(this);
             dbBillPleaseTableBillManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillContract.getInstance());
             dbBillPleaseTableBillRecordEtChangingManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillRecordEtChangingContract.getInstance());
+            dbBillPleaseTableBillTaxTipManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillTaxTipContract.getInstance());
 
-            recoverBill();
+            loadBill();
 
             hideFocus();
-
-            timer = new Timer();
         }
-        else {
+        catch (Exception ignored) {
             finish();
         }
     }
@@ -124,12 +105,49 @@ public class BillPleaseActivity extends Activity {
         }
     }
 
-	private void recoverBill() {
+	private void loadBill() {
+        etHidden = findViewById(R.id.et_hidden);
+        etHidden.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+
+        TypedArray resIds = getResources().obtainTypedArray(R.array.not_et_btn_res_ids);
+        int resId;
+        for(int i = 0; i < resIds.length(); i++) {
+            resId = resIds.getResourceId(i, 0);
+            if(resId != 0) {
+                findViewById(resId).setOnTouchListener(billPleaseOnTouchListener);
+            }
+        }
+        resIds.recycle();
+
+        llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_rows));
+
 		llBillRecords.removeAllViews();
 
 		for (DbTableBaseManager.DbTableRecord dbRecord : dbBillPleaseTableBillManager.getAllRecords()) {
 			drawBillRecord(dbRecord.getId());
 		}
+
+        long taxTipRecordId;
+        if(dbBillPleaseTableBillTaxTipManager.getAllRecords().size() == 0) {
+            taxTipRecordId = dbBillPleaseTableBillTaxTipManager.addRecord();
+        }
+        else {
+            taxTipRecordId = dbBillPleaseTableBillTaxTipManager.getAllRecords().iterator().next().getId();
+        }
+
+        DbEditText<Double> dbEtTax = (DbEditText) findViewById(R.id.et_tax);
+        dbEtTax.setDbRecordId(taxTipRecordId);
+        dbEtTax.initDbManagerBase(dbBillPleaseTableBillTaxTipManager, DbBillPleaseTableBillTaxTipContract.COLUMN_NAME_TAX);
+        dbEtTax.pullFromDb();
+        dbEtTax.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+        dbEtTax.addTextChangedListener(billPleaseTextWatcher);
+
+        DbEditText<Double> dbEtTip = (DbEditText) findViewById(R.id.et_tip);
+        dbEtTip.setDbRecordId(taxTipRecordId);
+        dbEtTip.initDbManagerBase(dbBillPleaseTableBillTaxTipManager, DbBillPleaseTableBillTaxTipContract.COLUMN_NAME_TIP);
+        dbEtTip.pullFromDb();
+        dbEtTip.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+        dbEtTip.addTextChangedListener(billPleaseTextWatcher);
 	}
 
     private void delBillRecord(long dbRecordId) {
@@ -285,8 +303,6 @@ public class BillPleaseActivity extends Activity {
 	private LinearLayout llBillRecords;
     private DbEditText exDbEt;
     private View etHidden;
-    private DbEditText dbEtTax;
-    private DbEditText dbEtTip;
     private int exMotionEvent;
     private BillPleaseOnFocusChangeListener billPleaseOnFocusChangeListener;
     private BillPleaseOnTouchListener billPleaseOnTouchListener;
@@ -294,6 +310,7 @@ public class BillPleaseActivity extends Activity {
     private DbBillPleaseManager dbBillPleaseManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillRecordEtChangingManager;
+    private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillTaxTipManager;
     private Timer timer;
 
     private static final int NONE_MOTION_EVENT = -1;
