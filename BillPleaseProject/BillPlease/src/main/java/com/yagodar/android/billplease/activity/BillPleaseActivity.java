@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -173,7 +174,31 @@ public class BillPleaseActivity extends Activity {
 
     private void delBillRecord(long dbRecordId) {
         dbBillPleaseManager.delBillRecord(dbRecordId);
-        llBillRecords.removeView(llBillRecords.findViewWithTag(dbRecordId));
+
+        View billRecordLlToDel = llBillRecords.findViewWithTag(dbRecordId);
+
+        llBillRecords.removeView(billRecordLlToDel);
+
+        if(llBillRecords.getChildCount() > 0) {
+            BillRecordEditText share = (BillRecordEditText) billRecordLlToDel.findViewById(R.id.et_share);
+            BillRecordEditText itemName = (BillRecordEditText) billRecordLlToDel.findViewById(R.id.et_item_name);
+
+            BillRecordEditText exEtShare = (BillRecordEditText) itemName.getNextFocusView(View.FOCUS_BACKWARD);
+            BillRecordEditText postEtItemName = (BillRecordEditText) share.getNextFocusView(View.FOCUS_FORWARD);
+
+            if(postEtItemName != null) {
+                postEtItemName.setNextFocusView(View.FOCUS_BACKWARD, exEtShare);
+                postEtItemName.setNextFocusView(View.FOCUS_UP, exEtShare);
+                postEtItemName.setNextFocusView(View.FOCUS_LEFT, exEtShare);
+            }
+
+            if(exEtShare != null) {
+                exEtShare.setNextFocusView(View.FOCUS_FORWARD, postEtItemName);
+                exEtShare.setNextFocusView(View.FOCUS_DOWN, postEtItemName);
+                exEtShare.setNextFocusView(View.FOCUS_RIGHT, postEtItemName);
+            }
+        }
+
         redrawAllSums();
     }
 
@@ -212,9 +237,36 @@ public class BillPleaseActivity extends Activity {
         etShare.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         etShare.addTextChangedListener(billPleaseTextWatcher);
 
-		billRecordLl.findViewById(R.id.btn_del_row).setTag(recordId);
+        billRecordLl.findViewById(R.id.btn_del_row).setTag(recordId);
 
-		llBillRecords.addView(billRecordLl);
+        llBillRecords.addView(billRecordLl);
+
+        if(llBillRecords.getChildCount() > 1) {
+            BillRecordEditText<Integer> exEtShare = (BillRecordEditText) llBillRecords.getChildAt(llBillRecords.getChildCount() - 2).findViewById(R.id.et_share);
+
+            exEtShare.setNextFocusView(View.FOCUS_FORWARD, etItemName);
+            exEtShare.setNextFocusView(View.FOCUS_DOWN, etItemName);
+            exEtShare.setNextFocusView(View.FOCUS_RIGHT, etItemName);
+
+            etItemName.setNextFocusView(View.FOCUS_BACKWARD, exEtShare);
+            etItemName.setNextFocusView(View.FOCUS_UP, exEtShare);
+            etItemName.setNextFocusView(View.FOCUS_LEFT, exEtShare);
+        }
+
+        etItemName.setNextFocusView(View.FOCUS_FORWARD, etCost);
+        etItemName.setNextFocusView(View.FOCUS_DOWN, etCost);
+        etItemName.setNextFocusView(View.FOCUS_RIGHT, etCost);
+
+        etCost.setNextFocusView(View.FOCUS_BACKWARD, etItemName);
+        etCost.setNextFocusView(View.FOCUS_UP, etItemName);
+        etCost.setNextFocusView(View.FOCUS_LEFT, etItemName);
+        etCost.setNextFocusView(View.FOCUS_FORWARD, etShare);
+        etCost.setNextFocusView(View.FOCUS_DOWN, etShare);
+        etCost.setNextFocusView(View.FOCUS_RIGHT, etShare);
+
+        etShare.setNextFocusView(View.FOCUS_BACKWARD, etCost);
+        etShare.setNextFocusView(View.FOCUS_UP, etCost);
+        etShare.setNextFocusView(View.FOCUS_LEFT, etCost);
 	}
 
     private void hideSoftKeyboard(View view) {

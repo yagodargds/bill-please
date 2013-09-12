@@ -2,6 +2,8 @@ package com.yagodar.android.billplease.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.SparseArray;
+import android.view.View;
 
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.DbTableColumn;
@@ -13,6 +15,8 @@ import com.yagodar.android.database.sqlite.custom.DbEditText;
 public class BillRecordEditText<T extends Object> extends DbEditText<T> {
     public BillRecordEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        nextFocusViews = new SparseArray<View>();
     }
 
     @Override
@@ -29,6 +33,17 @@ public class BillRecordEditText<T extends Object> extends DbEditText<T> {
         else {
             setDescriptionText();
         }
+    }
+
+    @Override
+    public View focusSearch(int direction) {
+        View searchedView = nextFocusViews.get(direction);
+
+        if(searchedView == null) {
+            searchedView = super.focusSearch(direction);
+        }
+
+        return searchedView;
     }
 
     public void initDbManagerChanging(DbTableBaseManager dbTableManagerChanging, String dbTableColumnNameChanging) {
@@ -54,6 +69,14 @@ public class BillRecordEditText<T extends Object> extends DbEditText<T> {
         return result;
     }
 
+    public void setNextFocusView(int direction, View view) {
+        nextFocusViews.put(direction, view);
+    }
+
+    public View getNextFocusView(int direction) {
+        return nextFocusViews.get(direction);
+    }
+
     private void setChanged(boolean value) {
         if(dbTableManagerChanging != null && dbTableColumnChanging != null) {
             long dbRecordId = getDbRecordId();
@@ -69,4 +92,5 @@ public class BillRecordEditText<T extends Object> extends DbEditText<T> {
 
     private DbTableBaseManager dbTableManagerChanging;
     private DbTableColumn dbTableColumnChanging;
+    private SparseArray<View> nextFocusViews;
 }
