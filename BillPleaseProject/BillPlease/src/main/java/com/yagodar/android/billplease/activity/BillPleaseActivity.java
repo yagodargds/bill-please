@@ -165,7 +165,7 @@ public class BillPleaseActivity extends Activity {
         dbEtTip.setDbRecordId(taxTipRecordId);
         dbEtTip.initDbManagerBase(dbBillPleaseTableBillTaxTipManager, DbBillPleaseTableBillTaxTipContract.COLUMN_NAME_TIP);
         if(isTaxTipNew) {
-            dbEtTax.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tip_double)));
+            dbEtTip.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tip_double)));
         }
         dbEtTip.pullFromDb();
         dbEtTip.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
