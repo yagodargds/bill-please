@@ -208,6 +208,7 @@ public class BillPleaseActivity extends Activity {
     private void delAllBillRecords() {
         dbBillPleaseManager.delAllBillRecords();
         llBillRecords.removeAllViews();
+        addBillRecord();
         redrawAllSums();
     }
 
@@ -337,6 +338,8 @@ public class BillPleaseActivity extends Activity {
                         if(!((BillRecordEditText) view).isChanged()) {
                             ((BillRecordEditText) view).setText("");
                         }
+
+
 
                         exDbEt = (BillRecordEditText) view;
                     }
