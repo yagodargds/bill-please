@@ -1,7 +1,7 @@
 <resources>
 
     <string name="app_name">Bill, Please!</string>
-    
+
     <string name="btn_lbl_new_bill">new bill</string>
     <string name="btn_lbl_add_row">add</string>
     <string name="btn_lbl_del_row">del</string>
@@ -10,7 +10,5 @@
     <string name="lbl_tax">tax (%)</string>
     <string name="lbl_tip">tip (%)</string>
     <string name="lbl_total">total</string>
-    
-    <string name="on_btn_click_method_name">onButtonClick</string>
-    
+
 </resources>

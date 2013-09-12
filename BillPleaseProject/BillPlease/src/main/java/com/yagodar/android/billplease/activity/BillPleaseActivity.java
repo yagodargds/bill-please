@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.yagodar.android.billplease.R;
 import com.yagodar.android.billplease.custom.BillRecordEditText;
@@ -21,6 +22,8 @@ import com.yagodar.android.billplease.database.DbBillPleaseTableBillTaxTipContra
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.custom.DbEditText;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,6 +49,14 @@ public class BillPleaseActivity extends Activity {
         try {
             timer = new Timer();
 
+            decimalFormat = new DecimalFormat();
+            decimalFormat.setMinimumFractionDigits(getResources().getInteger(R.integer.min_fraction_digits));
+            decimalFormat.setMaximumFractionDigits(getResources().getInteger(R.integer.max_fraction_digits));
+
+            DecimalFormatSymbols custom = new DecimalFormatSymbols();
+            custom.setDecimalSeparator('.');
+            decimalFormat.setDecimalFormatSymbols(custom);
+
             exMotionEvent = NONE_MOTION_EVENT;
 
             billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
@@ -60,6 +71,8 @@ public class BillPleaseActivity extends Activity {
             loadBill();
 
             hideFocus();
+
+            redrawAllSums();
         }
         catch (Exception ignored) {
             finish();
@@ -127,9 +140,11 @@ public class BillPleaseActivity extends Activity {
 			drawBillRecord(dbRecord.getId());
 		}
 
+        boolean isTaxTipNew = false;
         long taxTipRecordId;
         if(dbBillPleaseTableBillTaxTipManager.getAllRecords().size() == 0) {
             taxTipRecordId = dbBillPleaseTableBillTaxTipManager.addRecord();
+            isTaxTipNew = true;
         }
         else {
             taxTipRecordId = dbBillPleaseTableBillTaxTipManager.getAllRecords().iterator().next().getId();
@@ -138,6 +153,9 @@ public class BillPleaseActivity extends Activity {
         DbEditText<Double> dbEtTax = (DbEditText) findViewById(R.id.et_tax);
         dbEtTax.setDbRecordId(taxTipRecordId);
         dbEtTax.initDbManagerBase(dbBillPleaseTableBillTaxTipManager, DbBillPleaseTableBillTaxTipContract.COLUMN_NAME_TAX);
+        if(isTaxTipNew) {
+            dbEtTax.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tax_double)));
+        }
         dbEtTax.pullFromDb();
         dbEtTax.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         dbEtTax.addTextChangedListener(billPleaseTextWatcher);
@@ -145,6 +163,9 @@ public class BillPleaseActivity extends Activity {
         DbEditText<Double> dbEtTip = (DbEditText) findViewById(R.id.et_tip);
         dbEtTip.setDbRecordId(taxTipRecordId);
         dbEtTip.initDbManagerBase(dbBillPleaseTableBillTaxTipManager, DbBillPleaseTableBillTaxTipContract.COLUMN_NAME_TIP);
+        if(isTaxTipNew) {
+            dbEtTax.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tip_double)));
+        }
         dbEtTip.pullFromDb();
         dbEtTip.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         dbEtTip.addTextChangedListener(billPleaseTextWatcher);
@@ -153,11 +174,13 @@ public class BillPleaseActivity extends Activity {
     private void delBillRecord(long dbRecordId) {
         dbBillPleaseManager.delBillRecord(dbRecordId);
         llBillRecords.removeView(llBillRecords.findViewWithTag(dbRecordId));
+        redrawAllSums();
     }
 
     private void delAllBillRecords() {
         dbBillPleaseManager.delAllBillRecords();
         llBillRecords.removeAllViews();
+        redrawAllSums();
     }
 
 	private void drawBillRecord(long recordId) {
@@ -204,6 +227,48 @@ public class BillPleaseActivity extends Activity {
         etHidden.requestFocus();
     }
 
+    private void redrawAllSums() {
+        double subtotalSum = calcSubtotalSum();
+        ((TextView) findViewById(R.id.tv_subtotal_sum)).setText(String.valueOf(decimalFormat.format(subtotalSum)));
+
+        double taxSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tax)).getDbValue() / 100.0 );
+        ((TextView) findViewById(R.id.tv_tax_sum)).setText(String.valueOf(decimalFormat.format(taxSum)));
+
+        double tipSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tip)).getDbValue() / 100.0 );
+        ((TextView) findViewById(R.id.tv_tip_sum)).setText(String.valueOf(decimalFormat.format(tipSum)));
+
+        ((TextView) findViewById(R.id.tv_total_sum)).setText(String.valueOf(decimalFormat.format(subtotalSum + taxSum + tipSum)));
+    }
+
+    private void redrawTaxTipSums() {
+        double subtotalSum = calcSubtotalSum();
+
+        double taxSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tax)).getDbValue() / 100.0 );
+        ((TextView) findViewById(R.id.tv_tax_sum)).setText(String.valueOf(decimalFormat.format(taxSum)));
+
+        double tipSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tip)).getDbValue() / 100.0 );
+        ((TextView) findViewById(R.id.tv_tip_sum)).setText(String.valueOf(decimalFormat.format(tipSum)));
+
+        ((TextView) findViewById(R.id.tv_total_sum)).setText(String.valueOf(decimalFormat.format(subtotalSum + taxSum + tipSum)));
+    }
+
+    private double calcSubtotalSum() {
+        double value = 0.0;
+
+        try {
+            LinearLayout billRecordLl;
+            for(int i = 0; i < llBillRecords.getChildCount(); i++) {
+                billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
+                value += ((BillRecordEditText<Double>) billRecordLl.findViewById(R.id.et_cost)).getDbValue() / (double) ((BillRecordEditText<Integer>) billRecordLl.findViewById(R.id.et_share)).getDbValue();
+            }
+
+
+        }
+        catch(Exception ignored) {}
+
+        return value;
+    }
+
     private class BillPleaseOnFocusChangeListener implements View.OnFocusChangeListener {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
@@ -223,9 +288,28 @@ public class BillPleaseActivity extends Activity {
                     else {
                         timer.cancel();
                         ((BillRecordEditText) view).pushToDb();
+
+                        if(view.getId() == R.id.et_cost) {
+                            double defCost = Double.parseDouble(getResources().getString(R.string.min_cost_double));
+                            if(((BillRecordEditText<Double>) view).getDbValue() < defCost) {
+                                ((BillRecordEditText<Double>) view).setDbValue(defCost);
+                            }
+                        }
+                        else if(view.getId() == R.id.et_share) {
+                            int defShare = getResources().getInteger(R.integer.min_share);
+                            if(((BillRecordEditText<Integer>) view).getDbValue() < defShare) {
+                                ((BillRecordEditText<Integer>) view).setDbValue(defShare);
+                            }
+                        }
+
                         ((BillRecordEditText) view).pullFromDb();
                         ((BillRecordEditText) view).resetInputRegistered();
+
+                        timer.cancel();
+
                         llBillRecords.findViewWithTag(view.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_not_picked));
+
+                        redrawAllSums();
                     }
                     break;
                 case R.id.et_tax:
@@ -235,9 +319,14 @@ public class BillPleaseActivity extends Activity {
                     }
                     else {
                         timer.cancel();
+
                         ((DbEditText) view).pushToDb();
                         ((DbEditText) view).pullFromDb();
                         ((DbEditText) view).resetInputRegistered();
+
+                        timer.cancel();
+
+                        redrawTaxTipSums();
                     }
                     break;
                 case R.id.et_hidden:
@@ -312,6 +401,7 @@ public class BillPleaseActivity extends Activity {
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillRecordEtChangingManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillTaxTipManager;
     private Timer timer;
+    private DecimalFormat decimalFormat;
 
     private static final int NONE_MOTION_EVENT = -1;
 }

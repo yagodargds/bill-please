@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yagodar.android.billplease"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="@string/version_name" >
 
     <uses-sdk
         android:minSdkVersion="4"
