@@ -22,7 +22,7 @@
     <ImageButton
         android:id="@+id/btn_del_row"
         style="@style/button_icon_v"
-        android:contentDescription="@string/btn_lbl_del_row"
+        android:contentDescription="@string/btn_lbl_del_bill_record"
         android:src="@android:drawable/ic_delete" />
 
 </LinearLayout>

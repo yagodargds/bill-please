@@ -19,12 +19,6 @@
             android:text="@string/app_name" />
 
         <ImageButton
-            android:id="@+id/btn_add_row"
-            style="@style/button_icon_v"
-            android:contentDescription="@string/btn_lbl_add_row"
-            android:src="@android:drawable/ic_input_add" />
-        
-        <ImageButton
             android:id="@+id/btn_new_bill"
             style="@style/button_icon_v"
             android:contentDescription="@string/btn_lbl_new_bill"
@@ -36,11 +30,23 @@
         android:id="@+id/sv_bill_rows"
         style="@style/app_v"
         android:layout_weight="1" >
-        
+
         <LinearLayout
-            android:id="@+id/ll_bill_rows"
-            style="@style/vertical_linear_layout_v" />
-        
+            style="@style/vertical_linear_layout_v" >
+
+            <LinearLayout
+                android:id="@+id/ll_bill_records"
+                style="@style/vertical_linear_layout_v" />
+
+            <ImageButton
+                android:id="@+id/btn_add_new_bill_record"
+                android:contentDescription="@string/btn_lbl_add_new_bill_record"
+                android:src="@android:drawable/ic_input_add"
+                android:layout_gravity="center"
+                style="@style/button_icon_v" />
+
+        </LinearLayout>
+
     </ScrollView>
     
     <LinearLayout 

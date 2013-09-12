@@ -6,7 +6,6 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -87,7 +86,7 @@ public class BillPleaseActivity extends Activity {
 
 	public void onButtonClick(View button) {
 		switch(button.getId()) {
-		case R.id.btn_add_row:
+		case R.id.btn_add_new_bill_record:
 			addBillRecord();
 			break;
 		case R.id.btn_del_row:
@@ -133,13 +132,17 @@ public class BillPleaseActivity extends Activity {
         }
         resIds.recycle();
 
-        llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_rows));
+        llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_records));
 
 		llBillRecords.removeAllViews();
 
 		for (DbTableBaseManager.DbTableRecord dbRecord : dbBillPleaseTableBillManager.getAllRecords()) {
 			drawBillRecord(dbRecord.getId());
 		}
+
+        if(llBillRecords.getChildCount() == 0) {
+            addBillRecord();
+        }
 
         boolean isTaxTipNew = false;
         long taxTipRecordId;
@@ -339,6 +342,7 @@ public class BillPleaseActivity extends Activity {
                     }
                     else {
                         timer.cancel();
+
                         ((BillRecordEditText) view).pushToDb();
 
                         if(view.getId() == R.id.et_cost) {
@@ -360,6 +364,10 @@ public class BillPleaseActivity extends Activity {
                         timer.cancel();
 
                         llBillRecords.findViewWithTag(view.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_not_picked));
+
+                        if(llBillRecords.findViewWithTag(view.getTag()).equals(llBillRecords.getChildAt(llBillRecords.getChildCount() - 1)) && ((BillRecordEditText) view).isChanged()) {
+                            addBillRecord();
+                        }
 
                         redrawAllSums();
                     }

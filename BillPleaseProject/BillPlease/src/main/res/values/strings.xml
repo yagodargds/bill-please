@@ -3,8 +3,8 @@
     <string name="app_name">Bill, Please!</string>
 
     <string name="btn_lbl_new_bill">new bill</string>
-    <string name="btn_lbl_add_row">add</string>
-    <string name="btn_lbl_del_row">del</string>
+    <string name="btn_lbl_add_new_bill_record">add</string>
+    <string name="btn_lbl_del_bill_record">delete</string>
 
     <string name="lbl_subtotal">subtotal</string>
     <string name="lbl_tax">tax (%)</string>
