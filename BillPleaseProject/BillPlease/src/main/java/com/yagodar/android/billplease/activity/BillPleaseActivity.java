@@ -21,6 +21,7 @@ import com.yagodar.android.billplease.database.DbBillPleaseTableBillRecordEtChan
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillTaxTipContract;
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.custom.DbEditText;
+import com.yagodar.android.util.Log;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -88,21 +89,18 @@ public class BillPleaseActivity extends Activity {
 		switch(button.getId()) {
 		case R.id.btn_add_new_bill_record:
 			addBillRecord();
-			break;
-		case R.id.btn_del_row:
-            if(exDbEt != null && button.getTag().equals(exDbEt.getTag())) {
-                hideSoftKeyboard(exDbEt);
-                hideFocus();
-            }
 
-            delBillRecord((Long) button.getTag());
+            if(exDbEt != null && exDbEt instanceof BillRecordEditText) {
+                llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
+            }
+			break;
+		case R.id.btn_del_bill_record:
+            if(exDbEt != null && exDbEt instanceof BillRecordEditText) {
+                delBillRecord(exDbEt.getDbRecordId());
+            }
 			break;
 		case R.id.btn_new_bill:
-            if(exDbEt != null) {
-                hideSoftKeyboard(exDbEt);
-                hideFocus();
-            }
-
+            hideFocus();
             delAllBillRecords();
 			break;
 		default:
@@ -119,6 +117,8 @@ public class BillPleaseActivity extends Activity {
     }
 
 	private void loadBill() {
+        llActionBar = ((LinearLayout) findViewById(R.id.ll_action_bar));
+
         etHidden = findViewById(R.id.et_hidden);
         etHidden.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
 
@@ -180,27 +180,35 @@ public class BillPleaseActivity extends Activity {
 
         View billRecordLlToDel = llBillRecords.findViewWithTag(dbRecordId);
 
-        llBillRecords.removeView(billRecordLlToDel);
+        BillRecordEditText share = (BillRecordEditText) billRecordLlToDel.findViewById(R.id.et_share);
+        BillRecordEditText itemName = (BillRecordEditText) billRecordLlToDel.findViewById(R.id.et_item_name);
 
-        if(llBillRecords.getChildCount() > 0) {
-            BillRecordEditText share = (BillRecordEditText) billRecordLlToDel.findViewById(R.id.et_share);
-            BillRecordEditText itemName = (BillRecordEditText) billRecordLlToDel.findViewById(R.id.et_item_name);
+        BillRecordEditText exEtShare = (BillRecordEditText) itemName.getNextFocusView(View.FOCUS_BACKWARD);
+        final BillRecordEditText postEtItemName = (BillRecordEditText) share.getNextFocusView(View.FOCUS_FORWARD);
 
-            BillRecordEditText exEtShare = (BillRecordEditText) itemName.getNextFocusView(View.FOCUS_BACKWARD);
-            BillRecordEditText postEtItemName = (BillRecordEditText) share.getNextFocusView(View.FOCUS_FORWARD);
+        if(postEtItemName != null) {
+            postEtItemName.setNextFocusView(View.FOCUS_BACKWARD, exEtShare);
+            postEtItemName.setNextFocusView(View.FOCUS_UP, exEtShare);
+            postEtItemName.setNextFocusView(View.FOCUS_LEFT, exEtShare);
 
-            if(postEtItemName != null) {
-                postEtItemName.setNextFocusView(View.FOCUS_BACKWARD, exEtShare);
-                postEtItemName.setNextFocusView(View.FOCUS_UP, exEtShare);
-                postEtItemName.setNextFocusView(View.FOCUS_LEFT, exEtShare);
+            try {
+                postEtItemName.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        postEtItemName.requestFocus();
+                    }
+                });
             }
-
-            if(exEtShare != null) {
-                exEtShare.setNextFocusView(View.FOCUS_FORWARD, postEtItemName);
-                exEtShare.setNextFocusView(View.FOCUS_DOWN, postEtItemName);
-                exEtShare.setNextFocusView(View.FOCUS_RIGHT, postEtItemName);
-            }
+            catch(Exception ignored) {}
         }
+
+        if(exEtShare != null) {
+            exEtShare.setNextFocusView(View.FOCUS_FORWARD, postEtItemName);
+            exEtShare.setNextFocusView(View.FOCUS_DOWN, postEtItemName);
+            exEtShare.setNextFocusView(View.FOCUS_RIGHT, postEtItemName);
+        }
+
+        llBillRecords.removeView(billRecordLlToDel);
 
         redrawAllSums();
     }
@@ -213,7 +221,7 @@ public class BillPleaseActivity extends Activity {
     }
 
 	private void drawBillRecord(long recordId) {
-		LinearLayout billRecordLl = (LinearLayout) getLayoutInflater().inflate(R.layout.app_row_llv, null);
+		LinearLayout billRecordLl = (LinearLayout) getLayoutInflater().inflate(R.layout.bill_record_llv, null);
 
 		billRecordLl.setTag(recordId);
 
@@ -240,8 +248,6 @@ public class BillPleaseActivity extends Activity {
         etShare.pullFromDb();
         etShare.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         etShare.addTextChangedListener(billPleaseTextWatcher);
-
-        billRecordLl.findViewById(R.id.btn_del_row).setTag(recordId);
 
         llBillRecords.addView(billRecordLl);
 
@@ -339,7 +345,12 @@ public class BillPleaseActivity extends Activity {
                             ((BillRecordEditText) view).setText("");
                         }
 
-
+                        if(llBillRecords.indexOfChild(llBillRecords.findViewWithTag(view.getTag())) != llBillRecords.getChildCount() - 1) {
+                            llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.GONE);
+                        }
 
                         exDbEt = (BillRecordEditText) view;
                     }
@@ -371,6 +382,8 @@ public class BillPleaseActivity extends Activity {
                         if(llBillRecords.findViewWithTag(view.getTag()).equals(llBillRecords.getChildAt(llBillRecords.getChildCount() - 1)) && ((BillRecordEditText) view).isChanged()) {
                             addBillRecord();
                         }
+
+                        llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.GONE);
 
                         redrawAllSums();
                     }
@@ -452,6 +465,7 @@ public class BillPleaseActivity extends Activity {
         }
     }
 
+    private LinearLayout llActionBar;
 	private LinearLayout llBillRecords;
     private DbEditText exDbEt;
     private View etHidden;

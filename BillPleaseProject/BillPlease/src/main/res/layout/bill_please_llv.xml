@@ -4,7 +4,7 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     style="@style/app_llv" >
 
-    <LinearLayout 
+    <LinearLayout
         style="@style/header_footer_row_llv" >
 
         <ImageView
@@ -18,11 +18,25 @@
             android:layout_weight="1"
             android:text="@string/app_name" />
 
-        <ImageButton
-            android:id="@+id/btn_new_bill"
-            style="@style/button_icon_v"
-            android:contentDescription="@string/btn_lbl_new_bill"
-            android:src="@android:drawable/ic_dialog_alert" />
+        <LinearLayout
+            android:id="@+id/ll_action_bar"
+            style="@style/horizontal_linear_layout_v"
+            android:layout_width="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btn_del_bill_record"
+                style="@style/button_icon_v"
+                android:contentDescription="@string/btn_lbl_del_bill_record"
+                android:src="@android:drawable/ic_delete"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/btn_new_bill"
+                style="@style/button_icon_v"
+                android:contentDescription="@string/btn_lbl_new_bill"
+                android:src="@android:drawable/ic_dialog_alert" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

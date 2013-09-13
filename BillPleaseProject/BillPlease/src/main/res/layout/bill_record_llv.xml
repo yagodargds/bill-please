@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    style="@style/app_row_llv" >
+    style="@style/bill_record_llv" >
 
     <com.yagodar.android.billplease.custom.BillRecordEditText
         android:id="@+id/et_item_name"
@@ -18,11 +18,5 @@
         android:id="@+id/et_share"
         android:contentDescription="@string/descr_share"
         style="@style/share_val_etv" />
-
-    <ImageButton
-        android:id="@+id/btn_del_row"
-        style="@style/button_icon_v"
-        android:contentDescription="@string/btn_lbl_del_bill_record"
-        android:src="@android:drawable/ic_delete" />
 
 </LinearLayout>

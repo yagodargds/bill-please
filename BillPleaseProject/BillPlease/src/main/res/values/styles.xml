@@ -32,7 +32,7 @@
         <item name="android:background">@color/sky_blue_lightest</item>
     </style>
     
-    <style name="app_row_llv" parent="horizontal_linear_layout_v">
+    <style name="bill_record_llv" parent="horizontal_linear_layout_v">
         <item name="android:layout_height">@dimen/app_row_height</item>
     </style>
     
@@ -56,7 +56,7 @@
         <item name="android:background">@android:color/transparent</item> <!-- TODO -->
     </style>
     
-    <style name="header_footer_row_llv" parent="app_row_llv">
+    <style name="header_footer_row_llv" parent="bill_record_llv">
         <item name="android:background">@color/sky_blue</item>
     </style>
     
