@@ -5,7 +5,8 @@
     style="@style/app_llv" >
 
     <LinearLayout
-        style="@style/header_footer_row_llv" >
+        android:id="@+id/ll_action_bar"
+        style="@style/action_bar_llv" >
 
         <ImageView
             android:id="@+id/iv_icon"
@@ -19,7 +20,7 @@
             android:text="@string/app_name" />
 
         <LinearLayout
-            android:id="@+id/ll_action_bar"
+            android:id="@+id/ll_action_bar_icons"
             style="@style/horizontal_linear_layout_v"
             android:layout_width="wrap_content">
 
@@ -64,7 +65,10 @@
     </ScrollView>
     
     <LinearLayout 
-        style="@style/header_footer_row_llv" >
+        style="@style/action_bar_llv" >
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
 
         <TextView
             android:id="@+id/tv_subtotal_lbl"
@@ -79,11 +83,17 @@
         <TextView
                 android:id="@+id/tv_subtotal_sum"
                 style="@style/footer_row_total_number_tv" />
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
         
     </LinearLayout>
     
     <LinearLayout 
-        style="@style/header_footer_row_llv" >
+        style="@style/action_bar_llv" >
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
 
         <TextView
             android:id="@+id/tv_tax_lbl"
@@ -98,11 +108,17 @@
         <TextView
                 android:id="@+id/tv_tax_sum"
                 style="@style/footer_row_total_number_tv" />
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
         
     </LinearLayout>
     
     <LinearLayout 
-        style="@style/header_footer_row_llv" >
+        style="@style/action_bar_llv" >
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
 
         <TextView
                 android:id="@+id/tv_tip_lbl"
@@ -117,30 +133,39 @@
         <TextView
                 android:id="@+id/tv_tip_sum"
                 style="@style/footer_row_total_number_tv" />
-        
-    </LinearLayout>
-    
-    <LinearLayout 
-        style="@style/header_footer_row_llv" >
 
         <TextView
-                android:id="@+id/tv_total_lbl"
+            style="@style/footer_screen_edge_intent_tv" />
+        
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/action_bar_llv" >
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
+
+        <TextView
+            android:id="@+id/tv_total_lbl"
             style="@style/footer_total_row_tv"
             android:layout_weight="1"
             android:text="@string/lbl_total" />
 
         <TextView
-                android:id="@+id/tv_total_empty"
+            android:id="@+id/tv_total_empty"
             style="@style/footer_number_etv" />
 
         <TextView
-                android:id="@+id/tv_total_sum"
-                style="@style/footer_total_row_number_tv" />
+            android:id="@+id/tv_total_sum"
+            style="@style/footer_total_row_number_tv" />
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
 
         <EditText
-                android:id="@+id/et_hidden"
-                style="@style/hidden_etv" />
-        
+            android:id="@+id/et_hidden"
+            style="@style/hidden_etv" />
+
     </LinearLayout>
     
 </LinearLayout>

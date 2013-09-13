@@ -16,24 +16,31 @@
     </style>
     
     <style name="text_v" parent="app_v">
+        <item name="android:layout_height">@dimen/text_view_height</item>
+        <item name="android:layout_margin">@dimen/text_margin</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:typeface">serif</item>
         <item name="android:gravity">center_vertical|center_horizontal</item>
     </style>
     
     <style name="icon_v" parent="app_v">
-        <item name="android:layout_width">@dimen/app_row_height</item>
-        <item name="android:layout_margin">@dimen/view_margin</item>
+        <item name="android:layout_width">@dimen/icon_size</item>
+        <item name="android:layout_height">@dimen/icon_size</item>
+        <item name="android:layout_margin">@dimen/icon_margin</item>
         <item name="android:scaleType">centerInside</item>
     </style>
-    
+
+    <style name="hidden_etv" parent="app_v">
+        <item name="android:layout_width">@dimen/app_hidden_input_width</item>
+    </style>
+
     <style name="app_llv" parent="vertical_linear_layout_v">
         <item name="android:baselineAligned">false</item>
         <item name="android:background">@color/sky_blue_lightest</item>
     </style>
     
-    <style name="bill_record_llv" parent="horizontal_linear_layout_v">
-        <item name="android:layout_height">@dimen/app_row_height</item>
+    <style name="app_row_llv" parent="horizontal_linear_layout_v">
+        <item name="android:layout_height">wrap_content</item>
     </style>
     
     <style name="edit_text_v" parent="text_v">
@@ -45,27 +52,27 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
-    
+
+    <style name="bill_row_tv" parent="text_v">
+        <item name="android:textColor">@android:color/transparent</item>
+    </style>
+
     <style name="footer_row_tv" parent="text_v">
         <item name="android:textSize">@dimen/footer_row_text_size</item>
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
-    
+
     <style name="button_icon_v" parent="icon_v">
         <item name="android:onClick">@string/on_btn_click_method_name</item>
         <item name="android:background">@android:color/transparent</item> <!-- TODO -->
     </style>
     
-    <style name="header_footer_row_llv" parent="bill_record_llv">
+    <style name="action_bar_llv" parent="app_row_llv">
         <item name="android:background">@color/sky_blue</item>
     </style>
     
     <style name="input_etv" parent="edit_text_v">
         <item name="android:layout_width">@dimen/app_input_width</item>
-    </style>
-
-    <style name="hidden_etv" parent="edit_text_v">
-        <item name="android:layout_width">@dimen/app_hidden_input_width</item>
     </style>
 
     <style name="number_etv" parent="input_etv">
@@ -80,13 +87,21 @@
         <item name="android:inputType">textShortMessage</item>
         <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
-    
+
+    <style name="bill_screen_edge_intent_tv" parent="bill_row_tv">
+        <item name="android:layout_width">@dimen/app_screen_edge_intent</item>
+    </style>
+
     <style name="footer_row_total_number_tv" parent="footer_row_tv">
-        <item name="android:layout_width">@dimen/total_number_width</item>
+        <item name="android:layout_width">@dimen/app_input_width</item>
     </style>
     
     <style name="footer_total_row_tv" parent="footer_row_tv">
         <item name="android:textSize">@dimen/footer_total_row_text_size</item>
+    </style>
+
+    <style name="footer_screen_edge_intent_tv" parent="footer_row_tv">
+        <item name="android:layout_width">@dimen/app_screen_edge_intent</item>
     </style>
     
 	<style name="cost_val_etv" parent="number_decimal_etv">
@@ -103,19 +118,21 @@
     </style>
     
     <style name="footer_total_row_number_tv" parent="footer_total_row_tv">
-        <item name="android:layout_width">@dimen/total_number_width</item>
+        <item name="android:layout_width">@dimen/app_input_width</item>
     </style>
     
-    <dimen name="app_row_height">40dp</dimen>
+    <dimen name="text_view_height">40dp</dimen>
+    <dimen name="text_margin">4dp</dimen>
+    <dimen name="icon_size">32dp</dimen>
+    <dimen name="icon_margin">8dp</dimen>
+    <dimen name="app_screen_edge_intent">16dp</dimen>
     <dimen name="app_hidden_input_width">0dp</dimen>
-    <dimen name="app_input_width">50dp</dimen>
-    <dimen name="total_number_width">90dp</dimen>
-    <dimen name="view_margin">1.5dp</dimen>
-    
-    <dimen name="app_name_text_size">18dp</dimen>
-    <dimen name="text_size">12dp</dimen>
-    <dimen name="footer_row_text_size">13dp</dimen>
-    <dimen name="footer_total_row_text_size">14dp</dimen>
+    <dimen name="app_input_width">72dp</dimen>
+
+    <dimen name="app_name_text_size">20dp</dimen>
+    <dimen name="text_size">14dp</dimen>
+    <dimen name="footer_row_text_size">16dp</dimen>
+    <dimen name="footer_total_row_text_size">18dp</dimen>
 
     <color name="bill_record_picked">@color/orange_light</color>
     <color name="bill_record_not_picked">@android:color/transparent</color>

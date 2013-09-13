@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    style="@style/bill_record_llv" >
+    style="@style/app_row_llv" >
+
+    <TextView
+        style="@style/bill_screen_edge_intent_tv" />
 
     <com.yagodar.android.billplease.custom.BillRecordEditText
         android:id="@+id/et_item_name"
@@ -18,5 +21,8 @@
         android:id="@+id/et_share"
         android:contentDescription="@string/descr_share"
         style="@style/share_val_etv" />
+
+    <TextView
+        style="@style/bill_screen_edge_intent_tv" />
 
 </LinearLayout>

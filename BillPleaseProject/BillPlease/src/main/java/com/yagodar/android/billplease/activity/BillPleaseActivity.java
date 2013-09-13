@@ -21,7 +21,6 @@ import com.yagodar.android.billplease.database.DbBillPleaseTableBillRecordEtChan
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillTaxTipContract;
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.custom.DbEditText;
-import com.yagodar.android.util.Log;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -117,7 +116,7 @@ public class BillPleaseActivity extends Activity {
     }
 
 	private void loadBill() {
-        llActionBar = ((LinearLayout) findViewById(R.id.ll_action_bar));
+        llActionBar = ((LinearLayout) findViewById(R.id.ll_action_bar_icons));
 
         etHidden = findViewById(R.id.et_hidden);
         etHidden.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
