@@ -8,18 +8,18 @@
 
     <com.yagodar.android.billplease.custom.BillRecordEditText
         android:id="@+id/et_item_name"
-        android:contentDescription="@string/descr_item_name"
+        android:contentDescription="@string/lbl_item_name"
         style="@style/item_name_etv"
         android:layout_weight="1" />
 
     <com.yagodar.android.billplease.custom.BillRecordEditText
         android:id="@+id/et_cost"
-        android:contentDescription="@string/descr_cost"
+        android:contentDescription="@string/lbl_cost"
         style="@style/cost_val_etv" />
 
     <com.yagodar.android.billplease.custom.BillRecordEditText
         android:id="@+id/et_share"
-        android:contentDescription="@string/descr_share"
+        android:contentDescription="@string/lbl_share"
         style="@style/share_val_etv" />
 
     <TextView

@@ -5,13 +5,12 @@
     style="@style/app_llv" >
 
     <LinearLayout
-        android:id="@+id/ll_action_bar"
         style="@style/action_bar_llv" >
 
         <ImageView
             android:id="@+id/iv_icon"
             style="@style/icon_v"
-            android:src="@drawable/ic_launcher" />
+            android:src="@android:drawable/sym_def_app_icon" />
 
         <TextView
             android:id="@+id/tv_app_name"
@@ -28,14 +27,20 @@
                 android:id="@+id/btn_del_bill_record"
                 style="@style/button_icon_v"
                 android:contentDescription="@string/btn_lbl_del_bill_record"
-                android:src="@android:drawable/ic_delete"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
                 android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/btn_new_bill"
                 style="@style/button_icon_v"
                 android:contentDescription="@string/btn_lbl_new_bill"
-                android:src="@android:drawable/ic_dialog_alert" />
+                android:src="@android:drawable/ic_menu_delete" />
+
+            <ImageButton
+                android:id="@+id/btn_share_bill"
+                style="@style/button_icon_v"
+                android:contentDescription="@string/btn_lbl_share_bill"
+                android:src="@android:drawable/ic_menu_share" />
 
         </LinearLayout>
 
@@ -56,7 +61,7 @@
             <ImageButton
                 android:id="@+id/btn_add_new_bill_record"
                 android:contentDescription="@string/btn_lbl_add_new_bill_record"
-                android:src="@android:drawable/ic_input_add"
+                android:src="@android:drawable/ic_menu_add"
                 android:layout_gravity="center"
                 style="@style/button_icon_v" />
 

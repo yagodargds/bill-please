@@ -2,6 +2,7 @@ package com.yagodar.android.billplease.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -46,37 +48,32 @@ public class BillPleaseActivity extends Activity {
 
         setContentView(R.layout.bill_please_llv);
 
-        try {
-            timer = new Timer();
+        timer = new Timer();
 
-            decimalFormat = new DecimalFormat();
-            decimalFormat.setMinimumFractionDigits(getResources().getInteger(R.integer.min_fraction_digits));
-            decimalFormat.setMaximumFractionDigits(getResources().getInteger(R.integer.max_fraction_digits));
+        decimalFormat = new DecimalFormat();
+        decimalFormat.setMinimumFractionDigits(getResources().getInteger(R.integer.min_fraction_digits));
+        decimalFormat.setMaximumFractionDigits(getResources().getInteger(R.integer.max_fraction_digits));
 
-            DecimalFormatSymbols custom = new DecimalFormatSymbols();
-            custom.setDecimalSeparator('.');
-            decimalFormat.setDecimalFormatSymbols(custom);
+        DecimalFormatSymbols custom = new DecimalFormatSymbols();
+        custom.setDecimalSeparator('.');
+        decimalFormat.setDecimalFormatSymbols(custom);
 
-            exMotionEvent = NONE_MOTION_EVENT;
+        exMotionEvent = NONE_MOTION_EVENT;
 
-            billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
-            billPleaseOnTouchListener = new BillPleaseOnTouchListener();
-            billPleaseTextWatcher = new BillPleaseTextWatcher();
+        billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
+        billPleaseOnTouchListener = new BillPleaseOnTouchListener();
+        billPleaseTextWatcher = new BillPleaseTextWatcher();
 
-            dbBillPleaseManager = DbBillPleaseManager.getInstance(this);
-            dbBillPleaseTableBillManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillContract.getInstance());
-            dbBillPleaseTableBillRecordEtChangingManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillRecordEtChangingContract.getInstance());
-            dbBillPleaseTableBillTaxTipManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillTaxTipContract.getInstance());
+        dbBillPleaseManager = DbBillPleaseManager.getInstance(this);
+        dbBillPleaseTableBillManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillContract.getInstance());
+        dbBillPleaseTableBillRecordEtChangingManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillRecordEtChangingContract.getInstance());
+        dbBillPleaseTableBillTaxTipManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillTaxTipContract.getInstance());
 
-            loadBill();
+        loadBill();
 
-            hideFocus();
+        hideFocus();
 
-            redrawAllSums();
-        }
-        catch (Exception ignored) {
-            finish();
-        }
+        redrawAllSums();
     }
 
     @Override
@@ -102,10 +99,71 @@ public class BillPleaseActivity extends Activity {
             hideFocus();
             delAllBillRecords();
 			break;
+            case R.id.btn_share_bill:
+                hideFocus();
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, getShareText());
+                sendIntent.setType(INTENT_TYPE_SHARE);
+                startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.btn_lbl_share_bill)));
+                break;
 		default:
 			break;
 		}
 	}
+
+    private String getShareText() {
+        String shareText = "";
+
+        //app name tag
+        shareText += "#" + getResources().getString(R.string.app_name).replaceAll("\\s", "");
+        shareText += "\n";
+
+        //records
+        shareText += "[" + getResources().getString(R.string.lbl_item_name) + "]";
+        shareText += "\n";
+        if(llBillRecords.getChildCount() > 1) {
+        LinearLayout billRecordLl;
+        double cost;
+        int share;
+        for(int i = 0; i < llBillRecords.getChildCount() - 1; i++) {
+            try {
+                billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
+                shareText += getResources().getString(R.string.lbl_item_name) + ":" + ((EditText) billRecordLl.findViewById(R.id.et_item_name)).getText();
+                cost = ((BillRecordEditText<Double>) billRecordLl.findViewById(R.id.et_cost)).getDbValue();
+                share = ((BillRecordEditText<Integer>) billRecordLl.findViewById(R.id.et_share)).getDbValue();
+                shareText += "\t|\t" + getResources().getString(R.string.lbl_cost) + ":" + String.valueOf(decimalFormat.format(cost));
+                shareText += "\t|\t" + getResources().getString(R.string.lbl_share) + ":" + String.valueOf(decimalFormat.format(share));
+                shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + String.valueOf(decimalFormat.format(cost / (double) share));
+                shareText += "\n";
+            }
+            catch(Exception ignored) {}
+        }
+        }
+        else {
+            shareText += getResources().getString(R.string.lbl_no_items);
+            shareText += "\n";
+        }
+
+        //subtotal
+        shareText += "[" + getResources().getString(R.string.lbl_subtotal) + "]" + ":" + ((TextView) findViewById(R.id.tv_subtotal_sum)).getText();
+        shareText += "\n";
+
+        //tax
+        shareText += "[" + getResources().getString(R.string.lbl_tax) + "]" + ":" + ((EditText) findViewById(R.id.et_tax)).getText();
+        shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + ((TextView) findViewById(R.id.tv_tax_sum)).getText();
+        shareText += "\n";
+
+        //tip
+        shareText += "[" + getResources().getString(R.string.lbl_tip) + "]" + ":" + ((EditText) findViewById(R.id.et_tip)).getText();
+        shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + ((TextView) findViewById(R.id.tv_tip_sum)).getText();
+        shareText += "\n";
+
+        //total
+        shareText += "[" + getResources().getString(R.string.lbl_total) + "]" + ":" + ((TextView) findViewById(R.id.tv_total_sum)).getText();
+
+        return shareText;
+    }
 
     private void addBillRecord() {
         long dbRecordId = dbBillPleaseManager.addNewBillRecord();
@@ -316,16 +374,14 @@ public class BillPleaseActivity extends Activity {
     private double calcSubtotalSum() {
         double value = 0.0;
 
-        try {
-            LinearLayout billRecordLl;
-            for(int i = 0; i < llBillRecords.getChildCount(); i++) {
+        LinearLayout billRecordLl;
+        for(int i = 0; i < llBillRecords.getChildCount(); i++) {
+            try {
                 billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
                 value += ((BillRecordEditText<Double>) billRecordLl.findViewById(R.id.et_cost)).getDbValue() / (double) ((BillRecordEditText<Integer>) billRecordLl.findViewById(R.id.et_share)).getDbValue();
             }
-
-
+            catch(Exception ignored) {}
         }
-        catch(Exception ignored) {}
 
         return value;
     }
@@ -480,4 +536,5 @@ public class BillPleaseActivity extends Activity {
     private DecimalFormat decimalFormat;
 
     private static final int NONE_MOTION_EVENT = -1;
+    private static final String INTENT_TYPE_SHARE = "text/plain";
 }
