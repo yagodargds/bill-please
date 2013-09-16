@@ -87,7 +87,15 @@ public class BillRecordEditText<T extends Object> extends DbEditText<T> {
     }
 
     private void setDescriptionText() {
-        setText(getContentDescription());
+        try {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    setText(getContentDescription());
+                }
+            });
+        }
+        catch(Exception ignored) {}
     }
 
     private DbTableBaseManager dbTableManagerChanging;

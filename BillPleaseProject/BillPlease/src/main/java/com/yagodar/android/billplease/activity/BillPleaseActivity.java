@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -63,6 +64,7 @@ public class BillPleaseActivity extends Activity {
         billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
         billPleaseOnTouchListener = new BillPleaseOnTouchListener();
         billPleaseTextWatcher = new BillPleaseTextWatcher();
+        billPleaseOnEditorActionListener = new BillPleaseOnEditorActionListener();
 
         dbBillPleaseManager = DbBillPleaseManager.getInstance(this);
         dbBillPleaseTableBillManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillContract.getInstance());
@@ -123,22 +125,22 @@ public class BillPleaseActivity extends Activity {
         shareText += "[" + getResources().getString(R.string.lbl_item_name) + "]";
         shareText += "\n";
         if(llBillRecords.getChildCount() > 1) {
-        LinearLayout billRecordLl;
-        double cost;
-        int share;
-        for(int i = 0; i < llBillRecords.getChildCount() - 1; i++) {
-            try {
-                billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
-                shareText += getResources().getString(R.string.lbl_item_name) + ":" + ((EditText) billRecordLl.findViewById(R.id.et_item_name)).getText();
-                cost = ((BillRecordEditText<Double>) billRecordLl.findViewById(R.id.et_cost)).getDbValue();
-                share = ((BillRecordEditText<Integer>) billRecordLl.findViewById(R.id.et_share)).getDbValue();
-                shareText += "\t|\t" + getResources().getString(R.string.lbl_cost) + ":" + String.valueOf(decimalFormat.format(cost));
-                shareText += "\t|\t" + getResources().getString(R.string.lbl_share) + ":" + String.valueOf(decimalFormat.format(share));
-                shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + String.valueOf(decimalFormat.format(cost / (double) share));
-                shareText += "\n";
+            LinearLayout billRecordLl;
+            double cost;
+            int share;
+            for(int i = 0; i < llBillRecords.getChildCount() - 1; i++) {
+                try {
+                    billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
+                    shareText += ((EditText) billRecordLl.findViewById(R.id.et_item_name)).getText();
+                    cost = ((BillRecordEditText<Double>) billRecordLl.findViewById(R.id.et_cost)).getDbValue();
+                    share = ((BillRecordEditText<Integer>) billRecordLl.findViewById(R.id.et_share)).getDbValue();
+                    shareText += "\t|\t" + getResources().getString(R.string.lbl_cost) + ":" + String.valueOf(decimalFormat.format(cost));
+                    shareText += "\t|\t" + getResources().getString(R.string.lbl_share) + ":" + String.valueOf(share);
+                    shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + String.valueOf(decimalFormat.format(cost / (double) share));
+                    shareText += "\n";
+                }
+                catch(Exception ignored) {}
             }
-            catch(Exception ignored) {}
-        }
         }
         else {
             shareText += getResources().getString(R.string.lbl_no_items);
@@ -245,24 +247,11 @@ public class BillPleaseActivity extends Activity {
 
         if(postEtItemName != null) {
             postEtItemName.setNextFocusView(View.FOCUS_BACKWARD, exEtShare);
-            postEtItemName.setNextFocusView(View.FOCUS_UP, exEtShare);
-            postEtItemName.setNextFocusView(View.FOCUS_LEFT, exEtShare);
-
-            try {
-                postEtItemName.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        postEtItemName.requestFocus();
-                    }
-                });
-            }
-            catch(Exception ignored) {}
+            postRequestFocus(postEtItemName);
         }
 
         if(exEtShare != null) {
             exEtShare.setNextFocusView(View.FOCUS_FORWARD, postEtItemName);
-            exEtShare.setNextFocusView(View.FOCUS_DOWN, postEtItemName);
-            exEtShare.setNextFocusView(View.FOCUS_RIGHT, postEtItemName);
         }
 
         llBillRecords.removeView(billRecordLlToDel);
@@ -289,6 +278,7 @@ public class BillPleaseActivity extends Activity {
         etItemName.pullFromDb();
         etItemName.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         etItemName.addTextChangedListener(billPleaseTextWatcher);
+        etItemName.setOnEditorActionListener(billPleaseOnEditorActionListener);
 
         BillRecordEditText<Double> etCost = (BillRecordEditText) billRecordLl.findViewById(R.id.et_cost);
         etCost.setDbRecordId(recordId);
@@ -297,6 +287,7 @@ public class BillPleaseActivity extends Activity {
         etCost.pullFromDb();
         etCost.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         etCost.addTextChangedListener(billPleaseTextWatcher);
+        etCost.setOnEditorActionListener(billPleaseOnEditorActionListener);
 
         BillRecordEditText<Integer> etShare = (BillRecordEditText) billRecordLl.findViewById(R.id.et_share);
         etShare.setDbRecordId(recordId);
@@ -305,6 +296,7 @@ public class BillPleaseActivity extends Activity {
         etShare.pullFromDb();
         etShare.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         etShare.addTextChangedListener(billPleaseTextWatcher);
+        etShare.setOnEditorActionListener(billPleaseOnEditorActionListener);
 
         llBillRecords.addView(billRecordLl);
 
@@ -312,28 +304,16 @@ public class BillPleaseActivity extends Activity {
             BillRecordEditText<Integer> exEtShare = (BillRecordEditText) llBillRecords.getChildAt(llBillRecords.getChildCount() - 2).findViewById(R.id.et_share);
 
             exEtShare.setNextFocusView(View.FOCUS_FORWARD, etItemName);
-            exEtShare.setNextFocusView(View.FOCUS_DOWN, etItemName);
-            exEtShare.setNextFocusView(View.FOCUS_RIGHT, etItemName);
 
             etItemName.setNextFocusView(View.FOCUS_BACKWARD, exEtShare);
-            etItemName.setNextFocusView(View.FOCUS_UP, exEtShare);
-            etItemName.setNextFocusView(View.FOCUS_LEFT, exEtShare);
         }
 
         etItemName.setNextFocusView(View.FOCUS_FORWARD, etCost);
-        etItemName.setNextFocusView(View.FOCUS_DOWN, etCost);
-        etItemName.setNextFocusView(View.FOCUS_RIGHT, etCost);
 
         etCost.setNextFocusView(View.FOCUS_BACKWARD, etItemName);
-        etCost.setNextFocusView(View.FOCUS_UP, etItemName);
-        etCost.setNextFocusView(View.FOCUS_LEFT, etItemName);
         etCost.setNextFocusView(View.FOCUS_FORWARD, etShare);
-        etCost.setNextFocusView(View.FOCUS_DOWN, etShare);
-        etCost.setNextFocusView(View.FOCUS_RIGHT, etShare);
 
         etShare.setNextFocusView(View.FOCUS_BACKWARD, etCost);
-        etShare.setNextFocusView(View.FOCUS_UP, etCost);
-        etShare.setNextFocusView(View.FOCUS_LEFT, etCost);
 	}
 
     private void hideSoftKeyboard(View view) {
@@ -343,32 +323,24 @@ public class BillPleaseActivity extends Activity {
     }
 
     private void hideFocus() {
-        etHidden.requestFocus();
+        postRequestFocus(etHidden);
     }
 
     private void redrawAllSums() {
         double subtotalSum = calcSubtotalSum();
-        ((TextView) findViewById(R.id.tv_subtotal_sum)).setText(String.valueOf(decimalFormat.format(subtotalSum)));
+        postSetText(((TextView) findViewById(R.id.tv_subtotal_sum)), String.valueOf(decimalFormat.format(subtotalSum)));
 
-        double taxSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tax)).getDbValue() / 100.0 );
-        ((TextView) findViewById(R.id.tv_tax_sum)).setText(String.valueOf(decimalFormat.format(taxSum)));
-
-        double tipSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tip)).getDbValue() / 100.0 );
-        ((TextView) findViewById(R.id.tv_tip_sum)).setText(String.valueOf(decimalFormat.format(tipSum)));
-
-        ((TextView) findViewById(R.id.tv_total_sum)).setText(String.valueOf(decimalFormat.format(subtotalSum + taxSum + tipSum)));
+        redrawTaxTipSums(subtotalSum);
     }
 
-    private void redrawTaxTipSums() {
-        double subtotalSum = calcSubtotalSum();
-
+    private void redrawTaxTipSums(double subtotalSum) {
         double taxSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tax)).getDbValue() / 100.0 );
-        ((TextView) findViewById(R.id.tv_tax_sum)).setText(String.valueOf(decimalFormat.format(taxSum)));
+        postSetText(((TextView) findViewById(R.id.tv_tax_sum)), String.valueOf(decimalFormat.format(taxSum)));
 
         double tipSum = subtotalSum * ( ((DbEditText<Double>) findViewById(R.id.et_tip)).getDbValue() / 100.0 );
-        ((TextView) findViewById(R.id.tv_tip_sum)).setText(String.valueOf(decimalFormat.format(tipSum)));
+        postSetText(((TextView) findViewById(R.id.tv_tip_sum)), String.valueOf(decimalFormat.format(tipSum)));
 
-        ((TextView) findViewById(R.id.tv_total_sum)).setText(String.valueOf(decimalFormat.format(subtotalSum + taxSum + tipSum)));
+        postSetText(((TextView) findViewById(R.id.tv_total_sum)), String.valueOf(decimalFormat.format(subtotalSum + taxSum + tipSum)));
     }
 
     private double calcSubtotalSum() {
@@ -386,6 +358,30 @@ public class BillPleaseActivity extends Activity {
         return value;
     }
 
+    private void postSetText(final TextView textView, final String text) {
+        try {
+            textView.post(new Runnable() {
+                @Override
+                public void run() {
+                    textView.setText(text);
+                }
+            });
+        }
+        catch(Exception ignored) {}
+    }
+
+    private void postRequestFocus(final View view) {
+        try {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.requestFocus();
+                }
+            });
+        }
+        catch(Exception ignored) {}
+    }
+
     private class BillPleaseOnFocusChangeListener implements View.OnFocusChangeListener {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
@@ -397,7 +393,7 @@ public class BillPleaseActivity extends Activity {
                         llBillRecords.findViewWithTag(view.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_picked));
 
                         if(!((BillRecordEditText) view).isChanged()) {
-                            ((BillRecordEditText) view).setText("");
+                            postSetText((TextView) view, "");
                         }
 
                         if(llBillRecords.indexOfChild(llBillRecords.findViewWithTag(view.getTag())) != llBillRecords.getChildCount() - 1) {
@@ -457,7 +453,7 @@ public class BillPleaseActivity extends Activity {
 
                         timer.cancel();
 
-                        redrawTaxTipSums();
+                        redrawTaxTipSums(calcSubtotalSum());
                     }
                     break;
                 case R.id.et_hidden:
@@ -511,11 +507,38 @@ public class BillPleaseActivity extends Activity {
         public void afterTextChanged(Editable s) {}
     }
 
+    private class BillPleaseOnEditorActionListener implements TextView.OnEditorActionListener {
+        @Override
+        public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
+                View nextFocusView = null;
+
+                switch(textView.getId()) {
+                    case R.id.et_item_name:
+                    case R.id.et_cost:
+                    case R.id.et_share:
+                        nextFocusView = ((BillRecordEditText) textView).getNextFocusView(View.FOCUS_FORWARD);
+                        break;
+                    default:
+                        break;
+                }
+
+                if(nextFocusView != null) {
+                    postRequestFocus(nextFocusView);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     private class PushToDbTimerTask extends TimerTask {
         @Override
         public void run() {
             if(exDbEt != null) {
                 exDbEt.pushToDb();
+                redrawAllSums();
             }
         }
     }
@@ -528,6 +551,7 @@ public class BillPleaseActivity extends Activity {
     private BillPleaseOnFocusChangeListener billPleaseOnFocusChangeListener;
     private BillPleaseOnTouchListener billPleaseOnTouchListener;
     private BillPleaseTextWatcher billPleaseTextWatcher;
+    private BillPleaseOnEditorActionListener billPleaseOnEditorActionListener;
     private DbBillPleaseManager dbBillPleaseManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillRecordEtChangingManager;
