@@ -4,7 +4,7 @@
 
     <string name="btn_lbl_add_new_bill_record">add</string>
     <string name="btn_lbl_del_bill_record">delete</string>
-    <string name="btn_lbl_new_bill">new bill</string>
+    <string name="btn_lbl_create_new_bill">create new bill</string>
     <string name="btn_lbl_share_bill">share bill</string>
 
     <string name="lbl_item_name">item</string>
@@ -16,6 +16,11 @@
     <string name="lbl_tip">tip (%)</string>
     <string name="lbl_total">total</string>
 
-    <string name="lbl_no_items">no items</string>
+    <string name="share_no_items">no items</string>
+
+    <string name="dialog_creating_new_bill">Creating new bill...</string>
+    <string name="dialog_delete_old_bill">Delete old bill?</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_confirm">Confirm</string>
 
 </resources>

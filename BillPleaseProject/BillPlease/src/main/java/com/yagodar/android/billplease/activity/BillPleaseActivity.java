@@ -1,10 +1,14 @@
 package com.yagodar.android.billplease.activity;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -30,7 +34,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class BillPleaseActivity extends Activity {
+public class BillPleaseActivity extends FragmentActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -66,14 +70,14 @@ public class BillPleaseActivity extends Activity {
         billPleaseTextWatcher = new BillPleaseTextWatcher();
         billPleaseOnEditorActionListener = new BillPleaseOnEditorActionListener();
 
+        deleteBillDialogFragment = new DeleteBillDialogFragment();
+
         dbBillPleaseManager = DbBillPleaseManager.getInstance(this);
         dbBillPleaseTableBillManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillContract.getInstance());
         dbBillPleaseTableBillRecordEtChangingManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillRecordEtChangingContract.getInstance());
         dbBillPleaseTableBillTaxTipManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillTaxTipContract.getInstance());
 
         loadBill();
-
-        hideFocus();
 
         redrawAllSums();
     }
@@ -83,24 +87,24 @@ public class BillPleaseActivity extends Activity {
         //Skipped. Not in need. Everything is redraws in onCreate(). P.S. If use it, may be bugs with draw EditText views.
     }
 
-	public void onButtonClick(View button) {
-		switch(button.getId()) {
-		case R.id.btn_add_new_bill_record:
-			addBillRecord();
+    public void onButtonClick(View button) {
+        switch(button.getId()) {
+            case R.id.btn_add_new_bill_record:
+                addBillRecord();
 
-            if(exDbEt != null && exDbEt instanceof BillRecordEditText) {
-                llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
-            }
-			break;
-		case R.id.btn_del_bill_record:
-            if(exDbEt != null && exDbEt instanceof BillRecordEditText) {
-                delBillRecord(exDbEt.getDbRecordId());
-            }
-			break;
-		case R.id.btn_new_bill:
-            hideFocus();
-            delAllBillRecords();
-			break;
+                if(exDbEt != null && exDbEt instanceof BillRecordEditText) {
+                    llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.btn_del_bill_record:
+                if(exDbEt != null && exDbEt instanceof BillRecordEditText) {
+                    delBillRecord(exDbEt.getDbRecordId());
+                }
+                break;
+            case R.id.btn_create_new_bill:
+                hideFocus();
+                deleteBillDialogFragment.show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
+                break;
             case R.id.btn_share_bill:
                 hideFocus();
                 Intent sendIntent = new Intent();
@@ -109,10 +113,10 @@ public class BillPleaseActivity extends Activity {
                 sendIntent.setType(INTENT_TYPE_SHARE);
                 startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.btn_lbl_share_bill)));
                 break;
-		default:
-			break;
-		}
-	}
+            default:
+                break;
+        }
+    }
 
     private String getShareText() {
         String shareText = "";
@@ -143,7 +147,7 @@ public class BillPleaseActivity extends Activity {
             }
         }
         else {
-            shareText += getResources().getString(R.string.lbl_no_items);
+            shareText += getResources().getString(R.string.share_no_items);
             shareText += "\n";
         }
 
@@ -165,14 +169,6 @@ public class BillPleaseActivity extends Activity {
         shareText += "[" + getResources().getString(R.string.lbl_total) + "]" + ":" + ((TextView) findViewById(R.id.tv_total_sum)).getText();
 
         return shareText;
-    }
-
-    private void addBillRecord() {
-        long dbRecordId = dbBillPleaseManager.addNewBillRecord();
-
-        if(dbRecordId != -1) {
-            drawBillRecord(dbRecordId);
-        }
     }
 
 	private void loadBill() {
@@ -234,6 +230,14 @@ public class BillPleaseActivity extends Activity {
         dbEtTip.addTextChangedListener(billPleaseTextWatcher);
 	}
 
+    private void addBillRecord() {
+        long dbRecordId = dbBillPleaseManager.addNewBillRecord();
+
+        if(dbRecordId != -1) {
+            drawBillRecord(dbRecordId);
+        }
+    }
+
     private void delBillRecord(long dbRecordId) {
         dbBillPleaseManager.delBillRecord(dbRecordId);
 
@@ -259,7 +263,7 @@ public class BillPleaseActivity extends Activity {
         redrawAllSums();
     }
 
-    private void delAllBillRecords() {
+    private void createNewBill() {
         dbBillPleaseManager.delAllBillRecords();
         llBillRecords.removeAllViews();
         addBillRecord();
@@ -533,6 +537,39 @@ public class BillPleaseActivity extends Activity {
         }
     }
 
+    private class DeleteBillDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(R.string.dialog_creating_new_bill);
+            builder.setMessage(R.string.dialog_delete_old_bill);
+            builder.setPositiveButton(R.string.dialog_confirm, onClickListener);
+            builder.setNegativeButton(R.string.dialog_cancel, onClickListener);
+
+            return builder.create();
+        }
+
+        private class DeleteBillDialogOnClickListener implements DialogInterface.OnClickListener {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        createNewBill();
+                        dialog.dismiss();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        dialog.cancel();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private DialogInterface.OnClickListener onClickListener = new DeleteBillDialogOnClickListener();
+    }
+
     private class PushToDbTimerTask extends TimerTask {
         @Override
         public void run() {
@@ -552,6 +589,7 @@ public class BillPleaseActivity extends Activity {
     private BillPleaseOnTouchListener billPleaseOnTouchListener;
     private BillPleaseTextWatcher billPleaseTextWatcher;
     private BillPleaseOnEditorActionListener billPleaseOnEditorActionListener;
+    private DeleteBillDialogFragment deleteBillDialogFragment;
     private DbBillPleaseManager dbBillPleaseManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillRecordEtChangingManager;

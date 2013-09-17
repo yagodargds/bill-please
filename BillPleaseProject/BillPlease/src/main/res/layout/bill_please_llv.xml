@@ -31,9 +31,9 @@
                 android:visibility="gone" />
 
             <ImageButton
-                android:id="@+id/btn_new_bill"
+                android:id="@+id/btn_create_new_bill"
                 style="@style/button_icon_v"
-                android:contentDescription="@string/btn_lbl_new_bill"
+                android:contentDescription="@string/btn_lbl_create_new_bill"
                 android:src="@android:drawable/ic_menu_delete" />
 
             <ImageButton
@@ -169,7 +169,9 @@
 
         <EditText
             android:id="@+id/et_hidden"
-            style="@style/hidden_etv" />
+            style="@style/hidden_etv">
+            <requestFocus />
+        </EditText>
 
     </LinearLayout>
     
