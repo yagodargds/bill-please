@@ -406,10 +406,6 @@ public class BillPleaseActivity extends FragmentActivity {
                     if(hasFocus) {
                         llBillRecords.findViewWithTag(view.getTag()).setBackgroundColor(getResources().getColor(R.color.bill_record_picked));
 
-                        if(!((BillRecordEditText) view).isChanged()) {
-                            postSetText((TextView) view, "");
-                        }
-
                         if(llBillRecords.indexOfChild(llBillRecords.findViewWithTag(view.getTag())) != llBillRecords.getChildCount() - 1) {
                             llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
                         }
@@ -573,10 +569,13 @@ public class BillPleaseActivity extends FragmentActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch(which) {
                     case DialogInterface.BUTTON_POSITIVE:
+                        int defShare = getResources().getInteger(R.integer.min_share);
                         try {
-                            dbBillPleaseTableBillValuesManager.setColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_DEF_SHARE, Integer.parseInt(((EditText) dlgCreateNewBillLlv.findViewById(R.id.et_def_share)).getText().toString()));
+                            defShare = Integer.parseInt(((EditText) dlgCreateNewBillLlv.findViewById(R.id.et_def_share)).getText().toString());
                         }
                         catch(Exception ignored) {}
+
+                        dbBillPleaseTableBillValuesManager.setColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_DEF_SHARE, defShare);
 
                         createNewBill();
 

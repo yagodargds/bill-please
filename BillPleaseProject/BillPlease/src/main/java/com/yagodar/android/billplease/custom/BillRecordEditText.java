@@ -31,7 +31,7 @@ public class BillRecordEditText<T extends Object> extends DbEditText<T> {
             super.pullFromDb();
         }
         else {
-            setDescriptionText();
+            clearText();
         }
     }
 
@@ -84,18 +84,6 @@ public class BillRecordEditText<T extends Object> extends DbEditText<T> {
                 dbTableManagerChanging.setColumnValue(dbRecordId * getId(), dbTableColumnChanging.getColumnName(), value);
             }
         }
-    }
-
-    private void setDescriptionText() {
-        try {
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    setText(getContentDescription());
-                }
-            });
-        }
-        catch(Exception ignored) {}
     }
 
     private DbTableBaseManager dbTableManagerChanging;
