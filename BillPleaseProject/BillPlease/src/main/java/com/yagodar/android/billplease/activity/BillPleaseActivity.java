@@ -25,7 +25,7 @@ import com.yagodar.android.billplease.custom.BillRecordEditText;
 import com.yagodar.android.billplease.database.DbBillPleaseManager;
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillContract;
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillRecordEtChangingContract;
-import com.yagodar.android.billplease.database.DbBillPleaseTableBillTaxTipContract;
+import com.yagodar.android.billplease.database.DbBillPleaseTableBillValuesContract;
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.custom.DbEditText;
 
@@ -70,12 +70,12 @@ public class BillPleaseActivity extends FragmentActivity {
         billPleaseTextWatcher = new BillPleaseTextWatcher();
         billPleaseOnEditorActionListener = new BillPleaseOnEditorActionListener();
 
-        deleteBillDialogFragment = new DeleteBillDialogFragment();
+        createNewBillDialogFragment = new CreateNewBillDialogFragment();
 
         dbBillPleaseManager = DbBillPleaseManager.getInstance(this);
         dbBillPleaseTableBillManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillContract.getInstance());
         dbBillPleaseTableBillRecordEtChangingManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillRecordEtChangingContract.getInstance());
-        dbBillPleaseTableBillTaxTipManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillTaxTipContract.getInstance());
+        dbBillPleaseTableBillValuesManager = dbBillPleaseManager.getDbTableManager(DbBillPleaseTableBillValuesContract.getInstance());
 
         loadBill();
 
@@ -103,7 +103,7 @@ public class BillPleaseActivity extends FragmentActivity {
                 break;
             case R.id.btn_create_new_bill:
                 hideFocus();
-                deleteBillDialogFragment.show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
+                createNewBillDialogFragment.show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
                 break;
             case R.id.btn_share_bill:
                 hideFocus();
@@ -195,24 +195,20 @@ public class BillPleaseActivity extends FragmentActivity {
 			drawBillRecord(dbRecord.getId());
 		}
 
-        if(llBillRecords.getChildCount() == 0) {
-            addBillRecord();
-        }
-
-        boolean isTaxTipNew = false;
-        long taxTipRecordId;
-        if(dbBillPleaseTableBillTaxTipManager.getAllRecords().size() == 0) {
-            taxTipRecordId = dbBillPleaseTableBillTaxTipManager.addRecord();
-            isTaxTipNew = true;
+        boolean isValuesNew = false;
+        long valuesRecordId;
+        if(dbBillPleaseTableBillValuesManager.getAllRecords().size() == 0) {
+            valuesRecordId = dbBillPleaseTableBillValuesManager.addRecord();
+            isValuesNew = true;
         }
         else {
-            taxTipRecordId = dbBillPleaseTableBillTaxTipManager.getAllRecords().iterator().next().getId();
+            valuesRecordId = dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId();
         }
 
         DbEditText<Double> dbEtTax = (DbEditText) findViewById(R.id.et_tax);
-        dbEtTax.setDbRecordId(taxTipRecordId);
-        dbEtTax.initDbManagerBase(dbBillPleaseTableBillTaxTipManager, DbBillPleaseTableBillTaxTipContract.COLUMN_NAME_TAX);
-        if(isTaxTipNew) {
+        dbEtTax.setDbRecordId(valuesRecordId);
+        dbEtTax.initDbManagerBase(dbBillPleaseTableBillValuesManager, DbBillPleaseTableBillValuesContract.COLUMN_NAME_TAX);
+        if(isValuesNew) {
             dbEtTax.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tax_double)));
         }
         dbEtTax.pullFromDb();
@@ -220,20 +216,33 @@ public class BillPleaseActivity extends FragmentActivity {
         dbEtTax.addTextChangedListener(billPleaseTextWatcher);
 
         DbEditText<Double> dbEtTip = (DbEditText) findViewById(R.id.et_tip);
-        dbEtTip.setDbRecordId(taxTipRecordId);
-        dbEtTip.initDbManagerBase(dbBillPleaseTableBillTaxTipManager, DbBillPleaseTableBillTaxTipContract.COLUMN_NAME_TIP);
-        if(isTaxTipNew) {
+        dbEtTip.setDbRecordId(valuesRecordId);
+        dbEtTip.initDbManagerBase(dbBillPleaseTableBillValuesManager, DbBillPleaseTableBillValuesContract.COLUMN_NAME_TIP);
+        if(isValuesNew) {
             dbEtTip.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tip_double)));
         }
         dbEtTip.pullFromDb();
         dbEtTip.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         dbEtTip.addTextChangedListener(billPleaseTextWatcher);
+
+        if(llBillRecords.getChildCount() == 0) {
+            createNewBillDialogFragment.show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
+        }
+        else {
+            findViewById(R.id.btn_add_new_bill_record).setVisibility(View.VISIBLE);
+        }
 	}
 
     private void addBillRecord() {
         long dbRecordId = dbBillPleaseManager.addNewBillRecord();
 
         if(dbRecordId != -1) {
+            int defShare = (Integer) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_DEF_SHARE);
+            if(defShare > getResources().getInteger(R.integer.min_share)) {
+                dbBillPleaseTableBillManager.setColumnValue(dbRecordId, DbBillPleaseTableBillContract.COLUMN_NAME_SHARE, defShare);
+                dbBillPleaseTableBillRecordEtChangingManager.setColumnValue(dbRecordId * R.id.et_share, DbBillPleaseTableBillRecordEtChangingContract.COLUMN_NAME_IS_CHANGED, true);
+            }
+
             drawBillRecord(dbRecordId);
         }
     }
@@ -267,6 +276,7 @@ public class BillPleaseActivity extends FragmentActivity {
         dbBillPleaseManager.delAllBillRecords();
         llBillRecords.removeAllViews();
         addBillRecord();
+        findViewById(R.id.btn_add_new_bill_record).setVisibility(View.VISIBLE);
         redrawAllSums();
     }
 
@@ -537,25 +547,39 @@ public class BillPleaseActivity extends FragmentActivity {
         }
     }
 
-    private class DeleteBillDialogFragment extends DialogFragment {
+    private class CreateNewBillDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-            builder.setTitle(R.string.dialog_creating_new_bill);
-            builder.setMessage(R.string.dialog_delete_old_bill);
-            builder.setPositiveButton(R.string.dialog_confirm, onClickListener);
-            builder.setNegativeButton(R.string.dialog_cancel, onClickListener);
+            builder.setTitle(R.string.btn_lbl_create_new_bill);
+
+            dlgCreateNewBillLlv = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.dlg_create_new_bill_llv, null);
+
+            if(llBillRecords.getChildCount() > 0) {
+                dlgCreateNewBillLlv.findViewById(R.id.tv_current_bill_will_be_deleted).setVisibility(View.VISIBLE);
+                builder.setNegativeButton(R.string.dlg_cancel, onClickListener);
+            }
+
+            builder.setView(dlgCreateNewBillLlv);
+
+            builder.setPositiveButton(R.string.dlg_confirm, onClickListener);
 
             return builder.create();
         }
 
-        private class DeleteBillDialogOnClickListener implements DialogInterface.OnClickListener {
+        private class CreateNewBillDialogOnClickListener implements DialogInterface.OnClickListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch(which) {
                     case DialogInterface.BUTTON_POSITIVE:
+                        try {
+                            dbBillPleaseTableBillValuesManager.setColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_DEF_SHARE, Integer.parseInt(((EditText) dlgCreateNewBillLlv.findViewById(R.id.et_def_share)).getText().toString()));
+                        }
+                        catch(Exception ignored) {}
+
                         createNewBill();
+
                         dialog.dismiss();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -567,7 +591,8 @@ public class BillPleaseActivity extends FragmentActivity {
             }
         }
 
-        private DialogInterface.OnClickListener onClickListener = new DeleteBillDialogOnClickListener();
+        private DialogInterface.OnClickListener onClickListener = new CreateNewBillDialogOnClickListener();
+        private LinearLayout dlgCreateNewBillLlv;
     }
 
     private class PushToDbTimerTask extends TimerTask {
@@ -589,11 +614,11 @@ public class BillPleaseActivity extends FragmentActivity {
     private BillPleaseOnTouchListener billPleaseOnTouchListener;
     private BillPleaseTextWatcher billPleaseTextWatcher;
     private BillPleaseOnEditorActionListener billPleaseOnEditorActionListener;
-    private DeleteBillDialogFragment deleteBillDialogFragment;
+    private CreateNewBillDialogFragment createNewBillDialogFragment;
     private DbBillPleaseManager dbBillPleaseManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillManager;
     private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillRecordEtChangingManager;
-    private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillTaxTipManager;
+    private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillValuesManager;
     private Timer timer;
     private DecimalFormat decimalFormat;
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/vertical_linear_layout_v" >
+
+    <TextView
+        android:id="@+id/tv_current_bill_will_be_deleted"
+        android:text="@string/dlg_current_bill_will_be_deleted"
+        android:visibility="gone"
+        style="@style/dlg_text_v" />
+
+    <LinearLayout
+        style="@style/horizontal_linear_layout_v" >
+
+        <TextView
+            android:layout_weight="0.5"
+            style="@style/dlg_text_v" />
+
+        <EditText
+            android:id="@+id/et_def_share"
+            android:hint="@string/lbl_def_share"
+            style="@style/dlg_number_etv" />
+
+        <TextView
+            android:layout_weight="0.5"
+            style="@style/dlg_text_v" />
+
+    </LinearLayout>
+
+</LinearLayout>

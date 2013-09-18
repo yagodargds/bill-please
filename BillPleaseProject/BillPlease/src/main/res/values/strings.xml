@@ -2,14 +2,15 @@
 
     <string name="app_name">Bill, Please!</string>
 
-    <string name="btn_lbl_add_new_bill_record">add</string>
-    <string name="btn_lbl_del_bill_record">delete</string>
-    <string name="btn_lbl_create_new_bill">create new bill</string>
-    <string name="btn_lbl_share_bill">share bill</string>
+    <string name="btn_lbl_add_new_bill_record">Add new record</string>
+    <string name="btn_lbl_del_bill_record">Delete record</string>
+    <string name="btn_lbl_create_new_bill">Create new bill...</string>
+    <string name="btn_lbl_share_bill">Share bill...</string>
 
     <string name="lbl_item_name">item</string>
     <string name="lbl_cost">cost</string>
     <string name="lbl_share">share</string>
+    <string name="lbl_def_share">default share</string>
 
     <string name="lbl_subtotal">subtotal</string>
     <string name="lbl_tax">tax (%)</string>
@@ -18,9 +19,8 @@
 
     <string name="share_no_items">no items</string>
 
-    <string name="dialog_creating_new_bill">Creating new bill...</string>
-    <string name="dialog_delete_old_bill">Delete old bill?</string>
-    <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_confirm">Confirm</string>
+    <string name="dlg_current_bill_will_be_deleted">Current bill will be deleted!</string>
+    <string name="dlg_confirm">Confirm</string>
+    <string name="dlg_cancel">Cancel</string>
 
 </resources>

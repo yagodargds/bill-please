@@ -63,6 +63,7 @@
                 android:contentDescription="@string/btn_lbl_add_new_bill_record"
                 android:src="@android:drawable/ic_menu_add"
                 android:layout_gravity="center"
+                android:visibility="gone"
                 style="@style/button_icon_v" />
 
         </LinearLayout>
