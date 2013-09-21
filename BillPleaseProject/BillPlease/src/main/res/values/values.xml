@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="version_name">1.0.7.2a</string>
+    <string name="version_name">1.0.8.0a</string>
 
     <string name="min_cost_double">0.0</string>
     <integer name="min_share">1</integer>
@@ -10,8 +10,9 @@
 
     <integer name="push_to_db_delay_millisecs">1000</integer>
 
-    <integer name="min_fraction_digits">1</integer>
+    <integer name="min_fraction_digits">2</integer>
     <integer name="max_fraction_digits">2</integer>
 
     <string name="on_btn_click_method_name">onButtonClick</string>
+
 </resources>

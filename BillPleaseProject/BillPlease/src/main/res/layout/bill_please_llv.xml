@@ -69,9 +69,9 @@
         </LinearLayout>
 
     </ScrollView>
-    
-    <LinearLayout 
-        style="@style/action_bar_llv" >
+
+    <LinearLayout
+        style="@style/footer_llv" >
 
         <TextView
             style="@style/footer_screen_edge_intent_tv" />
@@ -81,22 +81,31 @@
             style="@style/footer_row_tv"
             android:layout_weight="1"
             android:text="@string/lbl_subtotal" />
-        
-        <TextView
-            android:id="@+id/tv_subtotal_empty"
-            style="@style/footer_number_etv" />
-        
-        <TextView
+
+        <LinearLayout
+            android:layout_width="@dimen/dbl_bill_input_width"
+            style="@style/horizontal_linear_layout_v" >
+
+            <TextView
+                android:id="@+id/tv_subtotal_empty"
+                android:layout_weight="1"
+                style="@style/footer_row_tv" />
+
+            <TextView
                 android:id="@+id/tv_subtotal_sum"
-                style="@style/footer_row_total_number_tv" />
+                android:layout_width="wrap_content"
+                android:minWidth="@dimen/bill_input_width"
+                style="@style/footer_row_tv" />
+
+        </LinearLayout>
 
         <TextView
             style="@style/footer_screen_edge_intent_tv" />
-        
+
     </LinearLayout>
     
     <LinearLayout 
-        style="@style/action_bar_llv" >
+        style="@style/footer_llv" >
 
         <TextView
             style="@style/footer_screen_edge_intent_tv" />
@@ -107,38 +116,21 @@
             android:layout_weight="1"
             android:text="@string/lbl_tax" />
 
+        <TextView
+            android:id="@+id/tv_tax_main"
+            style="@style/check_box_tv" />
+
         <com.yagodar.android.database.sqlite.custom.DbEditText
                 android:id="@+id/et_tax"
-                style="@style/footer_number_etv" />
-        
-        <TextView
-                android:id="@+id/tv_tax_sum"
-                style="@style/footer_row_total_number_tv" />
+                style="@style/tax_tip_etv" />
 
         <TextView
-            style="@style/footer_screen_edge_intent_tv" />
-        
-    </LinearLayout>
-    
-    <LinearLayout 
-        style="@style/action_bar_llv" >
+            android:id="@+id/tv_tax_sum_main"
+            style="@style/check_box_tv" />
 
-        <TextView
-            style="@style/footer_screen_edge_intent_tv" />
-
-        <TextView
-                android:id="@+id/tv_tip_lbl"
-            style="@style/footer_row_tv"
-            android:layout_weight="1"
-            android:text="@string/lbl_tip" />
-        
         <com.yagodar.android.database.sqlite.custom.DbEditText
-                android:id="@+id/et_tip"
-                style="@style/footer_number_etv" />
-        
-        <TextView
-                android:id="@+id/tv_tip_sum"
-                style="@style/footer_row_total_number_tv" />
+                android:id="@+id/et_tax_sum"
+                style="@style/tax_tip_etv" />
 
         <TextView
             style="@style/footer_screen_edge_intent_tv" />
@@ -146,7 +138,40 @@
     </LinearLayout>
 
     <LinearLayout
-        style="@style/action_bar_llv" >
+        style="@style/footer_llv" >
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
+
+        <TextView
+            android:id="@+id/tv_tip_lbl"
+            style="@style/footer_row_tv"
+            android:layout_weight="1"
+            android:text="@string/lbl_tip" />
+
+        <TextView
+            android:id="@+id/tv_tip_main"
+            style="@style/check_box_tv" />
+
+        <com.yagodar.android.database.sqlite.custom.DbEditText
+            android:id="@+id/et_tip"
+            style="@style/tax_tip_etv" />
+
+        <TextView
+            android:id="@+id/tv_tip_sum_main"
+            style="@style/check_box_tv" />
+
+        <com.yagodar.android.database.sqlite.custom.DbEditText
+            android:id="@+id/et_tip_sum"
+            style="@style/tax_tip_etv" />
+
+        <TextView
+            style="@style/footer_screen_edge_intent_tv" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/footer_total_llv" >
 
         <TextView
             style="@style/footer_screen_edge_intent_tv" />
@@ -157,13 +182,22 @@
             android:layout_weight="1"
             android:text="@string/lbl_total" />
 
-        <TextView
-            android:id="@+id/tv_total_empty"
-            style="@style/footer_number_etv" />
+        <LinearLayout
+            android:layout_width="@dimen/dbl_bill_input_width"
+            style="@style/horizontal_linear_layout_v" >
 
-        <TextView
-            android:id="@+id/tv_total_sum"
-            style="@style/footer_total_row_number_tv" />
+            <TextView
+                android:id="@+id/tv_total_empty"
+                android:layout_weight="1"
+                style="@style/footer_row_tv" />
+
+            <TextView
+                android:id="@+id/tv_total_sum"
+                android:layout_width="wrap_content"
+                android:minWidth="@dimen/bill_input_width"
+                style="@style/footer_total_row_tv" />
+
+        </LinearLayout>
 
         <TextView
             style="@style/footer_screen_edge_intent_tv" />

@@ -6,18 +6,18 @@
     <TextView
         style="@style/bill_screen_edge_intent_tv" />
 
-    <com.yagodar.android.billplease.custom.BillRecordEditText
+    <com.yagodar.android.billplease.custom.BillRecordDbEditText
         android:id="@+id/et_item_name"
         android:hint="@string/lbl_item_name"
         style="@style/item_name_etv"
         android:layout_weight="1" />
 
-    <com.yagodar.android.billplease.custom.BillRecordEditText
+    <com.yagodar.android.billplease.custom.BillRecordDbEditText
         android:id="@+id/et_cost"
         android:hint="@string/lbl_cost"
         style="@style/cost_val_etv" />
 
-    <com.yagodar.android.billplease.custom.BillRecordEditText
+    <com.yagodar.android.billplease.custom.BillRecordDbEditText
         android:id="@+id/et_share"
         android:hint="@string/lbl_share"
         style="@style/share_val_etv" />

@@ -13,8 +13,8 @@
     <string name="lbl_def_share">default share</string>
 
     <string name="lbl_subtotal">subtotal</string>
-    <string name="lbl_tax">tax (%)</string>
-    <string name="lbl_tip">tip (%)</string>
+    <string name="lbl_tax">tax (% / const)</string>
+    <string name="lbl_tip">tip (% / const)</string>
     <string name="lbl_total">total</string>
 
     <string name="share_no_items">no items</string>

@@ -22,6 +22,7 @@
     </style>
 
     <style name="bill_text_v" parent="dlg_text_v">
+        <item name="android:inputType">textShortMessage</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:typeface">serif</item>
     </style>
@@ -69,13 +70,27 @@
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
 
+    <style name="check_box_tv" parent="bill_text_v">
+        <item name="android:layout_height">@dimen/check_box_height</item>
+        <item name="android:layout_width">@dimen/check_box_width</item>
+        <item name="android:background">@drawable/check_box_not_checked_rect</item>
+    </style>
+
     <style name="button_icon_v" parent="icon_v">
         <item name="android:onClick">@string/on_btn_click_method_name</item>
         <item name="android:background">@android:color/transparent</item> <!-- TODO -->
     </style>
     
     <style name="action_bar_llv" parent="app_row_llv">
-        <item name="android:background">@color/sky_blue</item>
+        <item name="android:background">@color/action_bar</item>
+    </style>
+
+    <style name="footer_llv" parent="app_row_llv">
+        <item name="android:background">@color/footer</item>
+    </style>
+
+    <style name="footer_total_llv" parent="app_row_llv">
+        <item name="android:background">@color/footer_total</item>
     </style>
 
     <style name="dlg_number_etv" parent="dlg_input_etv">
@@ -87,15 +102,21 @@
     </style>
 
     <style name="number_etv" parent="input_etv">
-        <item name="android:inputType">number</item>
+        <item name="android:inputType">textShortMessage|number</item>
     </style>
 
     <style name="number_decimal_etv" parent="input_etv">
-        <item name="android:inputType">numberDecimal</item>
+        <item name="android:inputType">textShortMessage|numberDecimal</item>
     </style>
-    
+
+    <style name="tax_tip_etv" parent="edit_text_v">
+        <item name="android:layout_width">@dimen/tax_tip_input_width</item>
+        <item name="android:inputType">textShortMessage|numberDecimal</item>
+        <item name="android:textSize">@dimen/footer_row_text_size</item>
+        <item name="android:textColor">@color/sky_blue_lightest</item>
+    </style>
+
     <style name="item_name_etv" parent="edit_text_v">
-        <item name="android:inputType">textShortMessage</item>
         <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
 
@@ -103,10 +124,6 @@
         <item name="android:layout_width">@dimen/screen_edge_intent</item>
     </style>
 
-    <style name="footer_row_total_number_tv" parent="footer_row_tv">
-        <item name="android:layout_width">@dimen/bill_input_width</item>
-    </style>
-    
     <style name="footer_total_row_tv" parent="footer_row_tv">
         <item name="android:textSize">@dimen/footer_total_row_text_size</item>
     </style>
@@ -114,7 +131,7 @@
     <style name="footer_screen_edge_intent_tv" parent="footer_row_tv">
         <item name="android:layout_width">@dimen/screen_edge_intent</item>
     </style>
-    
+
 	<style name="cost_val_etv" parent="number_decimal_etv">
         <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
@@ -122,16 +139,7 @@
     <style name="share_val_etv" parent="number_etv">
         <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
-    
-    <style name="footer_number_etv" parent="number_etv">
-        <item name="android:textSize">@dimen/footer_row_text_size</item>
-        <item name="android:textColor">@color/sky_blue_lightest</item>
-    </style>
-    
-    <style name="footer_total_row_number_tv" parent="footer_total_row_tv">
-        <item name="android:layout_width">@dimen/bill_input_width</item>
-    </style>
-    
+
     <dimen name="text_view_height">40dp</dimen>
     <dimen name="text_margin">4dp</dimen>
     <dimen name="icon_size">32dp</dimen>
@@ -139,15 +147,28 @@
     <dimen name="screen_edge_intent">16dp</dimen>
     <dimen name="hidden_input_width">0dp</dimen>
     <dimen name="bill_input_width">72dp</dimen>
-    <dimen name="dlg_input_width">144dp</dimen>
+    <dimen name="tax_tip_input_width">56dp</dimen>
+    <dimen name="dbl_bill_input_width">160dp</dimen>
+    <dimen name="dlg_input_width">@dimen/dbl_bill_input_width</dimen>
+    <dimen name="check_box_width">16dp</dimen>
+    <dimen name="check_box_height">30dp</dimen>
+    <dimen name="check_box_stroke_width">1dp</dimen>
 
     <dimen name="app_name_text_size">20dp</dimen>
     <dimen name="text_size">14dp</dimen>
     <dimen name="footer_row_text_size">16dp</dimen>
-    <dimen name="footer_total_row_text_size">18dp</dimen>
+    <dimen name="footer_total_row_text_size">20dp</dimen>
 
-    <color name="bill_record_picked">@color/orange_light</color>
+    <color name="action_bar">@color/sky_blue_dark</color>
+    <color name="bill_records">@color/sky_blue_lightest</color>
+    <color name="footer">@color/sky_blue_dark</color>
+    <color name="footer_total">@color/sky_blue_dark</color>
+
+    <color name="bill_record_picked">@color/orange_lightest</color>
     <color name="bill_record_not_picked">@android:color/transparent</color>
+
+    <color name="check_box_checked">@color/sky_blue</color>
+    <color name="check_box_not_checked">@android:color/transparent</color>
 
     <color name="sky_blue">#33A7FF</color>
     <color name="sky_blue_light">#95D1FF</color>
@@ -161,7 +182,7 @@
     <color name="orange_dark">#C08B45</color>
     <color name="orange_darkest">#A6640C</color>
 
-    <array name="not_et_btn_res_ids">
+    <array name="apply_touch_listener_res_ids">
         <item>@id/iv_icon</item>
         <item>@id/tv_app_name</item>
 
@@ -172,10 +193,12 @@
         <item>@id/tv_subtotal_sum</item>
 
         <item>@id/tv_tax_lbl</item>
-        <item>@id/tv_tax_sum</item>
+        <item>@id/tv_tax_main</item>
+        <item>@id/tv_tax_sum_main</item>
 
         <item>@id/tv_tip_lbl</item>
-        <item>@id/tv_tip_sum</item>
+        <item>@id/tv_tip_main</item>
+        <item>@id/tv_tip_sum_main</item>
 
         <item>@id/tv_total_lbl</item>
         <item>@id/tv_total_empty</item>
