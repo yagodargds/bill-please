@@ -3,26 +3,68 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     style="@style/app_row_llv" >
 
-    <TextView
-        style="@style/bill_screen_edge_intent_tv" />
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-    <com.yagodar.android.billplease.custom.BillRecordDbEditText
-        android:id="@+id/et_item_name"
-        android:hint="@string/lbl_item_name"
-        style="@style/item_name_etv"
-        android:layout_weight="1" />
+        <LinearLayout
+            style="@style/zone_content_horizontal_llv" >
 
-    <com.yagodar.android.billplease.custom.BillRecordDbEditText
-        android:id="@+id/et_cost"
-        android:hint="@string/lbl_cost"
-        style="@style/cost_val_etv" />
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
 
-    <com.yagodar.android.billplease.custom.BillRecordDbEditText
-        android:id="@+id/et_share"
-        android:hint="@string/lbl_share"
-        style="@style/share_val_etv" />
+                <TextView
+                    style="@style/alignment_v" />
 
-    <TextView
-        style="@style/bill_screen_edge_intent_tv" />
+                <com.yagodar.android.billplease.custom.BillRecordDbEditText
+                    android:id="@+id/et_item_name"
+                    android:contentDescription="@string/lbl_item_name"
+                    style="@style/input_etv" />
+
+                <TextView
+                    style="@style/alignment_v" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
+
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
+
+                    <TextView
+                        style="@style/alignment_v" />
+
+                    <com.yagodar.android.billplease.custom.BillRecordDbEditText
+                        android:id="@+id/et_cost"
+                        android:contentDescription="@string/lbl_cost"
+                        style="@style/number_decimal_etv" />
+
+                    <TextView
+                        style="@style/alignment_v" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
+
+                    <TextView
+                        style="@style/alignment_v" />
+
+                    <com.yagodar.android.billplease.custom.BillRecordDbEditText
+                        android:id="@+id/et_share"
+                        android:contentDescription="@string/lbl_share"
+                        style="@style/number_etv" />
+
+                    <TextView
+                        style="@style/alignment_v" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
 </LinearLayout>

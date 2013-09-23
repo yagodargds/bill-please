@@ -9,38 +9,40 @@
 
         <ImageView
             android:id="@+id/iv_icon"
-            style="@style/icon_v"
-            android:src="@android:drawable/sym_def_app_icon" />
+            android:src="@android:drawable/sym_def_app_icon"
+            style="@style/icon_v" />
 
         <TextView
             android:id="@+id/tv_app_name"
-            style="@style/app_name_tv"
-            android:layout_weight="1"
-            android:text="@string/app_name" />
+            android:text="@string/app_name"
+            style="@style/app_name_tv" />
+
+        <TextView
+            style="@style/fill_v" />
 
         <LinearLayout
             android:id="@+id/ll_action_bar_icons"
-            style="@style/horizontal_linear_layout_v"
-            android:layout_width="wrap_content">
+            android:layout_width="wrap_content"
+            style="@style/horizontal_linear_layout_v" >
 
             <ImageButton
                 android:id="@+id/btn_del_bill_record"
-                style="@style/button_icon_v"
                 android:contentDescription="@string/btn_lbl_del_bill_record"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:visibility="gone" />
+                android:visibility="gone"
+                style="@style/button_icon_v" />
 
             <ImageButton
                 android:id="@+id/btn_create_new_bill"
-                style="@style/button_icon_v"
                 android:contentDescription="@string/btn_lbl_create_new_bill"
-                android:src="@android:drawable/ic_menu_delete" />
+                android:src="@android:drawable/ic_menu_delete"
+                style="@style/button_icon_v" />
 
             <ImageButton
                 android:id="@+id/btn_share_bill"
-                style="@style/button_icon_v"
                 android:contentDescription="@string/btn_lbl_share_bill"
-                android:src="@android:drawable/ic_menu_share" />
+                android:src="@android:drawable/ic_menu_share"
+                style="@style/button_icon_v" />
 
         </LinearLayout>
 
@@ -48,8 +50,8 @@
 
     <ScrollView
         android:id="@+id/sv_bill_rows"
-        style="@style/app_v"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        style="@style/app_v" >
 
         <LinearLayout
             style="@style/vertical_linear_layout_v" >
@@ -74,99 +76,213 @@
         style="@style/footer_llv" >
 
         <TextView
-            style="@style/footer_screen_edge_intent_tv" />
-
-        <TextView
-            android:id="@+id/tv_subtotal_lbl"
-            style="@style/footer_row_tv"
-            android:layout_weight="1"
-            android:text="@string/lbl_subtotal" />
+            style="@style/screen_edge_intent_tv" />
 
         <LinearLayout
-            android:layout_width="@dimen/dbl_bill_input_width"
-            style="@style/horizontal_linear_layout_v" >
+            style="@style/zone_content_horizontal_llv" >
 
-            <TextView
-                android:id="@+id/tv_subtotal_empty"
-                android:layout_weight="1"
-                style="@style/footer_row_tv" />
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
 
-            <TextView
-                android:id="@+id/tv_subtotal_sum"
-                android:layout_width="wrap_content"
-                android:minWidth="@dimen/bill_input_width"
-                style="@style/footer_row_tv" />
+                <TextView
+                    style="@style/alignment_v" />
+
+                <TextView
+                    android:text="@string/lbl_subtotal"
+                    style="@style/footer_tv" />
+
+                <TextView
+                    style="@style/alignment_v" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
+
+                <TextView
+                    style="@style/fill_v" />
+
+                <TextView
+                    android:id="@+id/tv_subtotal_sum"
+                    style="@style/footer_tv" />
+
+                <TextView
+                    style="@style/sub_total_intent_fill_v" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
         <TextView
-            style="@style/footer_screen_edge_intent_tv" />
+            style="@style/screen_edge_intent_tv" />
 
-    </LinearLayout>
-    
-    <LinearLayout 
-        style="@style/footer_llv" >
-
-        <TextView
-            style="@style/footer_screen_edge_intent_tv" />
-
-        <TextView
-            android:id="@+id/tv_tax_lbl"
-            style="@style/footer_row_tv"
-            android:layout_weight="1"
-            android:text="@string/lbl_tax" />
-
-        <TextView
-            android:id="@+id/tv_tax_main"
-            style="@style/check_box_tv" />
-
-        <com.yagodar.android.database.sqlite.custom.DbEditText
-                android:id="@+id/et_tax"
-                style="@style/tax_tip_etv" />
-
-        <TextView
-            android:id="@+id/tv_tax_sum_main"
-            style="@style/check_box_tv" />
-
-        <com.yagodar.android.database.sqlite.custom.DbEditText
-                android:id="@+id/et_tax_sum"
-                style="@style/tax_tip_etv" />
-
-        <TextView
-            style="@style/footer_screen_edge_intent_tv" />
-        
     </LinearLayout>
 
     <LinearLayout
         style="@style/footer_llv" >
 
         <TextView
-            style="@style/footer_screen_edge_intent_tv" />
+            style="@style/screen_edge_intent_tv" />
+
+        <LinearLayout
+            style="@style/zone_content_horizontal_llv">
+
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
+
+                <TextView
+                    style="@style/alignment_v" />
+
+                <TextView
+                    android:text="@string/lbl_tax"
+                    style="@style/footer_tv" />
+
+                <TextView
+                    style="@style/alignment_v" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
+
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
+
+                    <LinearLayout
+                        android:id="@+id/ll_tax"
+                        android:layout_height="@dimen/check_box_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
+
+                        <TextView
+                            style="@style/fill_v" />
+
+                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                            android:id="@+id/et_tax"
+                            style="@style/tax_tip_etv" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_tax_main"
+                        style="@style/check_box_tv" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
+
+                    <LinearLayout
+                        android:id="@+id/ll_tax_sum"
+                        android:layout_height="@dimen/check_box_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
+
+                        <TextView
+                            style="@style/fill_v" />
+
+                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                            android:id="@+id/et_tax_sum"
+                            style="@style/tax_tip_etv" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_tax_sum_main"
+                        style="@style/check_box_tv" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_tip_lbl"
-            style="@style/footer_row_tv"
-            android:layout_weight="1"
-            android:text="@string/lbl_tip" />
+            style="@style/screen_edge_intent_tv" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/footer_llv" >
 
         <TextView
-            android:id="@+id/tv_tip_main"
-            style="@style/check_box_tv" />
+            style="@style/screen_edge_intent_tv" />
 
-        <com.yagodar.android.database.sqlite.custom.DbEditText
-            android:id="@+id/et_tip"
-            style="@style/tax_tip_etv" />
+        <LinearLayout
+            style="@style/zone_content_horizontal_llv" >
+
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
+
+                <TextView
+                    style="@style/alignment_v" />
+
+                <TextView
+                    android:text="@string/lbl_tip"
+                    style="@style/footer_tv" />
+
+                <TextView
+                    style="@style/alignment_v" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
+
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
+
+                    <LinearLayout
+                        android:id="@+id/ll_tip"
+                        android:layout_height="@dimen/check_box_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
+
+                        <TextView
+                            style="@style/fill_v" />
+
+                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                            android:id="@+id/et_tip"
+                            style="@style/tax_tip_etv" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_tip_main"
+                        style="@style/check_box_tv" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
+
+                    <LinearLayout
+                        android:id="@+id/ll_tip_sum"
+                        android:layout_height="@dimen/check_box_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
+
+                        <TextView
+                            style="@style/fill_v" />
+
+                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                            android:id="@+id/et_tip_sum"
+                            style="@style/tax_tip_etv" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_tip_sum_main"
+                        style="@style/check_box_tv" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_tip_sum_main"
-            style="@style/check_box_tv" />
-
-        <com.yagodar.android.database.sqlite.custom.DbEditText
-            android:id="@+id/et_tip_sum"
-            style="@style/tax_tip_etv" />
-
-        <TextView
-            style="@style/footer_screen_edge_intent_tv" />
+            style="@style/screen_edge_intent_tv" />
 
     </LinearLayout>
 
@@ -174,33 +290,45 @@
         style="@style/footer_total_llv" >
 
         <TextView
-            style="@style/footer_screen_edge_intent_tv" />
-
-        <TextView
-            android:id="@+id/tv_total_lbl"
-            style="@style/footer_total_row_tv"
-            android:layout_weight="1"
-            android:text="@string/lbl_total" />
+            style="@style/screen_edge_intent_tv" />
 
         <LinearLayout
-            android:layout_width="@dimen/dbl_bill_input_width"
-            style="@style/horizontal_linear_layout_v" >
+            style="@style/zone_content_horizontal_llv" >
 
-            <TextView
-                android:id="@+id/tv_total_empty"
-                android:layout_weight="1"
-                style="@style/footer_row_tv" />
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
 
-            <TextView
-                android:id="@+id/tv_total_sum"
-                android:layout_width="wrap_content"
-                android:minWidth="@dimen/bill_input_width"
-                style="@style/footer_total_row_tv" />
+                <TextView
+                    style="@style/alignment_v" />
+
+                <TextView
+                    android:text="@string/lbl_total"
+                    style="@style/footer_tv_total" />
+
+                <TextView
+                    style="@style/alignment_v" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
+
+                <TextView
+                    style="@style/fill_v" />
+
+                <TextView
+                    android:id="@+id/tv_total_sum"
+                    style="@style/footer_tv_total" />
+
+                <TextView
+                    style="@style/sub_total_intent_fill_v" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
         <TextView
-            style="@style/footer_screen_edge_intent_tv" />
+            style="@style/screen_edge_intent_tv" />
 
         <EditText
             android:id="@+id/et_hidden"
@@ -209,5 +337,5 @@
         </EditText>
 
     </LinearLayout>
-    
+
 </LinearLayout>

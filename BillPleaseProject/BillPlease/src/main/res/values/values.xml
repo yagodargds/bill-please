@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="version_name">1.0.8.0a</string>
+
+    <string name="version_name">1.0.8.3a</string>
 
     <string name="min_cost_double">0.0</string>
     <integer name="min_share">1</integer>

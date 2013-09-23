@@ -1,10 +1,10 @@
 package com.yagodar.android.billplease.custom;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.SparseArray;
-import android.view.View;
 
+import com.yagodar.android.billplease.R;
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.DbTableColumn;
 import com.yagodar.android.database.sqlite.custom.DbEditText;
@@ -26,10 +26,10 @@ public class BillRecordDbEditText<T extends Object> extends DbEditText<T> {
     @Override
     public void pullFromDb() {
         if(isChanged()) {
-            super.pullFromDb();
+            postSetNormalText(String.valueOf(getDbValue()));
         }
         else {
-            clearText();
+            postSetHintText(getContentDescription().toString());
         }
     }
 
@@ -54,6 +54,34 @@ public class BillRecordDbEditText<T extends Object> extends DbEditText<T> {
         }
 
         return result;
+    }
+
+    public void postSetNormalText(final String normalText) {
+        try {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    setTypeface(null, Typeface.NORMAL);
+                    setTextColor(getResources().getColor(R.color.bill_record_et_text));
+                    setText(normalText);
+                }
+            });
+        }
+        catch(Exception ignored) {}
+    }
+
+    public void postSetHintText(final String defText) {
+        try {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    setTypeface(null, Typeface.ITALIC);
+                    setTextColor(getResources().getColor(R.color.bill_record_et_hint_text));
+                    setText(defText);
+                }
+            });
+        }
+        catch(Exception ignored) {}
     }
 
     private void setChanged(boolean value) {

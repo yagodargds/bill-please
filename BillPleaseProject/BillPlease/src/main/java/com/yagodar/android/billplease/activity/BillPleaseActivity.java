@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -31,6 +32,8 @@ import com.yagodar.android.database.sqlite.custom.DbEditText;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -188,6 +191,10 @@ public class BillPleaseActivity extends FragmentActivity {
         }
         resIds.recycle();
 
+        for(View view :getViewsByTag(findViewById(android.R.id.content), getResources().getString(R.string.apply_touch_listener_tag))) {
+            view.setOnTouchListener(billPleaseOnTouchListener);
+        }
+
         llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_records));
 
 		llBillRecords.removeAllViews();
@@ -215,6 +222,7 @@ public class BillPleaseActivity extends FragmentActivity {
         dbEtTax.pullFromDb();
         if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
             postSetBackgroundResource(findViewById(R.id.tv_tax_main), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tax), R.drawable.check_box_checked_rect);
         }
         dbEtTax.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         dbEtTax.addTextChangedListener(billPleaseTextWatcher);
@@ -226,6 +234,7 @@ public class BillPleaseActivity extends FragmentActivity {
         dbEtTaxSum.pullFromDb();
         if(!(Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
             postSetBackgroundResource(findViewById(R.id.tv_tax_sum_main), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tax_sum), R.drawable.check_box_checked_rect);
         }
         dbEtTaxSum.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         dbEtTaxSum.addTextChangedListener(billPleaseTextWatcher);
@@ -240,6 +249,7 @@ public class BillPleaseActivity extends FragmentActivity {
         dbEtTip.pullFromDb();
         if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
             postSetBackgroundResource(findViewById(R.id.tv_tip_main), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tip), R.drawable.check_box_checked_rect);
         }
         dbEtTip.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         dbEtTip.addTextChangedListener(billPleaseTextWatcher);
@@ -251,6 +261,7 @@ public class BillPleaseActivity extends FragmentActivity {
         dbEtTipSum.pullFromDb();
         if(!(Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
             postSetBackgroundResource(findViewById(R.id.tv_tip_sum_main), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tip_sum), R.drawable.check_box_checked_rect);
         }
         dbEtTipSum.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
         dbEtTipSum.addTextChangedListener(billPleaseTextWatcher);
@@ -385,10 +396,11 @@ public class BillPleaseActivity extends FragmentActivity {
         double subtotalSum = calcSubtotalSum();
         postSetText(((TextView) findViewById(R.id.tv_subtotal_sum)), decimalFormat.format(subtotalSum));
 
-        redrawTaxTipSums(subtotalSum);
+        redrawTaxSum(subtotalSum);
+        redrawTipSum(subtotalSum);
     }
 
-    private void redrawTaxTipSums(double subtotalSum) {
+    private void redrawTaxSum(double subtotalSum) {
         DbEditText<Double> etTax = ((DbEditText<Double>) findViewById(R.id.et_tax));
         DbEditText<Double> etTaxSum = ((DbEditText<Double>) findViewById(R.id.et_tax_sum));
         double taxSum = 0.0;
@@ -431,6 +443,10 @@ public class BillPleaseActivity extends FragmentActivity {
             }
         }
 
+        postSetText(((TextView) findViewById(R.id.tv_total_sum)), decimalFormat.format(subtotalSum + taxSum + calcTipSum(subtotalSum)));
+    }
+
+    private void redrawTipSum(double subtotalSum) {
         DbEditText<Double> etTip = ((DbEditText<Double>) findViewById(R.id.et_tip));
         DbEditText<Double> etTipSum = ((DbEditText<Double>) findViewById(R.id.et_tip_sum));
         double tipSum = 0.0;
@@ -473,7 +489,7 @@ public class BillPleaseActivity extends FragmentActivity {
             }
         }
 
-        postSetText(((TextView) findViewById(R.id.tv_total_sum)), decimalFormat.format(subtotalSum + taxSum + tipSum));
+        postSetText(((TextView) findViewById(R.id.tv_total_sum)), decimalFormat.format(subtotalSum + calcTaxSum(subtotalSum) + tipSum));
     }
 
     private double calcSubtotalSum() {
@@ -489,6 +505,38 @@ public class BillPleaseActivity extends FragmentActivity {
         }
 
         return value;
+    }
+
+    private double calcTaxSum(double subtotalSum) {
+        double taxSum = 0.0;
+
+        DbEditText<Double> etTax = ((DbEditText<Double>) findViewById(R.id.et_tax));
+        DbEditText<Double> etTaxSum = ((DbEditText<Double>) findViewById(R.id.et_tax_sum));
+
+        if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
+            taxSum = subtotalSum * (etTax.getDbValue() / 100.0);
+        }
+        else {
+            taxSum = etTaxSum.getDbValue();
+        }
+
+        return taxSum;
+    }
+
+    private double calcTipSum(double subtotalSum) {
+        double tipSum = 0.0;
+
+        DbEditText<Double> etTip = ((DbEditText<Double>) findViewById(R.id.et_tip));
+        DbEditText<Double> etTipSum = ((DbEditText<Double>) findViewById(R.id.et_tip_sum));
+
+        if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
+            tipSum = subtotalSum * (etTip.getDbValue() / 100.0);
+        }
+        else {
+            tipSum = etTipSum.getDbValue();
+        }
+
+        return tipSum;
     }
 
     private void postSetText(final TextView textView, final String text) {
@@ -539,6 +587,25 @@ public class BillPleaseActivity extends FragmentActivity {
         catch(Exception ignored) {}
     }
 
+    public static List<View> getViewsByTag(View root, String tag) {
+        List<View> result = new LinkedList<View>();
+
+        if (root instanceof ViewGroup) {
+            final int childCount = ((ViewGroup) root).getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                result.addAll(getViewsByTag(((ViewGroup) root).getChildAt(i), tag));
+            }
+        }
+
+        final Object rootTag = root.getTag();
+        // handle null tags, code from Guava's Objects.equal
+        if (tag == rootTag || (tag != null && tag.equals(rootTag))) {
+            result.add(root);
+        }
+
+        return result;
+    }
+
     private class BillPleaseOnFocusChangeListener implements View.OnFocusChangeListener {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
@@ -548,6 +615,10 @@ public class BillPleaseActivity extends FragmentActivity {
                 case R.id.et_share:
                     if(hasFocus) {
                         postSetBackgroundColor(llBillRecords.findViewWithTag(view.getTag()), getResources().getColor(R.color.bill_record_picked));
+
+                        if(!((BillRecordDbEditText) view).isChanged()) {
+                            ((BillRecordDbEditText) view).postSetNormalText(DbEditText.EMPTY_TEXT);
+                        }
 
                         if(llBillRecords.indexOfChild(llBillRecords.findViewWithTag(view.getTag())) != llBillRecords.getChildCount() - 1) {
                             llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
@@ -594,10 +665,22 @@ public class BillPleaseActivity extends FragmentActivity {
                     break;
                 case R.id.et_tax:
                 case R.id.et_tax_sum:
-                case R.id.et_tip:
-                case R.id.et_tip_sum:
                     if(hasFocus) {
-                        curDbEt = (DbEditText) view;
+                        if(curDbEt != null) {
+                            switch(curDbEt.getId()) {
+                                case R.id.et_tip:
+                                case R.id.et_tip_sum:
+                                    curDbEt = (DbEditText) view;
+                                    redrawTipSum(calcSubtotalSum());
+                                    break;
+                                default:
+                                    curDbEt = (DbEditText) view;
+                                    break;
+                            }
+                        }
+                        else {
+                            curDbEt = (DbEditText) view;
+                        }
                     }
                     else {
                         timer.cancel();
@@ -608,14 +691,59 @@ public class BillPleaseActivity extends FragmentActivity {
 
                         timer.cancel();
 
-                        redrawTaxTipSums(calcSubtotalSum());
+                        redrawTaxSum(calcSubtotalSum());
+                    }
+                    break;
+                case R.id.et_tip:
+                case R.id.et_tip_sum:
+                    if(hasFocus) {
+                        if(curDbEt != null) {
+                            switch(curDbEt.getId()) {
+                                case R.id.et_tax:
+                                case R.id.et_tax_sum:
+                                    curDbEt = (DbEditText) view;
+                                    redrawTaxSum(calcSubtotalSum());
+                                    break;
+                                default:
+                                    curDbEt = (DbEditText) view;
+                                    break;
+                            }
+                        }
+                        else {
+                            curDbEt = (DbEditText) view;
+                        }
+                    }
+                    else {
+                        timer.cancel();
+
+                        ((DbEditText) view).pushToDb();
+                        ((DbEditText) view).pullFromDb();
+                        ((DbEditText) view).resetInputRegistered();
+
+                        timer.cancel();
+
+                        redrawTipSum(calcSubtotalSum());
                     }
                     break;
                 case R.id.et_hidden:
                     if(hasFocus) {
                         hideSoftKeyboard(curDbEt);
-                        curDbEt = null;
-                        redrawTaxTipSums(calcSubtotalSum());
+
+                        switch(curDbEt.getId()) {
+                            case R.id.et_tax:
+                            case R.id.et_tax_sum:
+                                curDbEt = null;
+                                redrawTaxSum(calcSubtotalSum());
+                                break;
+                            case R.id.et_tip:
+                            case R.id.et_tip_sum:
+                                curDbEt = null;
+                                redrawTipSum(calcSubtotalSum());
+                                break;
+                            default:
+                                curDbEt = null;
+                                break;
+                        }
                     }
                     break;
                 default:
@@ -630,23 +758,99 @@ public class BillPleaseActivity extends FragmentActivity {
             switch(view.getId()) {
                 case R.id.tv_tax_main:
                     postSetBackgroundResource(view, R.drawable.check_box_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tax), R.drawable.check_box_checked_rect);
+
                     postSetBackgroundResource(findViewById(R.id.tv_tax_sum_main), R.drawable.check_box_not_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tax_sum), R.drawable.check_box_not_checked_rect);
+
                     dbBillPleaseTableBillValuesManager.setColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN, true);
+
+                    if(curDbEt == null) {
+                        redrawTaxSum(calcSubtotalSum());
+                    }
+                    else {
+                        switch(curDbEt.getId()) {
+                            case R.id.et_tip:
+                            case R.id.et_tip_sum:
+                                redrawTaxSum(calcSubtotalSum());
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     break;
                 case R.id.tv_tax_sum_main:
                     postSetBackgroundResource(view, R.drawable.check_box_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tax_sum), R.drawable.check_box_checked_rect);
+
                     postSetBackgroundResource(findViewById(R.id.tv_tax_main), R.drawable.check_box_not_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tax), R.drawable.check_box_not_checked_rect);
+
                     dbBillPleaseTableBillValuesManager.setColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN, false);
+
+                    if(curDbEt == null) {
+                        redrawTaxSum(calcSubtotalSum());
+                    }
+                    else {
+                        switch(curDbEt.getId()) {
+                            case R.id.et_tip:
+                            case R.id.et_tip_sum:
+                                redrawTaxSum(calcSubtotalSum());
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     break;
                 case R.id.tv_tip_main:
                     postSetBackgroundResource(view, R.drawable.check_box_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tip), R.drawable.check_box_checked_rect);
+
                     postSetBackgroundResource(findViewById(R.id.tv_tip_sum_main), R.drawable.check_box_not_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tip_sum), R.drawable.check_box_not_checked_rect);
+
                     dbBillPleaseTableBillValuesManager.setColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN, true);
+
+                    if(curDbEt == null) {
+                        redrawTipSum(calcSubtotalSum());
+                    }
+                    else {
+                        switch(curDbEt.getId()) {
+                            case R.id.et_tax:
+                            case R.id.et_tax_sum:
+                                redrawTipSum(calcSubtotalSum());
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     break;
                 case R.id.tv_tip_sum_main:
                     postSetBackgroundResource(view, R.drawable.check_box_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tip_sum), R.drawable.check_box_checked_rect);
+
                     postSetBackgroundResource(findViewById(R.id.tv_tip_main), R.drawable.check_box_not_checked_rect);
+                    postSetBackgroundResource(findViewById(R.id.ll_tip), R.drawable.check_box_not_checked_rect);
+
                     dbBillPleaseTableBillValuesManager.setColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN, false);
+
+                    if(curDbEt == null) {
+                        redrawTipSum(calcSubtotalSum());
+                    }
+                    else {
+                        switch(curDbEt.getId()) {
+                            case R.id.et_tax:
+                            case R.id.et_tax_sum:
+                                redrawTipSum(calcSubtotalSum());
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     break;
                 case R.id.sv_bill_rows:
                     if(exMotionEvent == MotionEvent.ACTION_DOWN && event.getAction() == MotionEvent.ACTION_UP) {
@@ -723,7 +927,7 @@ public class BillPleaseActivity extends FragmentActivity {
             dlgCreateNewBillLlv = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.dlg_create_new_bill_llv, null);
 
             if(llBillRecords.getChildCount() > 0) {
-                dlgCreateNewBillLlv.findViewById(R.id.tv_current_bill_will_be_deleted).setVisibility(View.VISIBLE);
+                dlgCreateNewBillLlv.findViewById(R.id.llv_current_bill_will_be_deleted).setVisibility(View.VISIBLE);
                 builder.setNegativeButton(R.string.dlg_cancel, onClickListener);
             }
 
@@ -769,7 +973,19 @@ public class BillPleaseActivity extends FragmentActivity {
         public void run() {
             if(curDbEt != null) {
                 curDbEt.pushToDb();
-                redrawAllSums();
+                switch(curDbEt.getId()) {
+                    case R.id.et_tax:
+                    case R.id.et_tax_sum:
+                        redrawTaxSum(calcSubtotalSum());
+                        break;
+                    case R.id.et_tip:
+                    case R.id.et_tip_sum:
+                        redrawTipSum(calcSubtotalSum());
+                        break;
+                    default:
+                        redrawAllSums();
+                        break;
+                }
             }
         }
     }

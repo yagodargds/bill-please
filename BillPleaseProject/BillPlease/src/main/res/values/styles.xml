@@ -14,15 +14,58 @@
     <style name="horizontal_linear_layout_v" parent="app_v">
         <item name="android:orientation">horizontal</item>
     </style>
-    
-    <style name="dlg_text_v" parent="app_v">
+
+    <style name="app_text_v" parent="app_v">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:inputType">textShortMessage</item>
         <item name="android:layout_height">@dimen/text_view_height</item>
         <item name="android:layout_margin">@dimen/text_margin</item>
         <item name="android:gravity">center_vertical|center_horizontal</item>
     </style>
 
-    <style name="bill_text_v" parent="dlg_text_v">
-        <item name="android:inputType">textShortMessage</item>
+    <style name="fill_blank_v" parent="app_v">
+        <item name="android:layout_width">@dimen/unitary_width</item>
+    </style>
+
+    <style name="apply_t_l_v" parent="fill_blank_v">
+        <item name="android:tag">@string/apply_touch_listener_tag</item>
+    </style>
+
+    <style name="fill_blank_horizontal_llv" parent="fill_blank_v">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="half_horizontal_llv" parent="fill_blank_horizontal_llv">
+        <item name="android:layout_weight">@string/zone_weight_half</item>
+    </style>
+
+    <style name="fill_horizontal_llv" parent="fill_blank_horizontal_llv">
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="alignment_v" parent="apply_t_l_v">
+        <item name="android:layout_weight">@string/zone_weight_half</item>
+    </style>
+
+    <style name="fill_v" parent="apply_t_l_v">
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="sub_total_intent_fill_v" parent="apply_t_l_v">
+        <item name="android:layout_weight">@string/zone_weight_sub_total_intent</item>
+    </style>
+
+    <style name="screen_edge_intent_tv" parent="app_v">
+        <item name="android:tag">@string/apply_touch_listener_tag</item>
+        <item name="android:layout_width">@dimen/screen_edge_intent</item>
+    </style>
+
+    <style name="dlg_text_v" parent="app_text_v">
+        <item name="android:gravity">right|center_vertical</item>
+    </style>
+
+    <style name="bill_text_v" parent="app_text_v">
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:typeface">serif</item>
     </style>
@@ -47,8 +90,23 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="dlg_input_etv" parent="dlg_text_v">
+    <style name="zone_content_horizontal_llv" parent="horizontal_linear_layout_v">
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="zone_item_name_horizontal_llv" parent="horizontal_linear_layout_v">
+        <item name="android:layout_width">@dimen/unitary_width</item>
+        <item name="android:layout_weight">@string/zone_weight_item_name</item>
+    </style>
+
+    <style name="zone_tax_tip_horizontal_llv" parent="horizontal_linear_layout_v">
+        <item name="android:layout_width">@dimen/unitary_width</item>
+        <item name="android:layout_weight">@string/zone_weight_tax_tip</item>
+    </style>
+
+    <style name="dlg_input_etv" parent="app_text_v">
         <item name="android:layout_width">@dimen/dlg_input_width</item>
+        <item name="android:gravity">left|center_vertical</item>
     </style>
 
     <style name="edit_text_v" parent="bill_text_v">
@@ -57,16 +115,17 @@
 
     <style name="app_name_tv" parent="bill_text_v">
         <item name="android:textSize">@dimen/app_name_text_size</item>
-        <item name="android:gravity">center_vertical</item>
         <item name="android:textColor">@color/sky_blue_lightest</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="bill_row_tv" parent="bill_text_v">
         <item name="android:textColor">@android:color/transparent</item>
     </style>
 
-    <style name="footer_row_tv" parent="bill_text_v">
-        <item name="android:textSize">@dimen/footer_row_text_size</item>
+    <style name="footer_tv" parent="bill_text_v">
+        <item name="android:tag">@string/apply_touch_listener_tag</item>
+        <item name="android:textSize">@dimen/footer_text_size</item>
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
 
@@ -94,11 +153,11 @@
     </style>
 
     <style name="dlg_number_etv" parent="dlg_input_etv">
-        <item name="android:inputType">number</item>
+        <item name="android:inputType">textShortMessage|number</item>
     </style>
 
     <style name="input_etv" parent="edit_text_v">
-        <item name="android:layout_width">@dimen/bill_input_width</item>
+        <item name="android:minWidth">@dimen/bill_input_min_width</item>
     </style>
 
     <style name="number_etv" parent="input_etv">
@@ -110,34 +169,17 @@
     </style>
 
     <style name="tax_tip_etv" parent="edit_text_v">
-        <item name="android:layout_width">@dimen/tax_tip_input_width</item>
         <item name="android:inputType">textShortMessage|numberDecimal</item>
-        <item name="android:textSize">@dimen/footer_row_text_size</item>
+        <item name="android:textSize">@dimen/footer_text_size</item>
         <item name="android:textColor">@color/sky_blue_lightest</item>
-    </style>
-
-    <style name="item_name_etv" parent="edit_text_v">
-        <item name="android:textColor">@color/sky_blue_darkest</item>
     </style>
 
     <style name="bill_screen_edge_intent_tv" parent="bill_row_tv">
         <item name="android:layout_width">@dimen/screen_edge_intent</item>
     </style>
 
-    <style name="footer_total_row_tv" parent="footer_row_tv">
-        <item name="android:textSize">@dimen/footer_total_row_text_size</item>
-    </style>
-
-    <style name="footer_screen_edge_intent_tv" parent="footer_row_tv">
-        <item name="android:layout_width">@dimen/screen_edge_intent</item>
-    </style>
-
-	<style name="cost_val_etv" parent="number_decimal_etv">
-        <item name="android:textColor">@color/sky_blue_darkest</item>
-    </style>
-
-    <style name="share_val_etv" parent="number_etv">
-        <item name="android:textColor">@color/sky_blue_darkest</item>
+    <style name="footer_tv_total" parent="footer_tv">
+        <item name="android:textSize">@dimen/footer_total_text_size</item>
     </style>
 
     <dimen name="text_view_height">40dp</dimen>
@@ -146,18 +188,24 @@
     <dimen name="icon_margin">8dp</dimen>
     <dimen name="screen_edge_intent">16dp</dimen>
     <dimen name="hidden_input_width">0dp</dimen>
-    <dimen name="bill_input_width">72dp</dimen>
-    <dimen name="tax_tip_input_width">56dp</dimen>
-    <dimen name="dbl_bill_input_width">160dp</dimen>
-    <dimen name="dlg_input_width">@dimen/dbl_bill_input_width</dimen>
+    <dimen name="bill_input_min_width">4dp</dimen>
+    <dimen name="dlg_input_width">144dp</dimen>
     <dimen name="check_box_width">16dp</dimen>
     <dimen name="check_box_height">30dp</dimen>
     <dimen name="check_box_stroke_width">1dp</dimen>
+    <dimen name="unitary_width">1dp</dimen>
 
     <dimen name="app_name_text_size">20dp</dimen>
     <dimen name="text_size">14dp</dimen>
-    <dimen name="footer_row_text_size">16dp</dimen>
-    <dimen name="footer_total_row_text_size">20dp</dimen>
+    <dimen name="footer_text_size">16dp</dimen>
+    <dimen name="footer_total_text_size">20dp</dimen>
+
+    <string name="zone_weight_half">0.5</string>
+    <string name="zone_weight_sub_total_intent">0.25</string>
+    <string name="zone_weight_item_name">0.45</string>
+    <string name="zone_weight_tax_tip">0.55</string>
+
+    <string name="apply_touch_listener_tag">apl_t_l</string>
 
     <color name="action_bar">@color/sky_blue_dark</color>
     <color name="bill_records">@color/sky_blue_lightest</color>
@@ -169,6 +217,9 @@
 
     <color name="check_box_checked">@color/sky_blue</color>
     <color name="check_box_not_checked">@android:color/transparent</color>
+
+    <color name="bill_record_et_hint_text">@color/sky_blue_light</color>
+    <color name="bill_record_et_text">@color/sky_blue_darkest</color>
 
     <color name="sky_blue">#33A7FF</color>
     <color name="sky_blue_light">#95D1FF</color>
@@ -188,20 +239,14 @@
 
         <item>@id/sv_bill_rows</item>
 
-        <item>@id/tv_subtotal_lbl</item>
-        <item>@id/tv_subtotal_empty</item>
         <item>@id/tv_subtotal_sum</item>
 
-        <item>@id/tv_tax_lbl</item>
         <item>@id/tv_tax_main</item>
         <item>@id/tv_tax_sum_main</item>
 
-        <item>@id/tv_tip_lbl</item>
         <item>@id/tv_tip_main</item>
         <item>@id/tv_tip_sum_main</item>
 
-        <item>@id/tv_total_lbl</item>
-        <item>@id/tv_total_empty</item>
         <item>@id/tv_total_sum</item>
     </array>
 
