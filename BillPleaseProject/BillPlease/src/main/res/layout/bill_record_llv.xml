@@ -15,9 +15,13 @@
                 <TextView
                     style="@style/alignment_v" />
 
-                <com.yagodar.android.billplease.custom.BillRecordDbEditText
+                <com.yagodar.android.billplease.custom.HintDbEditText
                     android:id="@+id/et_item_name"
-                    android:contentDescription="@string/lbl_item_name"
+                    android:textColor="@color/bill_record_et_text"
+                    android:hint="@string/lbl_item_name"
+                    android:textColorHint="@color/bill_record_et_hint_text"
+                    custom:hintTypeface="italic"
+                    custom:hintShowDefValue="false"
                     style="@style/input_etv" />
 
                 <TextView
@@ -34,9 +38,14 @@
                     <TextView
                         style="@style/alignment_v" />
 
-                    <com.yagodar.android.billplease.custom.BillRecordDbEditText
+                    <com.yagodar.android.billplease.custom.HintDbEditText
                         android:id="@+id/et_cost"
-                        android:contentDescription="@string/lbl_cost"
+                        android:textColor="@color/bill_record_et_text"
+                        android:hint="@string/lbl_cost"
+                        android:textColorHint="@color/bill_record_et_hint_text"
+                        custom:hintTypeface="italic"
+                        custom:defValueStr="@string/min_cost_double"
+                        custom:minValueStr="@string/min_cost_double"
                         style="@style/number_decimal_etv" />
 
                     <TextView
@@ -50,9 +59,17 @@
                     <TextView
                         style="@style/alignment_v" />
 
-                    <com.yagodar.android.billplease.custom.BillRecordDbEditText
+                    <com.yagodar.android.billplease.custom.HintDbEditText
+                        xmlns:widget="com.yagodar.android.database.sqlite"
                         android:id="@+id/et_share"
-                        android:contentDescription="@string/lbl_share"
+                        widget:dbTableName=""
+                        widget:dbColumnName=""
+                        android:textColor="@color/bill_record_et_text"
+                        android:hint="@string/lbl_share"
+                        android:textColorHint="@color/bill_record_et_hint_text"
+                        custom:hintTypeface="italic"
+                        custom:defValueStr="@string/min_share_int"
+                        custom:minValueStr="@string/min_share_int"
                         style="@style/number_etv" />
 
                     <TextView

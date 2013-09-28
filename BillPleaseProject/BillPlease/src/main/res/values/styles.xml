@@ -17,10 +17,13 @@
 
     <style name="app_text_v" parent="app_v">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:inputType">textShortMessage</item>
         <item name="android:layout_height">@dimen/text_view_height</item>
         <item name="android:layout_margin">@dimen/text_margin</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:imeOptions">actionDone|flagNavigatePrevious|flagNavigateNext|flagNoExtractUi</item>
     </style>
 
     <style name="fill_blank_v" parent="app_v">
@@ -153,7 +156,7 @@
     </style>
 
     <style name="dlg_number_etv" parent="dlg_input_etv">
-        <item name="android:inputType">textShortMessage|number</item>
+        <item name="android:inputType">number</item>
     </style>
 
     <style name="input_etv" parent="edit_text_v">
@@ -161,15 +164,14 @@
     </style>
 
     <style name="number_etv" parent="input_etv">
-        <item name="android:inputType">textShortMessage|number</item>
+        <item name="android:inputType">number</item>
     </style>
 
     <style name="number_decimal_etv" parent="input_etv">
-        <item name="android:inputType">textShortMessage|numberDecimal</item>
+        <item name="android:inputType">numberDecimal</item>
     </style>
 
-    <style name="tax_tip_etv" parent="edit_text_v">
-        <item name="android:inputType">textShortMessage|numberDecimal</item>
+    <style name="tax_tip_etv" parent="number_decimal_etv">
         <item name="android:textSize">@dimen/footer_text_size</item>
         <item name="android:textColor">@color/sky_blue_lightest</item>
     </style>
