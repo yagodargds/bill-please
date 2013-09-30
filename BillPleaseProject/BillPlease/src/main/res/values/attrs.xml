@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="HintDbEditText">
+    <!--<declare-styleable name="HintDbEditText">
         <attr name="hintTypeface" format="enum">
             <enum name="normal" value="0"/>
             <enum name="bold" value="1"/>
@@ -10,5 +10,5 @@
         <attr name="hintShowDefValue" format="boolean" />
         <attr name="defValueStr" format="string" />
         <attr name="minValueStr" format="string" />
-    </declare-styleable>
+    </declare-styleable>-->
 </resources>

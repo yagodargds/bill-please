@@ -16,4 +16,6 @@
 
     <string name="on_btn_click_method_name">onButtonClick</string>
 
+    <string name="asm_pckg_xmlns">http://schemas.android.com/apk/res/com.yagodar.android.database.sqlite</string>
+
 </resources>

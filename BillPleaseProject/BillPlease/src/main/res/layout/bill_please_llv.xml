@@ -157,8 +157,11 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                        <com.yagodar.android.billplease.custom.BillDbEditText
                             android:id="@+id/et_tax"
+                            xmlns:widget="com.yagodar.android.database.sqlite"
+                            widget:dbTableName="tn"
+                            widget:dbColumnName="cn"
                             style="@style/tax_tip_etv" />
 
                     </LinearLayout>
@@ -181,7 +184,7 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                        <com.yagodar.android.billplease.custom.BillDbEditText
                             android:id="@+id/et_tax_sum"
                             style="@style/tax_tip_etv" />
 
@@ -241,7 +244,7 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                        <com.yagodar.android.billplease.custom.BillDbEditText
                             android:id="@+id/et_tip"
                             style="@style/tax_tip_etv" />
 
@@ -265,7 +268,7 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.database.sqlite.custom.DbEditText
+                        <com.yagodar.android.billplease.custom.BillDbEditText
                             android:id="@+id/et_tip_sum"
                             style="@style/tax_tip_etv" />
 

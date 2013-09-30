@@ -53,7 +53,12 @@ public class BillPleaseActivity extends FragmentActivity {
       protected void onCreate(Bundle savedInstanceState) {
           super.onCreate(savedInstanceState);
 
+          try {
           setContentView(R.layout.bill_please_llv);
+          }
+          catch(Exception e) {
+              System.out.print(e.toString());
+          }
 
           timer = new Timer();
 
@@ -81,7 +86,12 @@ public class BillPleaseActivity extends FragmentActivity {
 
           loadBill();
 
+          try {
           redrawAllSums();
+          }
+          catch(Exception e) {
+              System.out.print(e.toString());
+          }
       }
 
       @Override

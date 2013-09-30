@@ -22,7 +22,7 @@ public class HintDbEditText<T extends Object> extends DbEditText<T> {
 
         initHint = getHint().toString();
 
-        TypedArray styledAttrs = context.getTheme().obtainStyledAttributes(
+        /*TypedArray styledAttrs = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.HintDbEditText,
                 0,
@@ -36,7 +36,7 @@ public class HintDbEditText<T extends Object> extends DbEditText<T> {
         }
         finally {
             styledAttrs.recycle();
-        }
+        }*/
 
         postUpdateHint();
     }
