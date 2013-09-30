@@ -16,6 +16,6 @@ public class BillDbEditText<T extends Object> extends DbEditText<T> {
 
     @Override
     protected DbTableBaseManager registerTableManager(String s) {
-        return null;
+        return null;//TODO
     }
 }
