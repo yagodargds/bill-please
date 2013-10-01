@@ -1,1 +1,1 @@
-include ':BillPlease'
+include ':BillPlease', ':android-sqlite-manager'
