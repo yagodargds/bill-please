@@ -3,9 +3,7 @@
 build/
 gen/
 *.iml
+*.gradle
 
 # Local configuration file (sdk path, etc)
 local.properties
-
-# Android libraries
-android-sqlite-manager/
