@@ -8,7 +8,5 @@
             <enum name="boldItalic" value="3"/>
         </attr>
         <attr name="hintShowDefValue" format="boolean" />
-        <attr name="defValueStr" format="string" />
-        <attr name="minValueStr" format="string" />
     </declare-styleable>
 </resources>

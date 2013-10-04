@@ -27,9 +27,9 @@ import android.app.AlertDialog;
  import com.yagodar.android.billplease.database.DbBillPleaseTableBillContract;
 import com.yagodar.android.billplease.database.DbBillPleaseTableBillValuesContract;
  import com.yagodar.android.database.sqlite.DbTableBaseManager;
- import com.yagodar.android.database.sqlite.custom.DbEditText;
+import com.yagodar.android.database.sqlite.custom.AbstractDbEditText;
 
- import java.text.DecimalFormat;
+import java.text.DecimalFormat;
  import java.text.DecimalFormatSymbols;
  import java.util.LinkedList;
  import java.util.List;
@@ -235,7 +235,7 @@ public class BillPleaseActivity extends FragmentActivity {
               drawBillRecord(dbRecord.getId());
           }
 
-          DbEditText<Double> dbEtTax = (DbEditText) findViewById(R.id.et_tax);
+          AbstractDbEditText<Double> dbEtTax = (AbstractDbEditText) findViewById(R.id.et_tax);
           dbEtTax.setDbRecordId(valuesRecordId);
           if(isValuesNew) {
               dbEtTax.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tax_double)));
@@ -249,7 +249,7 @@ public class BillPleaseActivity extends FragmentActivity {
           dbEtTax.addTextChangedListener(billPleaseTextWatcher);
           dbEtTax.setOnEditorActionListener(billPleaseOnEditorActionListener);
 
-          DbEditText<Double> dbEtTaxSum = (DbEditText) findViewById(R.id.et_tax_sum);
+          AbstractDbEditText<Double> dbEtTaxSum = (AbstractDbEditText) findViewById(R.id.et_tax_sum);
           dbEtTaxSum.setDbRecordId(valuesRecordId);
           dbEtTaxSum.pullFromDb();
           if(!(Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
@@ -260,7 +260,7 @@ public class BillPleaseActivity extends FragmentActivity {
           dbEtTaxSum.addTextChangedListener(billPleaseTextWatcher);
           dbEtTaxSum.setOnEditorActionListener(billPleaseOnEditorActionListener);
 
-          DbEditText<Double> dbEtTip = (DbEditText) findViewById(R.id.et_tip);
+          AbstractDbEditText<Double> dbEtTip = (AbstractDbEditText) findViewById(R.id.et_tip);
           dbEtTip.setDbRecordId(valuesRecordId);
           if(isValuesNew) {
               dbEtTip.setDbValue(Double.parseDouble(getResources().getString(R.string.def_tip_double)));
@@ -274,7 +274,7 @@ public class BillPleaseActivity extends FragmentActivity {
           dbEtTip.addTextChangedListener(billPleaseTextWatcher);
           dbEtTip.setOnEditorActionListener(billPleaseOnEditorActionListener);
 
-          DbEditText<Double> dbEtTipSum = (DbEditText) findViewById(R.id.et_tip_sum);
+          AbstractDbEditText<Double> dbEtTipSum = (AbstractDbEditText) findViewById(R.id.et_tip_sum);
           dbEtTipSum.setDbRecordId(valuesRecordId);
           dbEtTipSum.pullFromDb();
           if(!(Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
@@ -409,8 +409,8 @@ public class BillPleaseActivity extends FragmentActivity {
       }
 
       private void redrawTaxSum(double subtotalSum) {
-          DbEditText<Double> etTax = ((DbEditText<Double>) findViewById(R.id.et_tax));
-          DbEditText<Double> etTaxSum = ((DbEditText<Double>) findViewById(R.id.et_tax_sum));
+          AbstractDbEditText<Double> etTax = ((AbstractDbEditText<Double>) findViewById(R.id.et_tax));
+          AbstractDbEditText<Double> etTaxSum = ((AbstractDbEditText<Double>) findViewById(R.id.et_tax_sum));
           double taxSum = 0.0;
 
           if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
@@ -455,8 +455,8 @@ public class BillPleaseActivity extends FragmentActivity {
       }
 
       private void redrawTipSum(double subtotalSum) {
-          DbEditText<Double> etTip = ((DbEditText<Double>) findViewById(R.id.et_tip));
-          DbEditText<Double> etTipSum = ((DbEditText<Double>) findViewById(R.id.et_tip_sum));
+          AbstractDbEditText<Double> etTip = ((AbstractDbEditText<Double>) findViewById(R.id.et_tip));
+          AbstractDbEditText<Double> etTipSum = ((AbstractDbEditText<Double>) findViewById(R.id.et_tip_sum));
           double tipSum = 0.0;
 
           if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
@@ -518,8 +518,8 @@ public class BillPleaseActivity extends FragmentActivity {
       private double calcTaxSum(double subtotalSum) {
           double taxSum = 0.0;
 
-          DbEditText<Double> etTax = ((DbEditText<Double>) findViewById(R.id.et_tax));
-          DbEditText<Double> etTaxSum = ((DbEditText<Double>) findViewById(R.id.et_tax_sum));
+          AbstractDbEditText<Double> etTax = ((AbstractDbEditText<Double>) findViewById(R.id.et_tax));
+          AbstractDbEditText<Double> etTaxSum = ((AbstractDbEditText<Double>) findViewById(R.id.et_tax_sum));
 
           if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
               taxSum = subtotalSum * (etTax.getDbValue() / 100.0);
@@ -534,8 +534,8 @@ public class BillPleaseActivity extends FragmentActivity {
       private double calcTipSum(double subtotalSum) {
           double tipSum = 0.0;
 
-          DbEditText<Double> etTip = ((DbEditText<Double>) findViewById(R.id.et_tip));
-          DbEditText<Double> etTipSum = ((DbEditText<Double>) findViewById(R.id.et_tip_sum));
+          AbstractDbEditText<Double> etTip = ((AbstractDbEditText<Double>) findViewById(R.id.et_tip));
+          AbstractDbEditText<Double> etTipSum = ((AbstractDbEditText<Double>) findViewById(R.id.et_tip_sum));
 
           if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId(), DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
               tipSum = subtotalSum * (etTip.getDbValue() / 100.0);
@@ -668,24 +668,24 @@ public class BillPleaseActivity extends FragmentActivity {
                               switch(curDbEt.getId()) {
                                   case R.id.et_tip:
                                   case R.id.et_tip_sum:
-                                      curDbEt = (DbEditText) view;
+                                      curDbEt = (AbstractDbEditText) view;
                                       redrawTipSum(calcSubtotalSum());
                                       break;
                                   default:
-                                      curDbEt = (DbEditText) view;
+                                      curDbEt = (AbstractDbEditText) view;
                                       break;
                               }
                           }
                           else {
-                              curDbEt = (DbEditText) view;
+                              curDbEt = (AbstractDbEditText) view;
                           }
                       }
                       else {
                           timer.cancel();
 
-                          ((DbEditText) view).pushToDb();
-                          ((DbEditText) view).pullFromDb();
-                          ((DbEditText) view).resetInputRegistered();
+                          ((AbstractDbEditText) view).pushToDb();
+                          ((AbstractDbEditText) view).pullFromDb();
+                          ((AbstractDbEditText) view).resetInputRegistered();
 
                           timer.cancel();
 
@@ -699,24 +699,24 @@ public class BillPleaseActivity extends FragmentActivity {
                               switch(curDbEt.getId()) {
                                   case R.id.et_tax:
                                   case R.id.et_tax_sum:
-                                      curDbEt = (DbEditText) view;
+                                      curDbEt = (AbstractDbEditText) view;
                                       redrawTaxSum(calcSubtotalSum());
                                       break;
                                   default:
-                                      curDbEt = (DbEditText) view;
+                                      curDbEt = (AbstractDbEditText) view;
                                       break;
                               }
                           }
                           else {
-                              curDbEt = (DbEditText) view;
+                              curDbEt = (AbstractDbEditText) view;
                           }
                       }
                       else {
                           timer.cancel();
 
-                          ((DbEditText) view).pushToDb();
-                          ((DbEditText) view).pullFromDb();
-                          ((DbEditText) view).resetInputRegistered();
+                          ((AbstractDbEditText) view).pushToDb();
+                          ((AbstractDbEditText) view).pullFromDb();
+                          ((AbstractDbEditText) view).resetInputRegistered();
 
                           timer.cancel();
 
@@ -899,7 +899,7 @@ public class BillPleaseActivity extends FragmentActivity {
                       case R.id.et_tip_sum:
                       case R.id.et_tax:
                       case R.id.et_tax_sum:
-                          nextFocusView = ((DbEditText) textView).getNextFocusView(View.FOCUS_FORWARD);
+                          nextFocusView = ((AbstractDbEditText) textView).getNextFocusView(View.FOCUS_FORWARD);
                           break;
                       default:
                           break;
@@ -995,7 +995,7 @@ public class BillPleaseActivity extends FragmentActivity {
 
       private LinearLayout llActionBar;
       private LinearLayout llBillRecords;
-      private DbEditText curDbEt;
+      private AbstractDbEditText curDbEt;
       private int customDefShare;
       private View etHidden;
       private int exMotionEvent;

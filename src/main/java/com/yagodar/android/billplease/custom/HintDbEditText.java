@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import com.yagodar.android.billplease.R;
 import com.yagodar.android.database.sqlite.DbTableBaseManager;
 import com.yagodar.android.database.sqlite.DbTableColumn;
-import com.yagodar.android.database.sqlite.custom.DbEditText;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
