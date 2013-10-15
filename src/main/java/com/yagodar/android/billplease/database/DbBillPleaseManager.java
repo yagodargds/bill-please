@@ -45,5 +45,5 @@ public class DbBillPleaseManager extends DbBaseManager<DbBillPleaseHelper> {
     private static DbBillPleaseManager INSTANCE;
 
     private static final String DATABASE_NAME = "bill_please.db";
-    private static final int DATABASE_VERSION = 45;
+    private static final int DATABASE_VERSION = 52;
 }

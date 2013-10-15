@@ -15,13 +15,12 @@
                 <TextView
                     style="@style/alignment_v" />
 
-                <com.yagodar.android.billplease.custom.HintDbEditText
+                <com.yagodar.android.billplease.custom.BillDbEditText
                     android:id="@+id/et_item_name"
                     android:textColor="@color/bill_record_et_text"
                     android:hint="@string/lbl_item_name"
                     android:textColorHint="@color/bill_record_et_hint_text"
-                    app:dbTableName="bill"
-                    app:dbColumnName="item_name"
+                    app:tableName="bill"
                     app:hintTypeface="italic"
                     app:hintShowDefValue="false"
                     style="@style/input_etv" />
@@ -40,16 +39,19 @@
                     <TextView
                         style="@style/alignment_v" />
 
-                    <com.yagodar.android.billplease.custom.HintDbEditText
+                    <com.yagodar.android.billplease.custom.BillDbEditText
                         android:id="@+id/et_cost"
                         android:textColor="@color/bill_record_et_text"
                         android:hint="@string/lbl_cost"
                         android:textColorHint="@color/bill_record_et_hint_text"
-                        app:dbTableName="bill"
-                        app:dbColumnName="cost"
-                        app:hintTypeface="italic"
+                        app:tableName="bill"
+                        app:tableColumnName="cost"
+                        app:valueType="real"
                         app:defValueStr="@string/min_cost_double"
                         app:minValueStr="@string/min_cost_double"
+                        app:minFractionDigits="@integer/min_fraction_digits"
+                        app:maxFractionDigits="@integer/max_fraction_digits"
+                        app:hintTypeface="italic"
                         style="@style/number_decimal_etv" />
 
                     <TextView
@@ -63,16 +65,17 @@
                     <TextView
                         style="@style/alignment_v" />
 
-                    <com.yagodar.android.billplease.custom.HintDbEditText
+                    <com.yagodar.android.billplease.custom.BillDbEditText
                         android:id="@+id/et_share"
                         android:textColor="@color/bill_record_et_text"
                         android:hint="@string/lbl_share"
                         android:textColorHint="@color/bill_record_et_hint_text"
-                        app:dbTableName="bill"
-                        app:dbColumnName="share"
-                        app:hintTypeface="italic"
+                        app:tableName="bill"
+                        app:tableColumnName="share"
+                        app:valueType="integer"
                         app:defValueStr="@string/min_share_int"
                         app:minValueStr="@string/min_share_int"
+                        app:hintTypeface="italic"
                         style="@style/number_etv" />
 
                     <TextView

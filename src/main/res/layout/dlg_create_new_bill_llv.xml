@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/vertical_linear_layout_v" >
 
     <LinearLayout
@@ -23,28 +24,25 @@
     <LinearLayout
         style="@style/zone_content_horizontal_llv" >
 
-        <LinearLayout
-            style="@style/zone_item_name_horizontal_llv" >
-
             <TextView
                 style="@style/fill_v" />
 
-            <TextView
-                android:text="@string/dlg_def_share"
-                style="@style/dlg_text_v" />
-        </LinearLayout>
-
-        <LinearLayout
-            style="@style/zone_tax_tip_horizontal_llv" >
-
-            <EditText
+            <com.yagodar.android.billplease.custom.BillValuesDbEditText
                 android:id="@+id/et_def_share"
+                android:hint="@string/lbl_def_share"
+                android:gravity="center_vertical|center_horizontal"
+                app:tableName="bill_values"
+                app:tableColumnName="def_share"
+                app:valueType="integer"
+                app:defValueStr="@string/min_share_int"
+                app:minValueStr="@string/min_share_int"
+                app:minFractionDigits="@integer/min_fraction_digits"
+                app:maxFractionDigits="@integer/max_fraction_digits"
+                app:hintTypeface="italic"
                 style="@style/dlg_number_etv" />
 
             <TextView
                 style="@style/fill_v" />
-
-        </LinearLayout>
 
     </LinearLayout>
 

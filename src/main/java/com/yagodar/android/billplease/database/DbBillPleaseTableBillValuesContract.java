@@ -35,13 +35,13 @@ public class DbBillPleaseTableBillValuesContract extends DbTableBaseContract {
     public static final String COLUMN_NAME_IS_TIP_PER_MAIN = "is_tip_per_main";
     public static final String COLUMN_NAME_DEF_SHARE = "def_share";
 
-    private static final double DEF_VAL_TAX_PER = 0.0;
-    private static final double DEF_VAL_TAX_SUM = 0.0;
+    private static final String DEF_VAL_TAX_PER = "-1.0";
+    private static final String DEF_VAL_TAX_SUM = "-1.0";
     private static final boolean DEF_VAL_TAX_PER_MAIN = true;
-    private static final double DEF_VAL_TIP_PER = 0.0;
-    private static final double DEF_VAL_TIP_SUM = 0.0;
+    private static final String DEF_VAL_TIP_PER = "-1.0";
+    private static final String DEF_VAL_TIP_SUM = "-1.0";
     private static final boolean DEF_VAL_TIP_PER_MAIN = true;
-    private static final int DEF_VAL_DEF_SHARE = 1;
+    private static final String DEF_VAL_DEF_SHARE = "-1";
 
     private static final String TABLE_NAME = "bill_values";
 
