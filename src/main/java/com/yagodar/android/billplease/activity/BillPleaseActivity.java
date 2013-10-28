@@ -44,7 +44,7 @@ public class BillPleaseActivity extends FragmentActivity {
      @Override
      public boolean onKeyDown(int keyCode, KeyEvent event) {
          if (keyCode == KeyEvent.KEYCODE_BACK) {
-             if(curDbEt != null) {
+             if(lastDbEt != null) {
                  hideFocus();
                  return true;
              }
@@ -111,13 +111,13 @@ public class BillPleaseActivity extends FragmentActivity {
              case R.id.btn_add_new_bill_record:
                  addBillRecord();
 
-                 if(curDbEt != null && isBillRecordEt(curDbEt)) {
+                 if(lastDbEt != null && isBillRecordEt(lastDbEt)) {
                      llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
                  }
                  break;
              case R.id.btn_del_bill_record:
-                 if(curDbEt != null && isBillRecordEt(curDbEt)) {
-                     delBillRecord(curDbEt.getRecordId());
+                 if(lastDbEt != null && isBillRecordEt(lastDbEt)) {
+                     delBillRecord(lastDbEt.getRecordId());
                  }
                  break;
              case R.id.btn_create_new_bill:
@@ -367,22 +367,22 @@ public class BillPleaseActivity extends FragmentActivity {
          if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
              taxSum = subtotalSum.multiply(etTax.getValue().divide(BigDecimal.valueOf(100.0), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
 
-             if(!etTax.equals(curDbEt)) {
-                 redrawDbEditTextValue(etTax, true);
+             if(!etTax.equals(lastDbEt)) {
+                etTax.pullFromDb();
              }
 
-             if(!etTaxSum.equals(curDbEt)) {
+             if(!etTaxSum.equals(lastDbEt)) {
                  syncDbEditTextValue(etTaxSum, taxSum);
              }
          }
          else {
              taxSum = etTaxSum.getValue();
 
-             if(!etTaxSum.equals(curDbEt)) {
-                 redrawDbEditTextValue(etTaxSum, true);
+             if(!etTaxSum.equals(lastDbEt)) {
+                 etTaxSum.pullFromDb();
              }
 
-             if(!etTax.equals(curDbEt)) {
+             if(!etTax.equals(lastDbEt)) {
                  BigDecimal taxPer = BigDecimal.valueOf(0.0);
                  if(subtotalSum.compareTo(BigDecimal.valueOf(0.0)) == 1) {
                      taxPer = taxSum.multiply(BigDecimal.valueOf(100.0)).divide(subtotalSum, bigValuesScale, BIG_VALUES_ROUNDING_MODE);
@@ -403,22 +403,22 @@ public class BillPleaseActivity extends FragmentActivity {
          if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
              tipSum = subtotalSum.multiply(etTip.getValue().divide(BigDecimal.valueOf(100.0), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
 
-             if(!etTip.equals(curDbEt)) {
-                 redrawDbEditTextValue(etTip, true);
+             if(!etTip.equals(lastDbEt)) {
+                 etTip.pullFromDb();
              }
 
-             if(!etTipSum.equals(curDbEt)) {
+             if(!etTipSum.equals(lastDbEt)) {
                  syncDbEditTextValue(etTipSum, tipSum);
              }
          }
          else {
              tipSum = etTipSum.getValue();
 
-             if(!etTipSum.equals(curDbEt)) {
-                 redrawDbEditTextValue(etTipSum, true);
+             if(!etTipSum.equals(lastDbEt)) {
+                 etTipSum.pullFromDb();
              }
 
-             if(!etTip.equals(curDbEt)) {
+             if(!etTip.equals(lastDbEt)) {
                  BigDecimal tipPer = BigDecimal.valueOf(0.0);
                  if(subtotalSum.compareTo(BigDecimal.valueOf(0.0)) == 1) {
                      tipPer = tipSum.multiply(BigDecimal.valueOf(100.0)).divide(subtotalSum, bigValuesScale, BIG_VALUES_ROUNDING_MODE);
@@ -486,7 +486,7 @@ public class BillPleaseActivity extends FragmentActivity {
          if(et != null) {
              et.setRecordId(recordId);
              et.setDefValue(defValueStr);
-             redrawDbEditTextValue(et, false);
+             et.pullFromDb();
              et.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
              et.addTextChangedListener(billPleaseTextWatcher);
              et.setOnEditorActionListener(billPleaseOnEditorActionListener);
@@ -506,15 +506,6 @@ public class BillPleaseActivity extends FragmentActivity {
              timer.cancel();
              et.syncValue(value);
              timer.cancel();
-         }
-     }
-
-     private void redrawDbEditTextValue(AbstractDbEditText et, boolean cancelTimer) {
-         if(et != null) {
-             et.pullFromDb();
-             if(cancelTimer) {
-                 timer.cancel();
-             }
          }
      }
 
@@ -602,11 +593,15 @@ public class BillPleaseActivity extends FragmentActivity {
                              llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.GONE);
                          }
 
-                         curDbEt = (BillDbEditText) view;
+                         lastDbEt = (BillDbEditText) view;
                      }
-                     else {//TODO input enabled
+                     else {
+                         timer.cancel();
                          if(llBillRecords.findViewWithTag(view.getTag()).equals(llBillRecords.getChildAt(llBillRecords.getChildCount() - 1))) {
-                             addBillRecord();
+                             Editable curDbEtEditableText = ((EditText) view).getText();
+                             if(curDbEtEditableText != null && curDbEtEditableText.length() > 0) {
+                                 addBillRecord();
+                             }
                          }
 
                          syncDbEditTextValue((BillDbEditText) view);
@@ -621,21 +616,18 @@ public class BillPleaseActivity extends FragmentActivity {
                  case R.id.et_tax:
                  case R.id.et_tax_sum:
                      if(hasFocus) {
-                         if(curDbEt != null) {
-                             switch(curDbEt.getId()) {
+                         if(lastDbEt != null) {
+                             switch(lastDbEt.getId()) {
                                  case R.id.et_tip:
                                  case R.id.et_tip_sum:
-                                     curDbEt = (BillValuesDbEditText) view;
                                      redrawTipSum(calcSubtotalSum());
                                      break;
                                  default:
-                                     curDbEt = (BillValuesDbEditText) view;
                                      break;
                              }
                          }
-                         else {
-                             curDbEt = (BillValuesDbEditText) view;
-                         }
+
+                         lastDbEt = (BillValuesDbEditText) view;
                      }
                      else {
                          syncDbEditTextValue((BillValuesDbEditText) view);
@@ -646,21 +638,18 @@ public class BillPleaseActivity extends FragmentActivity {
                  case R.id.et_tip:
                  case R.id.et_tip_sum:
                      if(hasFocus) {
-                         if(curDbEt != null) {
-                             switch(curDbEt.getId()) {
+                         if(lastDbEt != null) {
+                             switch(lastDbEt.getId()) {
                                  case R.id.et_tax:
                                  case R.id.et_tax_sum:
-                                     curDbEt = (BillValuesDbEditText) view;
                                      redrawTaxSum(calcSubtotalSum());
                                      break;
                                  default:
-                                     curDbEt = (BillValuesDbEditText) view;
                                      break;
                              }
                          }
-                         else {
-                             curDbEt = (BillValuesDbEditText) view;
-                         }
+
+                         lastDbEt = (BillValuesDbEditText) view;
                      }
                      else {
                          syncDbEditTextValue((BillValuesDbEditText) view);
@@ -670,21 +659,21 @@ public class BillPleaseActivity extends FragmentActivity {
                      break;
                  case R.id.et_hidden:
                      if(hasFocus) {
-                         hideSoftKeyboard(curDbEt);
+                         hideSoftKeyboard(lastDbEt);
 
-                         switch(curDbEt.getId()) {
+                         switch(lastDbEt.getId()) {
                              case R.id.et_tax:
                              case R.id.et_tax_sum:
-                                 curDbEt = null;
+                                 lastDbEt = null;
                                  redrawTaxSum(calcSubtotalSum());
                                  break;
                              case R.id.et_tip:
                              case R.id.et_tip_sum:
-                                 curDbEt = null;
+                                 lastDbEt = null;
                                  redrawTipSum(calcSubtotalSum());
                                  break;
                              default:
-                                 curDbEt = null;
+                                 lastDbEt = null;
                                  break;
                          }
                      }
@@ -708,11 +697,11 @@ public class BillPleaseActivity extends FragmentActivity {
 
                      dbBillPleaseTableBillValuesManager.setColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN, true);
 
-                     if(curDbEt == null) {
+                     if(lastDbEt == null) {
                          redrawTaxSum(calcSubtotalSum());
                      }
                      else {
-                         switch(curDbEt.getId()) {
+                         switch(lastDbEt.getId()) {
                              case R.id.et_tip:
                              case R.id.et_tip_sum:
                                  redrawTaxSum(calcSubtotalSum());
@@ -732,11 +721,11 @@ public class BillPleaseActivity extends FragmentActivity {
 
                      dbBillPleaseTableBillValuesManager.setColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN, false);
 
-                     if(curDbEt == null) {
+                     if(lastDbEt == null) {
                          redrawTaxSum(calcSubtotalSum());
                      }
                      else {
-                         switch(curDbEt.getId()) {
+                         switch(lastDbEt.getId()) {
                              case R.id.et_tip:
                              case R.id.et_tip_sum:
                                  redrawTaxSum(calcSubtotalSum());
@@ -756,11 +745,11 @@ public class BillPleaseActivity extends FragmentActivity {
 
                      dbBillPleaseTableBillValuesManager.setColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN, true);
 
-                     if(curDbEt == null) {
+                     if(lastDbEt == null) {
                          redrawTipSum(calcSubtotalSum());
                      }
                      else {
-                         switch(curDbEt.getId()) {
+                         switch(lastDbEt.getId()) {
                              case R.id.et_tax:
                              case R.id.et_tax_sum:
                                  redrawTipSum(calcSubtotalSum());
@@ -780,11 +769,11 @@ public class BillPleaseActivity extends FragmentActivity {
 
                      dbBillPleaseTableBillValuesManager.setColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN, false);
 
-                     if(curDbEt == null) {
+                     if(lastDbEt == null) {
                          redrawTipSum(calcSubtotalSum());
                      }
                      else {
-                         switch(curDbEt.getId()) {
+                         switch(lastDbEt.getId()) {
                              case R.id.et_tax:
                              case R.id.et_tax_sum:
                                  redrawTipSum(calcSubtotalSum());
@@ -818,12 +807,14 @@ public class BillPleaseActivity extends FragmentActivity {
          @Override
          public void onTextChanged(CharSequence s, int start, int before, int count) {
              timer.cancel();
-             timer = new Timer();
 
-             try {
-                 timer.schedule(new PushToDbTimerTask(), getResources().getInteger(R.integer.push_to_db_delay_millisecs));
+             if(lastDbEt != null && lastDbEt.isFocused()) {
+                 timer = new Timer();
+                 try {
+                     timer.schedule(new PushToDbTimerTask(), getResources().getInteger(R.integer.push_to_db_delay_millisecs));
+                 }
+                 catch(Exception ignored) {}
              }
-             catch(Exception ignored) {}
          }
 
          @Override
@@ -876,7 +867,7 @@ public class BillPleaseActivity extends FragmentActivity {
 
              BillValuesDbEditText dbEtDefShare = (BillValuesDbEditText) dlgCreateNewBillLlv.findViewById(R.id.et_def_share);
              dbEtDefShare.setRecordId(valuesRecordId);
-             redrawDbEditTextValue(dbEtDefShare, false);
+             dbEtDefShare.pullFromDb();
 
              builder.setView(dlgCreateNewBillLlv);
 
@@ -912,30 +903,20 @@ public class BillPleaseActivity extends FragmentActivity {
      private class PushToDbTimerTask extends TimerTask {
          @Override
          public void run() {
-             if(curDbEt != null) {
-                 switch(curDbEt.getId()) {
-                     case R.id.et_item_name:
-                     case R.id.et_cost:
-                     case R.id.et_share:
-                         /*if(llBillRecords.findViewWithTag(curDbEt.getTag()).equals(llBillRecords.getChildAt(llBillRecords.getChildCount() - 1)) && curDbEt.isInputRegistered()) {
-                             addBillRecord();
-                         }*/
-
-                         curDbEt.pushToDb();
-                         redrawAllSums();
-                         break;
+             if(lastDbEt != null) {
+                 switch(lastDbEt.getId()) {
                      case R.id.et_tax:
                      case R.id.et_tax_sum:
-                         curDbEt.pushToDb();
+                         lastDbEt.pushToDb();
                          redrawTaxSum(calcSubtotalSum());
                          break;
                      case R.id.et_tip:
                      case R.id.et_tip_sum:
-                         curDbEt.pushToDb();
+                         lastDbEt.pushToDb();
                          redrawTipSum(calcSubtotalSum());
                          break;
                      default:
-                         curDbEt.pushToDb();
+                         lastDbEt.pushToDb();
                          redrawAllSums();
                          break;
                  }
@@ -945,7 +926,7 @@ public class BillPleaseActivity extends FragmentActivity {
 
      private LinearLayout llActionBar;
      private LinearLayout llBillRecords;
-     private AbstractDbEditText curDbEt;
+     private AbstractDbEditText lastDbEt;
      private View etHidden;
      private int exMotionEvent;
      private BillPleaseOnFocusChangeListener billPleaseOnFocusChangeListener;

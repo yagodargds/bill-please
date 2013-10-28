@@ -21,6 +21,7 @@
                     android:hint="@string/lbl_item_name"
                     android:textColorHint="@color/bill_record_et_hint_text"
                     app:tableName="bill"
+                    app:tableColumnName="item_name"
                     app:hintTypeface="italic"
                     app:hintShowDefValue="false"
                     style="@style/input_etv" />
