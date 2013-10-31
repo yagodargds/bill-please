@@ -163,7 +163,7 @@
 
                      <LinearLayout
                          android:id="@+id/ll_tax"
-                         android:layout_height="@dimen/check_box_height"
+                         android:layout_height="@dimen/checkbox_height"
                          android:background="@drawable/check_box_not_checked_rect"
                          style="@style/fill_horizontal_llv">
 
@@ -185,9 +185,9 @@
 
                      </LinearLayout>
 
-                     <TextView
-                         android:id="@+id/tv_tax_main"
-                         style="@style/check_box_tv" />
+                     <CheckBox
+                         android:id="@+id/chk_tax_main"
+                         style="@style/check_box_v" />
 
                  </LinearLayout>
 
@@ -196,7 +196,7 @@
 
                      <LinearLayout
                          android:id="@+id/ll_tax_sum"
-                         android:layout_height="@dimen/check_box_height"
+                         android:layout_height="@dimen/checkbox_height"
                          android:background="@drawable/check_box_not_checked_rect"
                          style="@style/fill_horizontal_llv">
 
@@ -218,9 +218,9 @@
 
                      </LinearLayout>
 
-                     <TextView
-                         android:id="@+id/tv_tax_sum_main"
-                         style="@style/check_box_tv" />
+                     <CheckBox
+                         android:id="@+id/chk_tax_sum_main"
+                         style="@style/check_box_v" />
 
                  </LinearLayout>
 
@@ -265,7 +265,7 @@
 
                      <LinearLayout
                          android:id="@+id/ll_tip"
-                         android:layout_height="@dimen/check_box_height"
+                         android:layout_height="@dimen/checkbox_height"
                          android:background="@drawable/check_box_not_checked_rect"
                          style="@style/fill_horizontal_llv">
 
@@ -287,9 +287,9 @@
 
                      </LinearLayout>
 
-                     <TextView
-                         android:id="@+id/tv_tip_main"
-                         style="@style/check_box_tv" />
+                     <CheckBox
+                         android:id="@+id/chk_tip_main"
+                         style="@style/check_box_v" />
 
                  </LinearLayout>
 
@@ -298,7 +298,7 @@
 
                      <LinearLayout
                          android:id="@+id/ll_tip_sum"
-                         android:layout_height="@dimen/check_box_height"
+                         android:layout_height="@dimen/checkbox_height"
                          android:background="@drawable/check_box_not_checked_rect"
                          style="@style/fill_horizontal_llv">
 
@@ -320,9 +320,9 @@
 
                      </LinearLayout>
 
-                     <TextView
-                         android:id="@+id/tv_tip_sum_main"
-                         style="@style/check_box_tv" />
+                     <CheckBox
+                         android:id="@+id/chk_tip_sum_main"
+                         style="@style/check_box_v" />
 
                  </LinearLayout>
 

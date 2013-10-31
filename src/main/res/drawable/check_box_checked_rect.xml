@@ -7,7 +7,11 @@
         android:color="@color/check_box_checked" />
 
     <stroke
-        android:width="@dimen/check_box_stroke_width"
+        android:width="@dimen/checkbox_stroke_width"
         android:color="@color/sky_blue_darkest" />
+
+    <size
+        android:height="@dimen/checkbox_height"
+        android:width="@dimen/checkbox_width" />
 
 </shape>
