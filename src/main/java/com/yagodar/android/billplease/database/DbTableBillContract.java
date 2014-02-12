@@ -1,13 +1,12 @@
 package com.yagodar.android.billplease.database;
 
-import com.yagodar.android.database.sqlite.DbTableBaseContract;
-import com.yagodar.android.database.sqlite.DbTableColumn;
+import com.yagodar.android.database.sqlite.AbstractDbTableContract;
 
 /**
  * Created by Yagodar on 23.08.13.
  */
-public class DbBillPleaseTableBillContract extends DbTableBaseContract {
-    private DbBillPleaseTableBillContract() {
+public class DbTableBillContract extends AbstractDbTableContract {
+    private DbTableBillContract() {
         super(TABLE_NAME);
 
         addDbTableColumn(true, _ID);
@@ -16,9 +15,9 @@ public class DbBillPleaseTableBillContract extends DbTableBaseContract {
         addDbTableColumn(COLUMN_NAME_SHARE, DEF_VAL_SHARE);
     }
 
-    public static DbBillPleaseTableBillContract getInstance() {
+    public static DbTableBillContract getInstance() {
         if(INSTANCE == null) {
-            INSTANCE = new DbBillPleaseTableBillContract();
+            INSTANCE = new DbTableBillContract();
         }
 
         return INSTANCE;
@@ -34,5 +33,5 @@ public class DbBillPleaseTableBillContract extends DbTableBaseContract {
 
     private static final String TABLE_NAME = "bill";
 
-    private static DbBillPleaseTableBillContract INSTANCE;
+    private static DbTableBillContract INSTANCE;
 }

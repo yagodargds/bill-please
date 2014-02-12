@@ -1,402 +1,536 @@
 <?xml version="1.0" encoding="utf-8"?>
- <LinearLayout
-     xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:app="http://schemas.android.com/apk/res-auto"
-     style="@style/app_llv" >
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/app_llv" >
+
+    <LinearLayout
+        style="@style/action_bar_llv" >
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:src="@android:drawable/sym_def_app_icon"
+            style="@style/icon_v" />
+
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:text="@string/app_name"
+            style="@style/app_name_tv" />
+
+        <TextView
+            style="@style/fill_v" />
+
+        <LinearLayout
+            android:id="@+id/ll_action_bar_icons"
+            android:layout_width="wrap_content"
+            style="@style/horizontal_linear_layout_v" >
+
+            <ImageButton
+                android:id="@+id/btn_del_bill_record"
+                android:contentDescription="@string/btn_lbl_del_bill_record"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:visibility="gone"
+                style="@style/button_icon_v" />
+
+            <ImageButton
+                android:id="@+id/btn_create_new_bill"
+                android:contentDescription="@string/btn_lbl_create_new_bill"
+                android:src="@android:drawable/ic_menu_delete"
+                style="@style/button_icon_v" />
+
+            <ImageButton
+                android:id="@+id/btn_share_bill"
+                android:contentDescription="@string/btn_lbl_share_bill"
+                android:src="@android:drawable/ic_menu_share"
+                style="@style/button_icon_v" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/sv_bill_rows"
+        android:layout_weight="1"
+        style="@style/app_v" >
+
+        <LinearLayout
+            style="@style/vertical_linear_layout_v" >
+
+            <LinearLayout
+                android:id="@+id/ll_bill_records"
+                style="@style/vertical_linear_layout_v" />
+
+            <LinearLayout
+                style="@style/app_row_llv" >
+
+                <TextView
+                    style="@style/screen_edge_intent_tv" />
+
+                <LinearLayout
+                    style="@style/zone_content_horizontal_llv" >
+
+                    <LinearLayout
+                        style="@style/zone_item_name_horizontal_llv" >
+
+                        <CheckBox
+                            android:id="@+id/chk_all_records"
+                            android:tag="@string/tag_footer_record"
+                            style="@style/check_box_v" />
+
+                        <TextView
+                            style="@style/alignment_v" />
+
+                        <com.yagodar.android.billplease.custom.DbEditText
+                            android:id="@+id/et_def_item_name"
+                            android:textColor="@color/bill_record_et_text"
+                            android:hint="@string/lbl_item_name"
+                            android:textColorHint="@color/bill_record_et_hint_text"
+                            app:tableName="bill"
+                            app:tableColumnName="item_name"
+                            app:defValueStr="@string/lbl_item_name"
+                            app:hintTypeface="italic"
+                            style="@style/input_etv" />
+
+                        <TextView
+                            style="@style/alignment_v" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/zone_tax_tip_horizontal_llv" >
+
+                        <LinearLayout
+                            style="@style/half_horizontal_llv">
 
-     <LinearLayout
-         style="@style/action_bar_llv" >
+                            <TextView
+                                style="@style/alignment_v" />
 
-         <ImageView
-             android:id="@+id/iv_icon"
-             android:src="@android:drawable/sym_def_app_icon"
-             style="@style/icon_v" />
+                            <com.yagodar.android.billplease.custom.DbEditText
+                                android:id="@+id/et_def_cost"
+                                android:textColor="@color/bill_record_et_text"
+                                android:hint="@string/lbl_cost"
+                                android:textColorHint="@color/bill_record_et_hint_text"
+                                android:tag="@string/tag_footer_record"
+                                app:tableName="bill_values"
+                                app:tableColumnName="def_cost"
+                                app:valueType="real"
+                                app:defValueStr="@string/min_cost_double"
+                                app:minValueStr="@string/min_cost_double"
+                                app:minFractionDigits="@integer/min_fraction_digits"
+                                app:maxFractionDigits="@integer/max_fraction_digits"
+                                app:hintTypeface="italic"
+                                style="@style/number_decimal_etv" />
 
-         <TextView
-             android:id="@+id/tv_app_name"
-             android:text="@string/app_name"
-             style="@style/app_name_tv" />
+                            <TextView
+                                style="@style/alignment_v" />
 
-         <TextView
-             style="@style/fill_v" />
+                        </LinearLayout>
 
-         <LinearLayout
-             android:id="@+id/ll_action_bar_icons"
-             android:layout_width="wrap_content"
-             style="@style/horizontal_linear_layout_v" >
+                        <LinearLayout
+                            style="@style/half_horizontal_llv">
 
-             <ImageButton
-                 android:id="@+id/btn_del_bill_record"
-                 android:contentDescription="@string/btn_lbl_del_bill_record"
-                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                 android:visibility="gone"
-                 style="@style/button_icon_v" />
+                            <TextView
+                                style="@style/alignment_v" />
 
-             <ImageButton
-                 android:id="@+id/btn_create_new_bill"
-                 android:contentDescription="@string/btn_lbl_create_new_bill"
-                 android:src="@android:drawable/ic_menu_delete"
-                 style="@style/button_icon_v" />
+                            <com.yagodar.android.billplease.custom.DbEditText
+                                android:id="@+id/et_def_share"
+                                android:textColor="@color/bill_record_et_text"
+                                android:hint="@string/lbl_share"
+                                android:textColorHint="@color/bill_record_et_hint_text"
+                                android:tag="@string/tag_footer_record"
+                                app:tableName="bill_values"
+                                app:tableColumnName="def_share"
+                                app:valueType="integer"
+                                app:defValueStr="@string/min_share_int"
+                                app:minValueStr="@string/min_share_int"
+                                app:hintTypeface="italic"
+                                style="@style/number_etv" />
 
-             <ImageButton
-                 android:id="@+id/btn_share_bill"
-                 android:contentDescription="@string/btn_lbl_share_bill"
-                 android:src="@android:drawable/ic_menu_share"
-                 style="@style/button_icon_v" />
+                            <TextView
+                                style="@style/alignment_v" />
 
-         </LinearLayout>
+                        </LinearLayout>
 
-     </LinearLayout>
+                    </LinearLayout>
 
-     <ScrollView
-         android:id="@+id/sv_bill_rows"
-         android:layout_weight="1"
-         style="@style/app_v" >
+                </LinearLayout>
 
-         <LinearLayout
-             style="@style/vertical_linear_layout_v" >
+                <TextView
+                    style="@style/screen_edge_intent_tv" />
 
-             <LinearLayout
-                 android:id="@+id/ll_bill_records"
-                 style="@style/vertical_linear_layout_v" />
+            </LinearLayout>
 
-             <ImageButton
-                 android:id="@+id/btn_add_new_bill_record"
-                 android:contentDescription="@string/btn_lbl_add_new_bill_record"
-                 android:src="@android:drawable/ic_menu_add"
-                 android:layout_gravity="center"
-                 android:visibility="gone"
-                 style="@style/button_icon_v" />
+            <LinearLayout
+                style="@style/app_row_llv" >
 
-         </LinearLayout>
+                <TextView
+                    style="@style/screen_edge_intent_tv" />
 
-     </ScrollView>
+                <LinearLayout
+                    style="@style/zone_content_horizontal_llv" >
 
-     <LinearLayout
-         style="@style/footer_llv" >
+                    <LinearLayout
+                        style="@style/zone_item_name_horizontal_llv" >
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+                        <TextView
+                            android:layout_width="@dimen/checkbox_total_width"
+                            style="@style/fill_blank_v" />
 
-         <LinearLayout
-             style="@style/zone_content_horizontal_llv" >
+                        <TextView
+                            style="@style/alignment_v" />
 
-             <LinearLayout
-                 style="@style/zone_item_name_horizontal_llv" >
+                        <ImageButton
+                            android:id="@+id/btn_add_new_bill_record"
+                            android:contentDescription="@string/btn_lbl_add_new_bill_record"
+                            android:src="@android:drawable/ic_menu_add"
+                            android:layout_gravity="center"
+                            android:tag="@string/tag_footer_record"
+                            style="@style/button_icon_v" />
 
-                 <TextView
-                     style="@style/alignment_v" />
+                        <TextView
+                            style="@style/alignment_v" />
 
-                 <TextView
-                     android:text="@string/lbl_subtotal"
-                     style="@style/footer_tv_lbl" />
+                    </LinearLayout>
 
-                 <TextView
-                     style="@style/alignment_v" />
+                    <LinearLayout
+                        style="@style/zone_tax_tip_horizontal_llv" />
 
-             </LinearLayout>
+                </LinearLayout>
 
-             <LinearLayout
-                 style="@style/zone_tax_tip_horizontal_llv" >
+                <TextView
+                    style="@style/screen_edge_intent_tv" />
 
-                 <TextView
-                     style="@style/fill_v" />
+            </LinearLayout>
 
-                 <HorizontalScrollView
-                     style="@style/horizontal_scroll_v_totals">
+        </LinearLayout>
 
-                     <LinearLayout
-                         style="@style/horizontal_linear_layout_v" >
+    </ScrollView>
 
-                         <TextView
-                             android:id="@+id/tv_subtotal_sum"
-                             style="@style/footer_tv" />
+    <LinearLayout
+        style="@style/footer_llv" >
 
-                         <TextView
-                             style="@style/fill_blank_v" />
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-                     </LinearLayout>
+        <LinearLayout
+            style="@style/zone_content_horizontal_llv" >
 
-                 </HorizontalScrollView>
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
 
-                 <TextView
-                     style="@style/sub_total_intent_fill_v" />
+                <TextView
+                    style="@style/alignment_v" />
 
-             </LinearLayout>
+                <TextView
+                    android:text="@string/lbl_subtotal"
+                    style="@style/footer_tv_lbl" />
 
-         </LinearLayout>
+                <TextView
+                    style="@style/alignment_v" />
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+            </LinearLayout>
 
-     </LinearLayout>
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
 
-     <LinearLayout
-         style="@style/footer_llv" >
+                <TextView
+                    style="@style/fill_v" />
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+                <HorizontalScrollView
+                    style="@style/horizontal_scroll_v_totals">
 
-         <LinearLayout
-             style="@style/zone_content_horizontal_llv">
+                    <LinearLayout
+                        style="@style/horizontal_linear_layout_v" >
 
-             <LinearLayout
-                 style="@style/zone_item_name_horizontal_llv" >
+                        <TextView
+                            android:id="@+id/tv_subtotal_sum"
+                            style="@style/footer_tv" />
 
-                 <TextView
-                     style="@style/alignment_v" />
+                        <TextView
+                            style="@style/fill_blank_v" />
 
-                 <TextView
-                     android:text="@string/lbl_tax"
-                     style="@style/footer_tv_lbl" />
+                    </LinearLayout>
 
-                 <TextView
-                     style="@style/alignment_v" />
+                </HorizontalScrollView>
 
-             </LinearLayout>
+                <TextView
+                    style="@style/sub_total_intent_fill_v" />
 
-             <LinearLayout
-                 style="@style/zone_tax_tip_horizontal_llv" >
+            </LinearLayout>
 
-                 <LinearLayout
-                     style="@style/half_horizontal_llv">
+        </LinearLayout>
 
-                     <LinearLayout
-                         android:id="@+id/ll_tax"
-                         android:layout_height="@dimen/checkbox_height"
-                         android:background="@drawable/check_box_not_checked_rect"
-                         style="@style/fill_horizontal_llv">
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-                         <TextView
-                             style="@style/fill_v" />
+    </LinearLayout>
 
-                         <com.yagodar.android.billplease.custom.BillValuesDbEditText
-                             android:id="@+id/et_tax"
-                             app:tableName="bill_values"
-                             app:tableColumnName="tax_per"
-                             app:valueType="real"
-                             app:defValueStr="@string/min_tax_double"
-                             app:minValueStr="@string/min_tax_double"
-                             app:minFractionDigits="@integer/min_fraction_digits"
-                             app:maxFractionDigits="@integer/max_fraction_digits"
-                             app:hintTypeface="italic"
-                             app:hintShowDefValue="false"
-                             style="@style/tax_tip_etv" />
+    <LinearLayout
+        style="@style/footer_llv" >
 
-                     </LinearLayout>
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-                     <CheckBox
-                         android:id="@+id/chk_tax_main"
-                         style="@style/check_box_v" />
+        <LinearLayout
+            style="@style/zone_content_horizontal_llv">
 
-                 </LinearLayout>
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
 
-                 <LinearLayout
-                     style="@style/half_horizontal_llv">
+                <TextView
+                    style="@style/alignment_v" />
 
-                     <LinearLayout
-                         android:id="@+id/ll_tax_sum"
-                         android:layout_height="@dimen/checkbox_height"
-                         android:background="@drawable/check_box_not_checked_rect"
-                         style="@style/fill_horizontal_llv">
+                <TextView
+                    android:text="@string/lbl_tax"
+                    style="@style/footer_tv_lbl" />
 
-                         <TextView
-                             style="@style/fill_v" />
+                <TextView
+                    style="@style/alignment_v" />
 
-                         <com.yagodar.android.billplease.custom.BillValuesDbEditText
-                             android:id="@+id/et_tax_sum"
-                             app:tableName="bill_values"
-                             app:tableColumnName="tax_sum"
-                             app:valueType="real"
-                             app:defValueStr="@string/min_tax_double"
-                             app:minValueStr="@string/min_tax_double"
-                             app:minFractionDigits="@integer/min_fraction_digits"
-                             app:maxFractionDigits="@integer/max_fraction_digits"
-                             app:hintTypeface="italic"
-                             app:hintShowDefValue="false"
-                             style="@style/tax_tip_etv" />
+            </LinearLayout>
 
-                     </LinearLayout>
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
 
-                     <CheckBox
-                         android:id="@+id/chk_tax_sum_main"
-                         style="@style/check_box_v" />
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
 
-                 </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_tax"
+                        android:layout_height="@dimen/checkbox_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
 
-             </LinearLayout>
+                        <TextView
+                            style="@style/fill_v" />
 
-         </LinearLayout>
+                        <com.yagodar.android.billplease.custom.DbEditText
+                            android:id="@+id/et_tax"
+                            app:tableName="bill_values"
+                            app:tableColumnName="tax_per"
+                            app:valueType="real"
+                            app:defValueStr="@string/min_tax_double"
+                            app:minValueStr="@string/min_tax_double"
+                            app:minFractionDigits="@integer/min_fraction_digits"
+                            app:maxFractionDigits="@integer/max_fraction_digits"
+                            app:hintTypeface="italic"
+                            app:hintShowDefValue="false"
+                            style="@style/tax_tip_etv" />
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+                    </LinearLayout>
 
-     </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/chk_tax_main"
+                        style="@style/check_box_v" />
 
-     <LinearLayout
-         style="@style/footer_llv" >
+                </LinearLayout>
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
 
-         <LinearLayout
-             style="@style/zone_content_horizontal_llv" >
+                    <LinearLayout
+                        android:id="@+id/ll_tax_sum"
+                        android:layout_height="@dimen/checkbox_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
 
-             <LinearLayout
-                 style="@style/zone_item_name_horizontal_llv" >
+                        <TextView
+                            style="@style/fill_v" />
 
-                 <TextView
-                     style="@style/alignment_v" />
+                        <com.yagodar.android.billplease.custom.DbEditText
+                            android:id="@+id/et_tax_sum"
+                            app:tableName="bill_values"
+                            app:tableColumnName="tax_sum"
+                            app:valueType="real"
+                            app:defValueStr="@string/min_tax_double"
+                            app:minValueStr="@string/min_tax_double"
+                            app:minFractionDigits="@integer/min_fraction_digits"
+                            app:maxFractionDigits="@integer/max_fraction_digits"
+                            app:hintTypeface="italic"
+                            app:hintShowDefValue="false"
+                            style="@style/tax_tip_etv" />
 
-                 <TextView
-                     android:text="@string/lbl_tip"
-                     style="@style/footer_tv_lbl" />
+                    </LinearLayout>
 
-                 <TextView
-                     style="@style/alignment_v" />
+                    <CheckBox
+                        android:id="@+id/chk_tax_sum_main"
+                        style="@style/check_box_v" />
 
-             </LinearLayout>
+                </LinearLayout>
 
-             <LinearLayout
-                 style="@style/zone_tax_tip_horizontal_llv" >
+            </LinearLayout>
 
-                 <LinearLayout
-                     style="@style/half_horizontal_llv">
+        </LinearLayout>
 
-                     <LinearLayout
-                         android:id="@+id/ll_tip"
-                         android:layout_height="@dimen/checkbox_height"
-                         android:background="@drawable/check_box_not_checked_rect"
-                         style="@style/fill_horizontal_llv">
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-                         <TextView
-                             style="@style/fill_v" />
+    </LinearLayout>
 
-                         <com.yagodar.android.billplease.custom.BillValuesDbEditText
-                             android:id="@+id/et_tip"
-                             app:tableName="bill_values"
-                             app:tableColumnName="tip_per"
-                             app:valueType="real"
-                             app:defValueStr="@string/def_tip_per_double"
-                             app:minValueStr="@string/min_tip_double"
-                             app:minFractionDigits="@integer/min_fraction_digits"
-                             app:maxFractionDigits="@integer/max_fraction_digits"
-                             app:hintTypeface="italic"
-                             app:hintShowDefValue="false"
-                             style="@style/tax_tip_etv" />
+    <LinearLayout
+        style="@style/footer_llv" >
 
-                     </LinearLayout>
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-                     <CheckBox
-                         android:id="@+id/chk_tip_main"
-                         style="@style/check_box_v" />
+        <LinearLayout
+            style="@style/zone_content_horizontal_llv" >
 
-                 </LinearLayout>
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
 
-                 <LinearLayout
-                     style="@style/half_horizontal_llv">
+                <TextView
+                    style="@style/alignment_v" />
 
-                     <LinearLayout
-                         android:id="@+id/ll_tip_sum"
-                         android:layout_height="@dimen/checkbox_height"
-                         android:background="@drawable/check_box_not_checked_rect"
-                         style="@style/fill_horizontal_llv">
+                <TextView
+                    android:text="@string/lbl_tip"
+                    style="@style/footer_tv_lbl" />
 
-                         <TextView
-                             style="@style/fill_v" />
+                <TextView
+                    style="@style/alignment_v" />
 
-                         <com.yagodar.android.billplease.custom.BillValuesDbEditText
-                             android:id="@+id/et_tip_sum"
-                             app:tableName="bill_values"
-                             app:tableColumnName="tip_sum"
-                             app:valueType="real"
-                             app:defValueStr="@string/min_tip_double"
-                             app:minValueStr="@string/min_tip_double"
-                             app:minFractionDigits="@integer/min_fraction_digits"
-                             app:maxFractionDigits="@integer/max_fraction_digits"
-                             app:hintTypeface="italic"
-                             app:hintShowDefValue="false"
-                             style="@style/tax_tip_etv" />
+            </LinearLayout>
 
-                     </LinearLayout>
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
 
-                     <CheckBox
-                         android:id="@+id/chk_tip_sum_main"
-                         style="@style/check_box_v" />
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
 
-                 </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_tip"
+                        android:layout_height="@dimen/checkbox_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
 
-             </LinearLayout>
+                        <TextView
+                            style="@style/fill_v" />
 
-         </LinearLayout>
+                        <com.yagodar.android.billplease.custom.DbEditText
+                            android:id="@+id/et_tip"
+                            app:tableName="bill_values"
+                            app:tableColumnName="tip_per"
+                            app:valueType="real"
+                            app:defValueStr="@string/def_tip_per_double"
+                            app:minValueStr="@string/min_tip_double"
+                            app:minFractionDigits="@integer/min_fraction_digits"
+                            app:maxFractionDigits="@integer/max_fraction_digits"
+                            app:hintTypeface="italic"
+                            app:hintShowDefValue="false"
+                            style="@style/tax_tip_etv" />
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+                    </LinearLayout>
 
-     </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/chk_tip_main"
+                        style="@style/check_box_v" />
 
-     <LinearLayout
-         style="@style/footer_total_llv" >
+                </LinearLayout>
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+                <LinearLayout
+                    style="@style/half_horizontal_llv">
 
-         <LinearLayout
-             style="@style/zone_content_horizontal_llv" >
+                    <LinearLayout
+                        android:id="@+id/ll_tip_sum"
+                        android:layout_height="@dimen/checkbox_height"
+                        android:background="@drawable/check_box_not_checked_rect"
+                        style="@style/fill_horizontal_llv">
 
-             <LinearLayout
-                 style="@style/zone_item_name_horizontal_llv" >
+                        <TextView
+                            style="@style/fill_v" />
 
-                 <TextView
-                     style="@style/alignment_v" />
+                        <com.yagodar.android.billplease.custom.DbEditText
+                            android:id="@+id/et_tip_sum"
+                            app:tableName="bill_values"
+                            app:tableColumnName="tip_sum"
+                            app:valueType="real"
+                            app:defValueStr="@string/min_tip_double"
+                            app:minValueStr="@string/min_tip_double"
+                            app:minFractionDigits="@integer/min_fraction_digits"
+                            app:maxFractionDigits="@integer/max_fraction_digits"
+                            app:hintTypeface="italic"
+                            app:hintShowDefValue="false"
+                            style="@style/tax_tip_etv" />
 
-                 <TextView
-                     android:text="@string/lbl_total"
-                     style="@style/footer_tv_total" />
+                    </LinearLayout>
 
-                 <TextView
-                     style="@style/alignment_v" />
+                    <CheckBox
+                        android:id="@+id/chk_tip_sum_main"
+                        style="@style/check_box_v" />
 
-             </LinearLayout>
+                </LinearLayout>
 
-             <LinearLayout
-                 style="@style/zone_tax_tip_horizontal_llv" >
+            </LinearLayout>
 
-                 <TextView
-                     style="@style/fill_v" />
+        </LinearLayout>
 
-                 <HorizontalScrollView
-                     style="@style/horizontal_scroll_v_totals">
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-                     <LinearLayout
-                         style="@style/horizontal_linear_layout_v" >
+    </LinearLayout>
 
-                         <TextView
-                             android:id="@+id/tv_total_sum"
-                             style="@style/footer_tv_total" />
+    <LinearLayout
+        style="@style/footer_total_llv" >
 
-                         <TextView
-                             style="@style/fill_blank_v" />
+        <TextView
+            style="@style/screen_edge_intent_tv" />
 
-                     </LinearLayout>
+        <LinearLayout
+            style="@style/zone_content_horizontal_llv" >
 
-                 </HorizontalScrollView>
+            <LinearLayout
+                style="@style/zone_item_name_horizontal_llv" >
 
-                 <TextView
-                     style="@style/sub_total_intent_fill_v" />
-             </LinearLayout>
+                <TextView
+                    style="@style/alignment_v" />
 
-         </LinearLayout>
+                <TextView
+                    android:text="@string/lbl_total"
+                    style="@style/footer_tv_total" />
 
-         <TextView
-             style="@style/screen_edge_intent_tv" />
+                <TextView
+                    style="@style/alignment_v" />
 
-         <EditText
-             android:id="@+id/et_hidden"
-             style="@style/hidden_etv">
-             <requestFocus />
-         </EditText>
+            </LinearLayout>
 
-     </LinearLayout>
+            <LinearLayout
+                style="@style/zone_tax_tip_horizontal_llv" >
 
- </LinearLayout>
+                <TextView
+                    style="@style/fill_v" />
+
+                <HorizontalScrollView
+                    style="@style/horizontal_scroll_v_totals">
+
+                    <LinearLayout
+                        style="@style/horizontal_linear_layout_v" >
+
+                        <TextView
+                            android:id="@+id/tv_total_sum"
+                            style="@style/footer_tv_total" />
+
+                        <TextView
+                            style="@style/fill_blank_v" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+                <TextView
+                    style="@style/sub_total_intent_fill_v" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/screen_edge_intent_tv" />
+
+        <EditText
+            android:id="@+id/et_hidden"
+            style="@style/hidden_etv">
+            <requestFocus />
+        </EditText>
+
+    </LinearLayout>
+
+</LinearLayout>

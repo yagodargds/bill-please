@@ -12,18 +12,21 @@
             <LinearLayout
                 style="@style/zone_item_name_horizontal_llv" >
 
+                <CheckBox
+                    android:id="@+id/chk_record"
+                    style="@style/check_box_v" />
+
                 <TextView
                     style="@style/alignment_v" />
 
-                <com.yagodar.android.billplease.custom.BillDbEditText
+                <com.yagodar.android.billplease.custom.DbEditText
                     android:id="@+id/et_item_name"
                     android:textColor="@color/bill_record_et_text"
-                    android:hint="@string/lbl_item_name"
                     android:textColorHint="@color/bill_record_et_hint_text"
                     app:tableName="bill"
                     app:tableColumnName="item_name"
+                    app:defValueStr="@string/lbl_item_name"
                     app:hintTypeface="italic"
-                    app:hintShowDefValue="false"
                     style="@style/input_etv" />
 
                 <TextView
@@ -40,10 +43,9 @@
                     <TextView
                         style="@style/alignment_v" />
 
-                    <com.yagodar.android.billplease.custom.BillDbEditText
+                    <com.yagodar.android.billplease.custom.DbEditText
                         android:id="@+id/et_cost"
                         android:textColor="@color/bill_record_et_text"
-                        android:hint="@string/lbl_cost"
                         android:textColorHint="@color/bill_record_et_hint_text"
                         app:tableName="bill"
                         app:tableColumnName="cost"
@@ -66,10 +68,9 @@
                     <TextView
                         style="@style/alignment_v" />
 
-                    <com.yagodar.android.billplease.custom.BillDbEditText
+                    <com.yagodar.android.billplease.custom.DbEditText
                         android:id="@+id/et_share"
                         android:textColor="@color/bill_record_et_text"
-                        android:hint="@string/lbl_share"
                         android:textColorHint="@color/bill_record_et_hint_text"
                         app:tableName="bill"
                         app:tableColumnName="share"

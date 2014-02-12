@@ -23,12 +23,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yagodar.android.billplease.R;
-import com.yagodar.android.billplease.custom.BillDbEditText;
-import com.yagodar.android.billplease.custom.BillValuesDbEditText;
-import com.yagodar.android.billplease.database.DbBillPleaseManager;
-import com.yagodar.android.billplease.database.DbBillPleaseTableBillContract;
-import com.yagodar.android.billplease.database.DbBillPleaseTableBillValuesContract;
-import com.yagodar.android.database.sqlite.DbTableBaseManager;
+import com.yagodar.android.billplease.custom.DbEditText;
+import com.yagodar.android.billplease.database.DbManager;
+import com.yagodar.android.billplease.database.DbTableBillContract;
+import com.yagodar.android.billplease.database.DbTableBillValuesContract;
+import com.yagodar.android.database.sqlite.DbTableManager;
 import com.yagodar.android.database.sqlite.custom.AbstractDbEditText;
 
 import java.math.BigDecimal;
@@ -41,7 +40,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class BillPleaseActivity extends FragmentActivity {
+public class BillActivity extends FragmentActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -75,21 +74,21 @@ public class BillPleaseActivity extends FragmentActivity {
 
         exMotionEvent = NONE_MOTION_EVENT;
 
-        billPleaseOnFocusChangeListener = new BillPleaseOnFocusChangeListener();
-        billPleaseOnTouchListener = new BillPleaseOnTouchListener();
-        billPleaseTextWatcher = new BillPleaseTextWatcher();
-        billPleaseOnEditorActionListener = new BillPleaseOnEditorActionListener();
+        billOnFocusChangeListener = new BillOnFocusChangeListener();
+        billOnTouchListener = new BillOnTouchListener();
+        billTextWatcher = new BillTextWatcher();
+        billOnEditorActionListener = new BillOnEditorActionListener();
 
         createNewBillDialogFragment = new CreateNewBillDialogFragment();
 
-        dbBillPleaseTableBillManager = DbBillPleaseManager.getInstance(this).getDbTableManager(DbBillPleaseTableBillContract.getInstance());
-        dbBillPleaseTableBillValuesManager = DbBillPleaseManager.getInstance(this).getDbTableManager(DbBillPleaseTableBillValuesContract.getInstance());
+        dbTableBillManager = DbManager.getInstance(this).getDbTableManager(DbTableBillContract.getInstance());
+        dbTableBillValuesManager = DbManager.getInstance(this).getDbTableManager(DbTableBillValuesContract.getInstance());
 
-        if(dbBillPleaseTableBillValuesManager.getAllRecords().size() == 0) {
-            valuesRecordId = dbBillPleaseTableBillValuesManager.addRecord();
+        if(dbTableBillValuesManager.getAllRecords().size() == 0) {
+            valuesRecordId = dbTableBillValuesManager.addRecord();
         }
         else {
-            valuesRecordId = dbBillPleaseTableBillValuesManager.getAllRecords().iterator().next().getId();
+            valuesRecordId = dbTableBillValuesManager.getAllRecords().iterator().next().getId();
         }
 
         loadBill();
@@ -106,19 +105,24 @@ public class BillPleaseActivity extends FragmentActivity {
         switch(button.getId()) {
             case R.id.btn_add_new_bill_record:
                 addBillRecord();
-
-                if(lastDbEt != null && isBillRecordEt(lastDbEt)) {
-                    llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
-                }
+                llActionBar.findViewById(R.id.btn_create_new_bill).setVisibility(View.VISIBLE);
+                llActionBar.findViewById(R.id.btn_share_bill).setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_del_bill_record:
                 if(lastDbEt != null && isBillRecordEt(lastDbEt)) {
                     delBillRecord(lastDbEt.getRecordId());
+
+                    if(llBillRecords.getChildCount() == 0) {
+                        llActionBar.findViewById(R.id.btn_create_new_bill).setVisibility(View.GONE);
+                        llActionBar.findViewById(R.id.btn_share_bill).setVisibility(View.GONE);
+                    }
                 }
                 break;
             case R.id.btn_create_new_bill:
                 hideFocus();
                 createNewBillDialogFragment.show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
+                button.setVisibility(View.GONE);
+                llActionBar.findViewById(R.id.btn_share_bill).setVisibility(View.GONE);
                 break;
             case R.id.btn_share_bill:
                 hideFocus();
@@ -152,13 +156,13 @@ public class BillPleaseActivity extends FragmentActivity {
     private void toggleTax(boolean isTaxPerMain) {
         setTaxPerMainChecked(isTaxPerMain);
         setTaxSumMainChecked(!isTaxPerMain);
-        dbBillPleaseTableBillValuesManager.setColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN, isTaxPerMain);
+        dbTableBillValuesManager.setColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN, isTaxPerMain);
     }
 
     private void toggleTip(boolean isTipPerMain) {
         setTipPerMainChecked(isTipPerMain);
         setTipSumMainChecked(!isTipPerMain);
-        dbBillPleaseTableBillValuesManager.setColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN, isTipPerMain);
+        dbTableBillValuesManager.setColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN, isTipPerMain);
     }
 
     private void setTaxPerMainChecked(boolean isChecked) {
@@ -223,8 +227,8 @@ public class BillPleaseActivity extends FragmentActivity {
                 try {
                     billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
                     shareText += ((EditText) billRecordLl.findViewById(R.id.et_item_name)).getText();
-                    cost = ((BillDbEditText<BigDecimal>) billRecordLl.findViewById(R.id.et_cost)).getValue();
-                    share = ((BillDbEditText<BigInteger>) billRecordLl.findViewById(R.id.et_share)).getValue();
+                    cost = ((DbEditText<BigDecimal>) billRecordLl.findViewById(R.id.et_cost)).getValue();
+                    share = ((DbEditText<BigInteger>) billRecordLl.findViewById(R.id.et_share)).getValue();
                     shareText += "\t|\t" + getResources().getString(R.string.lbl_cost) + ":" + decimalFormat.format(cost);
                     shareText += "\t|\t" + getResources().getString(R.string.lbl_share) + ":" + share;
                     shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + decimalFormat.format(cost.divide(new BigDecimal(share), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
@@ -262,45 +266,61 @@ public class BillPleaseActivity extends FragmentActivity {
         llActionBar = ((LinearLayout) findViewById(R.id.ll_action_bar_icons));
 
         etHidden = findViewById(R.id.et_hidden);
-        etHidden.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
+        etHidden.setOnFocusChangeListener(billOnFocusChangeListener);
 
         TypedArray resIds = getResources().obtainTypedArray(R.array.apply_touch_listener_res_ids);
         int resId;
         for(int i = 0; i < resIds.length(); i++) {
             resId = resIds.getResourceId(i, 0);
             if(resId != 0) {
-                findViewById(resId).setOnTouchListener(billPleaseOnTouchListener);
+                findViewById(resId).setOnTouchListener(billOnTouchListener);
             }
         }
         resIds.recycle();
 
-        for(View view :getViewsByTag(findViewById(android.R.id.content), getResources().getString(R.string.apply_touch_listener_tag))) {
-            view.setOnTouchListener(billPleaseOnTouchListener);
+        for(View view :getViewsByTag(findViewById(android.R.id.content), getResources().getString(R.string.tag_apply_touch_listener))) {
+            view.setOnTouchListener(billOnTouchListener);
         }
 
         llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_records));
 
         llBillRecords.removeAllViews();
 
-        for (DbTableBaseManager.DbTableRecord dbRecord : dbBillPleaseTableBillManager.getAllRecords()) {
+        for (DbTableManager.DbTableRecord dbRecord : dbTableBillManager.getAllRecords()) {
             drawBillRecord(dbRecord.getId());
         }
 
-        BillValuesDbEditText dbEtTax = (BillValuesDbEditText) findViewById(R.id.et_tax);
+        DbEditText dbEtDefItemName = (DbEditText) findViewById(R.id.et_def_item_name);
+        initBillEditText(valuesRecordId, dbEtDefItemName);
+
+        DbEditText dbEtDefCost = (DbEditText) findViewById(R.id.et_def_cost);
+        initBillEditText(valuesRecordId, dbEtDefCost);
+
+        DbEditText dbEtDefShare = (DbEditText) findViewById(R.id.et_def_share);
+        initBillEditText(valuesRecordId, dbEtDefShare);
+
+        dbEtDefItemName.setNextFocusView(View.FOCUS_FORWARD, dbEtDefCost);
+
+        dbEtDefCost.setNextFocusView(View.FOCUS_BACKWARD, dbEtDefItemName);
+        dbEtDefCost.setNextFocusView(View.FOCUS_FORWARD, dbEtDefShare);
+
+        dbEtDefShare.setNextFocusView(View.FOCUS_BACKWARD, dbEtDefCost);
+
+        DbEditText dbEtTax = (DbEditText) findViewById(R.id.et_tax);
         initBillEditText(valuesRecordId, dbEtTax);
-        setTaxPerMainChecked((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
+        setTaxPerMainChecked((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
 
-        BillValuesDbEditText dbEtTaxSum = (BillValuesDbEditText) findViewById(R.id.et_tax_sum);
+        DbEditText dbEtTaxSum = (DbEditText) findViewById(R.id.et_tax_sum);
         initBillEditText(valuesRecordId, dbEtTaxSum);
-        setTaxSumMainChecked(!(Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
+        setTaxSumMainChecked(!(Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
 
-        BillValuesDbEditText dbEtTip = (BillValuesDbEditText) findViewById(R.id.et_tip);
+        DbEditText dbEtTip = (DbEditText) findViewById(R.id.et_tip);
         initBillEditText(valuesRecordId, dbEtTip);
-        setTipPerMainChecked((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN));
+        setTipPerMainChecked((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN));
 
-        BillValuesDbEditText dbEtTipSum = (BillValuesDbEditText) findViewById(R.id.et_tip_sum);
+        DbEditText dbEtTipSum = (DbEditText) findViewById(R.id.et_tip_sum);
         initBillEditText(valuesRecordId, dbEtTipSum);
-        setTipSumMainChecked(!(Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN));
+        setTipSumMainChecked(!(Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN));
 
         dbEtTax.setNextFocusView(View.FOCUS_FORWARD, dbEtTaxSum);
 
@@ -311,17 +331,10 @@ public class BillPleaseActivity extends FragmentActivity {
         dbEtTip.setNextFocusView(View.FOCUS_FORWARD, dbEtTipSum);
 
         dbEtTipSum.setNextFocusView(View.FOCUS_BACKWARD, dbEtTip);
-
-        if(llBillRecords.getChildCount() == 0) {
-            createNewBillDialogFragment.show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
-        }
-        else {
-            findViewById(R.id.btn_add_new_bill_record).setVisibility(View.VISIBLE);
-        }
     }
 
     private void addBillRecord() {
-        long dbRecordId = dbBillPleaseTableBillManager.addRecord();
+        long dbRecordId = dbTableBillManager.addRecord();
 
         if(dbRecordId != -1) {
             drawBillRecord(dbRecordId);
@@ -329,15 +342,15 @@ public class BillPleaseActivity extends FragmentActivity {
     }
 
     private void delBillRecord(long dbRecordId) {
-        dbBillPleaseTableBillManager.delRecord(dbRecordId);
+        dbTableBillManager.delRecord(dbRecordId);
 
         View billRecordLlToDel = llBillRecords.findViewWithTag(dbRecordId);
 
-        BillDbEditText etShare = (BillDbEditText) billRecordLlToDel.findViewById(R.id.et_share);
-        BillDbEditText etItemName = (BillDbEditText) billRecordLlToDel.findViewById(R.id.et_item_name);
+        DbEditText etShare = (DbEditText) billRecordLlToDel.findViewById(R.id.et_share);
+        DbEditText etItemName = (DbEditText) billRecordLlToDel.findViewById(R.id.et_item_name);
 
-        BillDbEditText backwardEtShare = (BillDbEditText) etItemName.getNextFocusView(View.FOCUS_BACKWARD);
-        final BillDbEditText forwardEtItemName = (BillDbEditText) etShare.getNextFocusView(View.FOCUS_FORWARD);
+        DbEditText backwardEtShare = (DbEditText) etItemName.getNextFocusView(View.FOCUS_BACKWARD);
+        final DbEditText forwardEtItemName = (DbEditText) etShare.getNextFocusView(View.FOCUS_FORWARD);
 
         if(forwardEtItemName != null) {
             forwardEtItemName.setNextFocusView(View.FOCUS_BACKWARD, backwardEtShare);
@@ -354,10 +367,8 @@ public class BillPleaseActivity extends FragmentActivity {
     }
 
     private void createNewBill() {
-        dbBillPleaseTableBillManager.delAllRecords();
+        dbTableBillManager.delAllRecords();
         llBillRecords.removeAllViews();
-        addBillRecord();
-        findViewById(R.id.btn_add_new_bill_record).setVisibility(View.VISIBLE);
         redrawAllSums();
     }
 
@@ -366,19 +377,19 @@ public class BillPleaseActivity extends FragmentActivity {
 
         billRecordLl.setTag(recordId);
 
-        BillDbEditText etItemName = (BillDbEditText) billRecordLl.findViewById(R.id.et_item_name);
-        initBillEditText(recordId, etItemName);
+        DbEditText etItemName = (DbEditText) billRecordLl.findViewById(R.id.et_item_name);
+        initBillEditText(recordId, etItemName, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_ITEM_NAME));
 
-        BillDbEditText etCost = (BillDbEditText) billRecordLl.findViewById(R.id.et_cost);
-        initBillEditText(recordId, etCost);
+        DbEditText etCost = (DbEditText) billRecordLl.findViewById(R.id.et_cost);
+        initBillEditText(recordId, etCost, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_COST));
 
-        BillDbEditText etShare = (BillDbEditText) billRecordLl.findViewById(R.id.et_share);
-        initBillEditText(recordId, etShare, (String) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_DEF_SHARE));
+        DbEditText etShare = (DbEditText) billRecordLl.findViewById(R.id.et_share);
+        initBillEditText(recordId, etShare, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_SHARE));
 
         llBillRecords.addView(billRecordLl);
 
         if(llBillRecords.getChildCount() > 1) {
-            BillDbEditText exEtShare = (BillDbEditText) llBillRecords.getChildAt(llBillRecords.getChildCount() - 2).findViewById(R.id.et_share);
+            DbEditText exEtShare = (DbEditText) llBillRecords.getChildAt(llBillRecords.getChildCount() - 2).findViewById(R.id.et_share);
 
             exEtShare.setNextFocusView(View.FOCUS_FORWARD, etItemName);
 
@@ -412,11 +423,11 @@ public class BillPleaseActivity extends FragmentActivity {
     }
 
     private void redrawTaxSum(BigDecimal subtotalSum) {
-        BillValuesDbEditText<BigDecimal> etTax = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tax));
-        BillValuesDbEditText<BigDecimal> etTaxSum = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tax_sum));
+        DbEditText<BigDecimal> etTax = ((DbEditText<BigDecimal>) findViewById(R.id.et_tax));
+        DbEditText<BigDecimal> etTaxSum = ((DbEditText<BigDecimal>) findViewById(R.id.et_tax_sum));
         BigDecimal taxSum;
 
-        if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
+        if((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
             taxSum = subtotalSum.multiply(etTax.getValue().divide(BigDecimal.valueOf(100.0), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
 
             if(!etTax.equals(lastDbEt)) {
@@ -448,11 +459,11 @@ public class BillPleaseActivity extends FragmentActivity {
     }
 
     private void redrawTipSum(BigDecimal subtotalSum) {
-        BillValuesDbEditText<BigDecimal> etTip = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tip));
-        BillValuesDbEditText<BigDecimal> etTipSum = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tip_sum));
+        DbEditText<BigDecimal> etTip = ((DbEditText<BigDecimal>) findViewById(R.id.et_tip));
+        DbEditText<BigDecimal> etTipSum = ((DbEditText<BigDecimal>) findViewById(R.id.et_tip_sum));
         BigDecimal tipSum;
 
-        if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
+        if((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
             tipSum = subtotalSum.multiply(etTip.getValue().divide(BigDecimal.valueOf(100.0), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
 
             if(!etTip.equals(lastDbEt)) {
@@ -490,7 +501,7 @@ public class BillPleaseActivity extends FragmentActivity {
         for(int i = 0; i < llBillRecords.getChildCount(); i++) {
             try {
                 billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
-                value = value.add(((BillDbEditText<BigDecimal>) billRecordLl.findViewById(R.id.et_cost)).getValue().divide(new BigDecimal(((BillDbEditText<BigInteger>) billRecordLl.findViewById(R.id.et_share)).getValue()), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
+                value = value.add(((DbEditText<BigDecimal>) billRecordLl.findViewById(R.id.et_cost)).getValue().divide(new BigDecimal(((DbEditText<BigInteger>) billRecordLl.findViewById(R.id.et_share)).getValue()), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
             }
             catch(Exception ignored) {}
         }
@@ -501,10 +512,10 @@ public class BillPleaseActivity extends FragmentActivity {
     private BigDecimal calcTaxSum(BigDecimal subtotalSum) {
         BigDecimal taxSum;
 
-        BillValuesDbEditText<BigDecimal> etTax = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tax));
-        BillValuesDbEditText<BigDecimal> etTaxSum = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tax_sum));
+        DbEditText<BigDecimal> etTax = ((DbEditText<BigDecimal>) findViewById(R.id.et_tax));
+        DbEditText<BigDecimal> etTaxSum = ((DbEditText<BigDecimal>) findViewById(R.id.et_tax_sum));
 
-        if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
+        if((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN)) {
             taxSum = subtotalSum.multiply(etTax.getValue().divide(new BigDecimal(100.0), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
         }
         else {
@@ -517,10 +528,10 @@ public class BillPleaseActivity extends FragmentActivity {
     private BigDecimal calcTipSum(BigDecimal subtotalSum) {
         BigDecimal tipSum;
 
-        BillValuesDbEditText<BigDecimal> etTip = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tip));
-        BillValuesDbEditText<BigDecimal> etTipSum = ((BillValuesDbEditText<BigDecimal>) findViewById(R.id.et_tip_sum));
+        DbEditText<BigDecimal> etTip = ((DbEditText<BigDecimal>) findViewById(R.id.et_tip));
+        DbEditText<BigDecimal> etTipSum = ((DbEditText<BigDecimal>) findViewById(R.id.et_tip_sum));
 
-        if((Boolean) dbBillPleaseTableBillValuesManager.getColumnValue(valuesRecordId, DbBillPleaseTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
+        if((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN)) {
             tipSum = subtotalSum.multiply(etTip.getValue().divide(BigDecimal.valueOf(100.0), bigValuesScale, BIG_VALUES_ROUNDING_MODE));
         }
         else {
@@ -539,9 +550,9 @@ public class BillPleaseActivity extends FragmentActivity {
             et.setRecordId(recordId);
             et.setDefValue(defValueStr);
             et.pullFromDb();
-            et.setOnFocusChangeListener(billPleaseOnFocusChangeListener);
-            et.addTextChangedListener(billPleaseTextWatcher);
-            et.setOnEditorActionListener(billPleaseOnEditorActionListener);
+            et.setOnFocusChangeListener(billOnFocusChangeListener);
+            et.addTextChangedListener(billTextWatcher);
+            et.setOnEditorActionListener(billOnEditorActionListener);
         }
     }
 
@@ -628,7 +639,7 @@ public class BillPleaseActivity extends FragmentActivity {
         return result;
     }
 
-    private class BillPleaseOnFocusChangeListener implements View.OnFocusChangeListener {
+    private class BillOnFocusChangeListener implements View.OnFocusChangeListener {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
             switch(view.getId()) {
@@ -637,15 +648,8 @@ public class BillPleaseActivity extends FragmentActivity {
                 case R.id.et_share:
                     if(hasFocus) {
                         postSetBackgroundColor(llBillRecords.findViewWithTag(view.getTag()), getResources().getColor(R.color.bill_record_picked));
-
-                        if(llBillRecords.indexOfChild(llBillRecords.findViewWithTag(view.getTag())) != llBillRecords.getChildCount() - 1) {
-                            llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
-                        }
-                        else {
-                            llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.GONE);
-                        }
-
-                        lastDbEt = (BillDbEditText) view;
+                        llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
+                        lastDbEt = (DbEditText) view;
                     }
                     else {
                         timer.cancel();
@@ -656,7 +660,7 @@ public class BillPleaseActivity extends FragmentActivity {
                             }
                         }
 
-                        syncDbEditTextValue((BillDbEditText) view);
+                        syncDbEditTextValue((DbEditText) view);
 
                         postSetBackgroundColor(llBillRecords.findViewWithTag(view.getTag()), getResources().getColor(R.color.bill_record_not_picked));
 
@@ -679,10 +683,10 @@ public class BillPleaseActivity extends FragmentActivity {
                             }
                         }
 
-                        lastDbEt = (BillValuesDbEditText) view;
+                        lastDbEt = (DbEditText) view;
                     }
                     else {
-                        syncDbEditTextValue((BillValuesDbEditText) view);
+                        syncDbEditTextValue((DbEditText) view);
 
                         redrawTaxSum(calcSubtotalSum());
                     }
@@ -701,10 +705,10 @@ public class BillPleaseActivity extends FragmentActivity {
                             }
                         }
 
-                        lastDbEt = (BillValuesDbEditText) view;
+                        lastDbEt = (DbEditText) view;
                     }
                     else {
-                        syncDbEditTextValue((BillValuesDbEditText) view);
+                        syncDbEditTextValue((DbEditText) view);
 
                         redrawTipSum(calcSubtotalSum());
                     }
@@ -736,7 +740,7 @@ public class BillPleaseActivity extends FragmentActivity {
         }
     }
 
-    private class BillPleaseOnTouchListener implements View.OnTouchListener {
+    private class BillOnTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent event) {
             switch(view.getId()) {
@@ -756,7 +760,7 @@ public class BillPleaseActivity extends FragmentActivity {
         }
     }
 
-    private class BillPleaseTextWatcher implements TextWatcher {
+    private class BillTextWatcher implements TextWatcher {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -777,7 +781,7 @@ public class BillPleaseActivity extends FragmentActivity {
         public void afterTextChanged(Editable s) {}
     }
 
-    private class BillPleaseOnEditorActionListener implements TextView.OnEditorActionListener {
+    private class BillOnEditorActionListener implements TextView.OnEditorActionListener {
         @Override
         public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
             if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
@@ -813,20 +817,8 @@ public class BillPleaseActivity extends FragmentActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle(R.string.btn_lbl_create_new_bill);
-
-            dlgCreateNewBillLlv = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.dlg_create_new_bill_llv, null);
-
-            if(llBillRecords.getChildCount() > 0) {
-                dlgCreateNewBillLlv.findViewById(R.id.llv_current_bill_will_be_deleted).setVisibility(View.VISIBLE);
-                builder.setNegativeButton(R.string.dlg_cancel, onClickListener);
-            }
-
-            BillValuesDbEditText dbEtDefShare = (BillValuesDbEditText) dlgCreateNewBillLlv.findViewById(R.id.et_def_share);
-            dbEtDefShare.setRecordId(valuesRecordId);
-            dbEtDefShare.pullFromDb();
-
-            builder.setView(dlgCreateNewBillLlv);
-
+            builder.setView(getActivity().getLayoutInflater().inflate(R.layout.dlg_create_new_bill_llv, null));
+            builder.setNegativeButton(R.string.dlg_cancel, onClickListener);
             builder.setPositiveButton(R.string.dlg_confirm, onClickListener);
 
             return builder.create();
@@ -837,10 +829,7 @@ public class BillPleaseActivity extends FragmentActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch(which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        ((BillValuesDbEditText) dlgCreateNewBillLlv.findViewById(R.id.et_def_share)).pushToDb();
-
                         createNewBill();
-
                         dialog.dismiss();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -853,7 +842,6 @@ public class BillPleaseActivity extends FragmentActivity {
         }
 
         private DialogInterface.OnClickListener onClickListener = new CreateNewBillDialogOnClickListener();
-        private LinearLayout dlgCreateNewBillLlv;
     }
 
     private class PushToDbTimerTask extends TimerTask {
@@ -885,13 +873,13 @@ public class BillPleaseActivity extends FragmentActivity {
     private AbstractDbEditText lastDbEt;
     private View etHidden;
     private int exMotionEvent;
-    private BillPleaseOnFocusChangeListener billPleaseOnFocusChangeListener;
-    private BillPleaseOnTouchListener billPleaseOnTouchListener;
-    private BillPleaseTextWatcher billPleaseTextWatcher;
-    private BillPleaseOnEditorActionListener billPleaseOnEditorActionListener;
+    private BillOnFocusChangeListener billOnFocusChangeListener;
+    private BillOnTouchListener billOnTouchListener;
+    private BillTextWatcher billTextWatcher;
+    private BillOnEditorActionListener billOnEditorActionListener;
     private CreateNewBillDialogFragment createNewBillDialogFragment;
-    private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillManager;
-    private DbTableBaseManager<DbBillPleaseManager> dbBillPleaseTableBillValuesManager;
+    private DbTableManager dbTableBillManager;
+    private DbTableManager dbTableBillValuesManager;
     private long valuesRecordId;
     private Timer timer;
     private DecimalFormat decimalFormat;

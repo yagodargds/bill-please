@@ -24,11 +24,12 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/text_view_height</item>
         <item name="android:layout_margin">@dimen/text_margin</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:singleLine">true</item>
         <item name="android:scrollHorizontally">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">center_vertical|center_horizontal</item>
-        <item name="android:imeOptions">actionDone|flagNavigatePrevious|flagNavigateNext|flagNoExtractUi</item>
+        <item name="android:imeOptions">actionDone|flagNoExtractUi</item>
     </style>
 
     <style name="fill_blank_v" parent="app_v">
@@ -36,7 +37,7 @@
     </style>
 
     <style name="apply_t_l_v" parent="fill_blank_v">
-        <item name="android:tag">@string/apply_touch_listener_tag</item>
+        <item name="android:tag">@string/tag_apply_touch_listener</item>
     </style>
 
     <style name="fill_blank_horizontal_llv" parent="fill_blank_v">
@@ -65,7 +66,7 @@
     </style>
 
     <style name="screen_edge_intent_tv" parent="app_v">
-        <item name="android:tag">@string/apply_touch_listener_tag</item>
+        <item name="android:tag">@string/tag_apply_touch_listener</item>
         <item name="android:layout_width">@dimen/screen_edge_intent</item>
     </style>
 
@@ -82,6 +83,8 @@
         <item name="android:layout_width">@dimen/icon_size</item>
         <item name="android:layout_height">@dimen/icon_size</item>
         <item name="android:layout_margin">@dimen/icon_margin</item>
+        <item name="android:layout_gravity">center_vertical|center_horizontal</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:scaleType">centerInside</item>
     </style>
 
@@ -145,7 +148,6 @@
         <item name="android:layout_height">@dimen/checkbox_height</item>
         <item name="android:layout_width">@dimen/checkbox_width</item>
         <item name="android:layout_margin">@dimen/checkbox_margin</item>
-        <item name="android:layout_gravity">center_vertical|center_horizontal</item>
         <item name="android:button">@drawable/checkbox_selector</item>
     </style>
 
@@ -187,7 +189,7 @@
     </style>
 
     <style name="footer_tv_lbl" parent="footer_tv">
-        <item name="android:tag">@string/apply_touch_listener_tag</item>
+        <item name="android:tag">@string/tag_apply_touch_listener</item>
     </style>
 
     <style name="footer_tv_total" parent="footer_tv">
@@ -206,6 +208,7 @@
     <dimen name="checkbox_height">30dp</dimen>
     <dimen name="checkbox_margin">4dp</dimen>
     <dimen name="checkbox_stroke_width">1dp</dimen>
+    <dimen name="checkbox_total_width">24dp</dimen> //checkbox_width + 2*checkbox_margin
     <dimen name="unitary_width">1dp</dimen>
 
     <dimen name="app_name_text_size">20dp</dimen>
@@ -218,7 +221,8 @@
     <string name="zone_weight_item_name">0.45</string>
     <string name="zone_weight_tax_tip">0.55</string>
 
-    <string name="apply_touch_listener_tag">apl_t_l</string>
+    <string name="tag_apply_touch_listener">apl_t_l</string>
+    <string name="tag_footer_record">apl_t_l</string>
 
     <color name="action_bar">@color/sky_blue_dark</color>
     <color name="bill_records">@color/sky_blue_lightest</color>
