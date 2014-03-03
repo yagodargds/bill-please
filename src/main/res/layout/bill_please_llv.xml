@@ -61,6 +61,7 @@
                 style="@style/vertical_linear_layout_v" />
 
             <LinearLayout
+                android:id="@+id/ll_bill_def_values_record"
                 style="@style/app_row_llv" >
 
                 <TextView
@@ -85,9 +86,10 @@
                             android:textColor="@color/bill_record_et_text"
                             android:hint="@string/lbl_item_name"
                             android:textColorHint="@color/bill_record_et_hint_text"
-                            app:tableName="bill"
-                            app:tableColumnName="item_name"
+                            app:tableName="bill_values"
+                            app:tableColumnName="def_item_name"
                             app:defValueStr="@string/lbl_item_name"
+                            app:editDefValue="true"
                             app:hintTypeface="italic"
                             style="@style/input_etv" />
 
@@ -110,11 +112,11 @@
                                 android:textColor="@color/bill_record_et_text"
                                 android:hint="@string/lbl_cost"
                                 android:textColorHint="@color/bill_record_et_hint_text"
-                                android:tag="@string/tag_footer_record"
                                 app:tableName="bill_values"
                                 app:tableColumnName="def_cost"
                                 app:valueType="real"
                                 app:defValueStr="@string/min_cost_double"
+                                app:editDefValue="true"
                                 app:minValueStr="@string/min_cost_double"
                                 app:minFractionDigits="@integer/min_fraction_digits"
                                 app:maxFractionDigits="@integer/max_fraction_digits"
@@ -137,11 +139,11 @@
                                 android:textColor="@color/bill_record_et_text"
                                 android:hint="@string/lbl_share"
                                 android:textColorHint="@color/bill_record_et_hint_text"
-                                android:tag="@string/tag_footer_record"
                                 app:tableName="bill_values"
                                 app:tableColumnName="def_share"
                                 app:valueType="integer"
                                 app:defValueStr="@string/min_share_int"
+                                app:editDefValue="true"
                                 app:minValueStr="@string/min_share_int"
                                 app:hintTypeface="italic"
                                 style="@style/number_etv" />
@@ -173,7 +175,7 @@
                         style="@style/zone_item_name_horizontal_llv" >
 
                         <TextView
-                            android:layout_width="@dimen/checkbox_total_width"
+                            android:layout_width="@dimen/check_total_width"
                             style="@style/fill_blank_v" />
 
                         <TextView
@@ -297,8 +299,8 @@
 
                     <LinearLayout
                         android:id="@+id/ll_tax"
-                        android:layout_height="@dimen/checkbox_height"
-                        android:background="@drawable/check_box_not_checked_rect"
+                        android:layout_height="@dimen/check_focused_height"
+                        android:background="@drawable/check_off"
                         style="@style/fill_horizontal_llv">
 
                         <TextView
@@ -313,7 +315,6 @@
                             app:minValueStr="@string/min_tax_double"
                             app:minFractionDigits="@integer/min_fraction_digits"
                             app:maxFractionDigits="@integer/max_fraction_digits"
-                            app:hintTypeface="italic"
                             app:hintShowDefValue="false"
                             style="@style/tax_tip_etv" />
 
@@ -330,8 +331,8 @@
 
                     <LinearLayout
                         android:id="@+id/ll_tax_sum"
-                        android:layout_height="@dimen/checkbox_height"
-                        android:background="@drawable/check_box_not_checked_rect"
+                        android:layout_height="@dimen/check_focused_height"
+                        android:background="@drawable/check_off"
                         style="@style/fill_horizontal_llv">
 
                         <TextView
@@ -346,7 +347,6 @@
                             app:minValueStr="@string/min_tax_double"
                             app:minFractionDigits="@integer/min_fraction_digits"
                             app:maxFractionDigits="@integer/max_fraction_digits"
-                            app:hintTypeface="italic"
                             app:hintShowDefValue="false"
                             style="@style/tax_tip_etv" />
 
@@ -399,8 +399,8 @@
 
                     <LinearLayout
                         android:id="@+id/ll_tip"
-                        android:layout_height="@dimen/checkbox_height"
-                        android:background="@drawable/check_box_not_checked_rect"
+                        android:layout_height="@dimen/check_focused_height"
+                        android:background="@drawable/check_off"
                         style="@style/fill_horizontal_llv">
 
                         <TextView
@@ -415,7 +415,6 @@
                             app:minValueStr="@string/min_tip_double"
                             app:minFractionDigits="@integer/min_fraction_digits"
                             app:maxFractionDigits="@integer/max_fraction_digits"
-                            app:hintTypeface="italic"
                             app:hintShowDefValue="false"
                             style="@style/tax_tip_etv" />
 
@@ -432,8 +431,8 @@
 
                     <LinearLayout
                         android:id="@+id/ll_tip_sum"
-                        android:layout_height="@dimen/checkbox_height"
-                        android:background="@drawable/check_box_not_checked_rect"
+                        android:layout_height="@dimen/check_focused_height"
+                        android:background="@drawable/check_off"
                         style="@style/fill_horizontal_llv">
 
                         <TextView
@@ -448,7 +447,6 @@
                             app:minValueStr="@string/min_tip_double"
                             app:minFractionDigits="@integer/min_fraction_digits"
                             app:maxFractionDigits="@integer/max_fraction_digits"
-                            app:hintTypeface="italic"
                             app:hintShowDefValue="false"
                             style="@style/tax_tip_etv" />
 

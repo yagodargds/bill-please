@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="version_name">1.0.8.5a</string>
+    <string name="version_name">1.0.8.7a</string>
+
+    <string name="app_tag">#BillPlease</string>
 
     <string name="min_cost_double">0.0</string>
     <string name="min_share_int">1</string>

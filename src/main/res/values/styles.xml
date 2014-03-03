@@ -145,9 +145,9 @@
     </style>
 
     <style name="check_box_v" parent="button_icon_v">
-        <item name="android:layout_height">@dimen/checkbox_height</item>
-        <item name="android:layout_width">@dimen/checkbox_width</item>
-        <item name="android:layout_margin">@dimen/checkbox_margin</item>
+        <item name="android:layout_height">@dimen/check_focused_height</item>
+        <item name="android:layout_width">@dimen/check_focused_width</item>
+        <item name="android:layout_margin">@dimen/check_margin</item>
         <item name="android:button">@drawable/checkbox_selector</item>
     </style>
 
@@ -204,11 +204,13 @@
     <dimen name="hidden_input_width">0dp</dimen>
     <dimen name="bill_input_min_width">4dp</dimen>
     <dimen name="dlg_input_width">144dp</dimen>
-    <dimen name="checkbox_width">16dp</dimen>
-    <dimen name="checkbox_height">30dp</dimen>
-    <dimen name="checkbox_margin">4dp</dimen>
-    <dimen name="checkbox_stroke_width">1dp</dimen>
-    <dimen name="checkbox_total_width">24dp</dimen> //checkbox_width + 2*checkbox_margin
+    <dimen name="check_margin">4dp</dimen>
+    <dimen name="check_height">28dp</dimen>
+    <dimen name="check_focused_height">30dp</dimen>
+    <dimen name="check_width">14dp</dimen>
+    <dimen name="check_stroke_width">1dp</dimen>
+    <dimen name="check_focused_width">16dp</dimen>
+    <dimen name="check_total_width">24dp</dimen> //check_width + 2*check_margin + [2*check_stroke_width (for focuse stroke)]
     <dimen name="unitary_width">1dp</dimen>
 
     <dimen name="app_name_text_size">20dp</dimen>
@@ -230,10 +232,23 @@
     <color name="footer_total">@color/sky_blue_dark</color>
 
     <color name="bill_record_picked">@color/orange_lightest</color>
+    <color name="bill_record_def_values_picked">@color/orange_light</color>
     <color name="bill_record_not_picked">@android:color/transparent</color>
 
-    <color name="check_box_checked">@color/sky_blue</color>
-    <color name="check_box_not_checked">@android:color/transparent</color>
+    <color name="check_on_solid">@color/sky_blue</color>
+    <color name="check_on_stroke">@color/sky_blue_darkest</color>
+    <color name="check_on_pressed_solid">@color/orange_light</color>
+    <color name="check_on_pressed_stroke">@color/orange</color>
+    <color name="check_on_disabled_solid">@color/orange_lightest</color>
+    <color name="check_on_disabled_stroke">@color/orange_light</color>
+    <color name="check_focused_solid">@android:color/transparent</color>
+    <color name="check_focused_stroke">@color/orange_dark</color>
+    <color name="check_off_solid">@android:color/transparent</color>
+    <color name="check_off_stroke">@color/sky_blue_darkest</color>
+    <color name="check_off_pressed_solid">@android:color/transparent</color>
+    <color name="check_off_pressed_stroke">@color/orange_light</color>
+    <color name="check_off_disabled_solid">@android:color/transparent</color>
+    <color name="check_off_disabled_stroke">@color/orange_light</color>
 
     <color name="bill_record_et_hint_text">@color/sky_blue_light</color>
     <color name="bill_record_et_text">@color/sky_blue_darkest</color>

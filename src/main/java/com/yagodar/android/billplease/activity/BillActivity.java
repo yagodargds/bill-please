@@ -79,17 +79,10 @@ public class BillActivity extends FragmentActivity {
         billTextWatcher = new BillTextWatcher();
         billOnEditorActionListener = new BillOnEditorActionListener();
 
-        createNewBillDialogFragment = new CreateNewBillDialogFragment();
-
         dbTableBillManager = DbManager.getInstance(this).getDbTableManager(DbTableBillContract.getInstance());
         dbTableBillValuesManager = DbManager.getInstance(this).getDbTableManager(DbTableBillValuesContract.getInstance());
 
-        if(dbTableBillValuesManager.getAllRecords().size() == 0) {
-            valuesRecordId = dbTableBillValuesManager.addRecord();
-        }
-        else {
-            valuesRecordId = dbTableBillValuesManager.getAllRecords().iterator().next().getId();
-        }
+        initDefValuesRecordId();
 
         loadBill();
 
@@ -104,25 +97,25 @@ public class BillActivity extends FragmentActivity {
     public void onButtonClick(View button) {
         switch(button.getId()) {
             case R.id.btn_add_new_bill_record:
+                if(llBillRecords.getChildCount() == 0) {
+                    findViewById(R.id.chk_all_records).setEnabled(true);
+                }
+
                 addBillRecord();
-                llActionBar.findViewById(R.id.btn_create_new_bill).setVisibility(View.VISIBLE);
-                llActionBar.findViewById(R.id.btn_share_bill).setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_del_bill_record:
                 if(lastDbEt != null && isBillRecordEt(lastDbEt)) {
                     delBillRecord(lastDbEt.getRecordId());
 
                     if(llBillRecords.getChildCount() == 0) {
-                        llActionBar.findViewById(R.id.btn_create_new_bill).setVisibility(View.GONE);
-                        llActionBar.findViewById(R.id.btn_share_bill).setVisibility(View.GONE);
+                        ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+                        findViewById(R.id.chk_all_records).setEnabled(false);
                     }
                 }
                 break;
             case R.id.btn_create_new_bill:
                 hideFocus();
-                createNewBillDialogFragment.show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
-                button.setVisibility(View.GONE);
-                llActionBar.findViewById(R.id.btn_share_bill).setVisibility(View.GONE);
+                (new CreateNewBillDialogFragment()).show(getSupportFragmentManager(), getResources().getString(R.string.btn_lbl_create_new_bill));
                 break;
             case R.id.btn_share_bill:
                 hideFocus();
@@ -131,6 +124,23 @@ public class BillActivity extends FragmentActivity {
                 sendIntent.putExtra(Intent.EXTRA_TEXT, getShareText());
                 sendIntent.setType(INTENT_TYPE_SHARE);
                 startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.btn_lbl_share_bill)));
+                break;
+            case R.id.chk_record:
+                if(((CheckBox) button).isChecked()) {
+
+                    if(llBillRecords.getChildCount() > 1) {
+                        DbEditText exEtShare = (DbEditText) llBillRecords.getChildAt(llBillRecords.getChildCount() - 2).findViewById(R.id.et_share);
+                        exEtShare.setNextFocusView(View.FOCUS_FORWARD, etItemName);
+                    }
+
+                    llActionBar.findViewById(R.id.btn_).setVisibility(View.GONE);
+                }
+                else {
+
+                }
+                break;
+            case R.id.chk_all_records:
+
                 break;
             case R.id.chk_tax_main:
                 toggleTax(((CheckBox) button).isChecked());
@@ -168,40 +178,40 @@ public class BillActivity extends FragmentActivity {
     private void setTaxPerMainChecked(boolean isChecked) {
         ((CheckBox) findViewById(R.id.chk_tax_main)).setChecked(isChecked);
         if(isChecked) {
-            postSetBackgroundResource(findViewById(R.id.ll_tax), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tax), R.drawable.check_on);
         }
         else {
-            postSetBackgroundResource(findViewById(R.id.ll_tax), R.drawable.check_box_not_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tax), R.drawable.check_off);
         }
     }
 
     private void setTaxSumMainChecked(boolean isChecked) {
         ((CheckBox) findViewById(R.id.chk_tax_sum_main)).setChecked(isChecked);
         if(isChecked) {
-            postSetBackgroundResource(findViewById(R.id.ll_tax_sum), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tax_sum), R.drawable.check_on);
         }
         else {
-            postSetBackgroundResource(findViewById(R.id.ll_tax_sum), R.drawable.check_box_not_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tax_sum), R.drawable.check_off);
         }
     }
 
     private void setTipPerMainChecked(boolean isChecked) {
         ((CheckBox) findViewById(R.id.chk_tip_main)).setChecked(isChecked);
         if(isChecked) {
-            postSetBackgroundResource(findViewById(R.id.ll_tip), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tip), R.drawable.check_on);
         }
         else {
-            postSetBackgroundResource(findViewById(R.id.ll_tip), R.drawable.check_box_not_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tip), R.drawable.check_off);
         }
     }
 
     private void setTipSumMainChecked(boolean isChecked) {
         ((CheckBox) findViewById(R.id.chk_tip_sum_main)).setChecked(isChecked);
         if(isChecked) {
-            postSetBackgroundResource(findViewById(R.id.ll_tip_sum), R.drawable.check_box_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tip_sum), R.drawable.check_on);
         }
         else {
-            postSetBackgroundResource(findViewById(R.id.ll_tip_sum), R.drawable.check_box_not_checked_rect);
+            postSetBackgroundResource(findViewById(R.id.ll_tip_sum), R.drawable.check_off);
         }
     }
 
@@ -213,7 +223,7 @@ public class BillActivity extends FragmentActivity {
         String shareText = "";
 
         //app name tag
-        shareText += "#" + getResources().getString(R.string.app_name);
+        shareText += getResources().getString(R.string.app_tag);
         shareText += "\n";
 
         //records
@@ -248,18 +258,27 @@ public class BillActivity extends FragmentActivity {
 
         //tax
         shareText += "[" + getResources().getString(R.string.lbl_tax) + "]" + ":" + ((EditText) findViewById(R.id.et_tax)).getText();
-        shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + ((TextView) findViewById(R.id.et_tax_sum)).getText();
+        shareText += "\t/\t" + ((TextView) findViewById(R.id.et_tax_sum)).getText();
         shareText += "\n";
 
         //tip
         shareText += "[" + getResources().getString(R.string.lbl_tip) + "]" + ":" + ((EditText) findViewById(R.id.et_tip)).getText();
-        shareText += "\t|\t" + getResources().getString(R.string.lbl_subtotal) + ":" + ((TextView) findViewById(R.id.et_tip_sum)).getText();
+        shareText += "\t/\t" + ((TextView) findViewById(R.id.et_tip_sum)).getText();
         shareText += "\n";
 
         //total
         shareText += "[" + getResources().getString(R.string.lbl_total) + "]" + ":" + ((TextView) findViewById(R.id.tv_total_sum)).getText();
 
         return shareText;
+    }
+
+    private void initDefValuesRecordId() {
+        if(dbTableBillValuesManager.getAllRecords().size() == 0) {
+            valuesRecordId = dbTableBillValuesManager.addRecord();
+        }
+        else {
+            valuesRecordId = dbTableBillValuesManager.getAllRecords().iterator().next().getId();
+        }
     }
 
     private void loadBill() {
@@ -287,57 +306,65 @@ public class BillActivity extends FragmentActivity {
         llBillRecords.removeAllViews();
 
         for (DbTableManager.DbTableRecord dbRecord : dbTableBillManager.getAllRecords()) {
-            drawBillRecord(dbRecord.getId());
+            drawBillRecord(dbRecord.getId(), false);
         }
 
+        if(llBillRecords.getChildCount() == 0) {
+            ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+            findViewById(R.id.chk_all_records).setEnabled(false);
+        }
+
+        initBillRecordDefValuesEts(false);
+        initTaxTipDefValuesEts();
+    }
+
+    private void initBillRecordDefValuesEts(boolean reset) {
         DbEditText dbEtDefItemName = (DbEditText) findViewById(R.id.et_def_item_name);
-        initBillEditText(valuesRecordId, dbEtDefItemName);
-
         DbEditText dbEtDefCost = (DbEditText) findViewById(R.id.et_def_cost);
-        initBillEditText(valuesRecordId, dbEtDefCost);
-
         DbEditText dbEtDefShare = (DbEditText) findViewById(R.id.et_def_share);
-        initBillEditText(valuesRecordId, dbEtDefShare);
+
+        if (reset) {
+            initBillEditText(valuesRecordId, dbEtDefItemName);
+            initBillEditText(valuesRecordId, dbEtDefCost);
+            initBillEditText(valuesRecordId, dbEtDefShare);
+        }
+        else {
+            initBillEditText(valuesRecordId, dbEtDefItemName, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_ITEM_NAME));
+            initBillEditText(valuesRecordId, dbEtDefCost, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_COST));
+            initBillEditText(valuesRecordId, dbEtDefShare, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_SHARE));
+        }
 
         dbEtDefItemName.setNextFocusView(View.FOCUS_FORWARD, dbEtDefCost);
-
-        dbEtDefCost.setNextFocusView(View.FOCUS_BACKWARD, dbEtDefItemName);
         dbEtDefCost.setNextFocusView(View.FOCUS_FORWARD, dbEtDefShare);
+    }
 
-        dbEtDefShare.setNextFocusView(View.FOCUS_BACKWARD, dbEtDefCost);
-
+    private void initTaxTipDefValuesEts() {
         DbEditText dbEtTax = (DbEditText) findViewById(R.id.et_tax);
-        initBillEditText(valuesRecordId, dbEtTax);
-        setTaxPerMainChecked((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
-
         DbEditText dbEtTaxSum = (DbEditText) findViewById(R.id.et_tax_sum);
-        initBillEditText(valuesRecordId, dbEtTaxSum);
-        setTaxSumMainChecked(!(Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
-
         DbEditText dbEtTip = (DbEditText) findViewById(R.id.et_tip);
-        initBillEditText(valuesRecordId, dbEtTip);
-        setTipPerMainChecked((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN));
-
         DbEditText dbEtTipSum = (DbEditText) findViewById(R.id.et_tip_sum);
+
+        initBillEditText(valuesRecordId, dbEtTax);
+        initBillEditText(valuesRecordId, dbEtTaxSum);
+        initBillEditText(valuesRecordId, dbEtTip);
         initBillEditText(valuesRecordId, dbEtTipSum);
+
+        setTaxPerMainChecked((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
+        setTaxSumMainChecked(!(Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TAX_PER_MAIN));
+        setTipPerMainChecked((Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN));
         setTipSumMainChecked(!(Boolean) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_IS_TIP_PER_MAIN));
 
         dbEtTax.setNextFocusView(View.FOCUS_FORWARD, dbEtTaxSum);
-
-        dbEtTaxSum.setNextFocusView(View.FOCUS_BACKWARD, dbEtTax);
         dbEtTaxSum.setNextFocusView(View.FOCUS_FORWARD, dbEtTip);
-
-        dbEtTip.setNextFocusView(View.FOCUS_BACKWARD, dbEtTaxSum);
         dbEtTip.setNextFocusView(View.FOCUS_FORWARD, dbEtTipSum);
-
-        dbEtTipSum.setNextFocusView(View.FOCUS_BACKWARD, dbEtTip);
     }
 
     private void addBillRecord() {
         long dbRecordId = dbTableBillManager.addRecord();
 
         if(dbRecordId != -1) {
-            drawBillRecord(dbRecordId);
+            drawBillRecord(dbRecordId, true);
+            redrawAllSums();
         }
     }
 
@@ -369,39 +396,46 @@ public class BillActivity extends FragmentActivity {
     private void createNewBill() {
         dbTableBillManager.delAllRecords();
         llBillRecords.removeAllViews();
+
+        ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+        findViewById(R.id.chk_all_records).setEnabled(false);
+
+        dbTableBillValuesManager.delAllRecords();
+        initDefValuesRecordId();
+        initBillRecordDefValuesEts(true);
+        initTaxTipDefValuesEts();
+
         redrawAllSums();
     }
 
-    private void drawBillRecord(long recordId) {
+    private void drawBillRecord(long recordId, boolean reset) {
         LinearLayout billRecordLl = (LinearLayout) getLayoutInflater().inflate(R.layout.bill_record_llv, null);
 
         billRecordLl.setTag(recordId);
 
         DbEditText etItemName = (DbEditText) billRecordLl.findViewById(R.id.et_item_name);
-        initBillEditText(recordId, etItemName, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_ITEM_NAME));
-
         DbEditText etCost = (DbEditText) billRecordLl.findViewById(R.id.et_cost);
-        initBillEditText(recordId, etCost, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_COST));
-
         DbEditText etShare = (DbEditText) billRecordLl.findViewById(R.id.et_share);
-        initBillEditText(recordId, etShare, (String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_SHARE));
+
+        initBillEditText(recordId, etItemName);
+        initBillEditText(recordId, etCost);
+        initBillEditText(recordId, etShare);
+
+        if (reset) {
+            etItemName.syncValueStr((String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_ITEM_NAME));
+            etCost.syncValueStr((String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_COST));
+            etShare.syncValueStr((String) dbTableBillValuesManager.getColumnValue(valuesRecordId, DbTableBillValuesContract.COLUMN_NAME_DEF_SHARE));
+        }
 
         llBillRecords.addView(billRecordLl);
 
         if(llBillRecords.getChildCount() > 1) {
             DbEditText exEtShare = (DbEditText) llBillRecords.getChildAt(llBillRecords.getChildCount() - 2).findViewById(R.id.et_share);
-
             exEtShare.setNextFocusView(View.FOCUS_FORWARD, etItemName);
-
-            etItemName.setNextFocusView(View.FOCUS_BACKWARD, exEtShare);
         }
 
         etItemName.setNextFocusView(View.FOCUS_FORWARD, etCost);
-
-        etCost.setNextFocusView(View.FOCUS_BACKWARD, etItemName);
         etCost.setNextFocusView(View.FOCUS_FORWARD, etShare);
-
-        etShare.setNextFocusView(View.FOCUS_BACKWARD, etCost);
     }
 
     private void hideSoftKeyboard(View view) {
@@ -548,7 +582,7 @@ public class BillActivity extends FragmentActivity {
     private void initBillEditText(long recordId, AbstractDbEditText et, String defValueStr) {
         if(et != null) {
             et.setRecordId(recordId);
-            et.setDefValue(defValueStr);
+            et.setDefValueStr(defValueStr);
             et.pullFromDb();
             et.setOnFocusChangeListener(billOnFocusChangeListener);
             et.addTextChangedListener(billTextWatcher);
@@ -567,7 +601,7 @@ public class BillActivity extends FragmentActivity {
     private void syncDbEditTextValue(AbstractDbEditText et, Object value) {
         if(et != null) {
             timer.cancel();
-            et.syncValue(value);
+            et.syncValueObj(value);
             timer.cancel();
         }
     }
@@ -647,69 +681,72 @@ public class BillActivity extends FragmentActivity {
                 case R.id.et_cost:
                 case R.id.et_share:
                     if(hasFocus) {
-                        postSetBackgroundColor(llBillRecords.findViewWithTag(view.getTag()), getResources().getColor(R.color.bill_record_picked));
-                        llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.VISIBLE);
                         lastDbEt = (DbEditText) view;
+                        postSetBackgroundColor(llBillRecords.findViewWithTag(view.getTag()), getResources().getColor(R.color.bill_record_picked));
                     }
                     else {
-                        timer.cancel();
-                        if(llBillRecords.findViewWithTag(view.getTag()).equals(llBillRecords.getChildAt(llBillRecords.getChildCount() - 1))) {
-                            Editable curDbEtEditableText = ((EditText) view).getText();
-                            if(curDbEtEditableText != null && curDbEtEditableText.length() > 0) {
-                                addBillRecord();
-                            }
-                        }
-
                         syncDbEditTextValue((DbEditText) view);
-
                         postSetBackgroundColor(llBillRecords.findViewWithTag(view.getTag()), getResources().getColor(R.color.bill_record_not_picked));
-
-                        llActionBar.findViewById(R.id.btn_del_bill_record).setVisibility(View.GONE);
-
                         redrawAllSums();
+                    }
+                    break;
+                case R.id.et_def_item_name:
+                case R.id.et_def_cost:
+                case R.id.et_def_share:
+                    if(hasFocus) {
+                        lastDbEt = (DbEditText) view;
+                        postSetBackgroundColor(findViewById(R.id.ll_bill_def_values_record), getResources().getColor(R.color.bill_record_def_values_picked));
+                    }
+                    else {
+                        syncDbEditTextValue((DbEditText) view);
+                        postSetBackgroundColor(findViewById(R.id.ll_bill_def_values_record), getResources().getColor(R.color.bill_record_not_picked));
                     }
                     break;
                 case R.id.et_tax:
                 case R.id.et_tax_sum:
                     if(hasFocus) {
+                        int lastDbEtId = 0;
                         if(lastDbEt != null) {
-                            switch(lastDbEt.getId()) {
-                                case R.id.et_tip:
-                                case R.id.et_tip_sum:
-                                    redrawTipSum(calcSubtotalSum());
-                                    break;
-                                default:
-                                    break;
-                            }
+                            lastDbEtId = lastDbEt.getId();
                         }
 
                         lastDbEt = (DbEditText) view;
+
+                        switch (lastDbEtId) {
+                            case R.id.et_tip:
+                            case R.id.et_tip_sum:
+                                redrawTipSum(calcSubtotalSum());
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     else {
                         syncDbEditTextValue((DbEditText) view);
-
                         redrawTaxSum(calcSubtotalSum());
                     }
                     break;
                 case R.id.et_tip:
                 case R.id.et_tip_sum:
                     if(hasFocus) {
+                        int lastDbEtId = 0;
                         if(lastDbEt != null) {
-                            switch(lastDbEt.getId()) {
-                                case R.id.et_tax:
-                                case R.id.et_tax_sum:
-                                    redrawTaxSum(calcSubtotalSum());
-                                    break;
-                                default:
-                                    break;
-                            }
+                            lastDbEtId = lastDbEt.getId();
                         }
 
                         lastDbEt = (DbEditText) view;
+
+                        switch(lastDbEtId) {
+                            case R.id.et_tax:
+                            case R.id.et_tax_sum:
+                                redrawTaxSum(calcSubtotalSum());
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     else {
                         syncDbEditTextValue((DbEditText) view);
-
                         redrawTipSum(calcSubtotalSum());
                     }
                     break;
@@ -717,19 +754,22 @@ public class BillActivity extends FragmentActivity {
                     if(hasFocus) {
                         hideSoftKeyboard(lastDbEt);
 
-                        switch(lastDbEt.getId()) {
+                        int lastDbEtId = 0;
+                        if(lastDbEt != null) {
+                            lastDbEtId = lastDbEt.getId();
+                            lastDbEt = null;
+                        }
+
+                        switch(lastDbEtId) {
                             case R.id.et_tax:
                             case R.id.et_tax_sum:
-                                lastDbEt = null;
                                 redrawTaxSum(calcSubtotalSum());
                                 break;
                             case R.id.et_tip:
                             case R.id.et_tip_sum:
-                                lastDbEt = null;
                                 redrawTipSum(calcSubtotalSum());
                                 break;
                             default:
-                                lastDbEt = null;
                                 break;
                         }
                     }
@@ -791,6 +831,9 @@ public class BillActivity extends FragmentActivity {
                     case R.id.et_item_name:
                     case R.id.et_cost:
                     case R.id.et_share:
+                    case R.id.et_def_item_name:
+                    case R.id.et_def_cost:
+                    case R.id.et_def_share:
                     case R.id.et_tip:
                     case R.id.et_tip_sum:
                     case R.id.et_tax:
@@ -877,7 +920,6 @@ public class BillActivity extends FragmentActivity {
     private BillOnTouchListener billOnTouchListener;
     private BillTextWatcher billTextWatcher;
     private BillOnEditorActionListener billOnEditorActionListener;
-    private CreateNewBillDialogFragment createNewBillDialogFragment;
     private DbTableManager dbTableBillManager;
     private DbTableManager dbTableBillValuesManager;
     private long valuesRecordId;

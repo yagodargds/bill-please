@@ -22,11 +22,10 @@
                 <com.yagodar.android.billplease.custom.DbEditText
                     android:id="@+id/et_item_name"
                     android:textColor="@color/bill_record_et_text"
-                    android:textColorHint="@color/bill_record_et_hint_text"
                     app:tableName="bill"
                     app:tableColumnName="item_name"
                     app:defValueStr="@string/lbl_item_name"
-                    app:hintTypeface="italic"
+                    app:hintShowDefValue="false"
                     style="@style/input_etv" />
 
                 <TextView
@@ -46,7 +45,6 @@
                     <com.yagodar.android.billplease.custom.DbEditText
                         android:id="@+id/et_cost"
                         android:textColor="@color/bill_record_et_text"
-                        android:textColorHint="@color/bill_record_et_hint_text"
                         app:tableName="bill"
                         app:tableColumnName="cost"
                         app:valueType="real"
@@ -54,7 +52,7 @@
                         app:minValueStr="@string/min_cost_double"
                         app:minFractionDigits="@integer/min_fraction_digits"
                         app:maxFractionDigits="@integer/max_fraction_digits"
-                        app:hintTypeface="italic"
+                        app:hintShowDefValue="false"
                         style="@style/number_decimal_etv" />
 
                     <TextView
@@ -71,13 +69,12 @@
                     <com.yagodar.android.billplease.custom.DbEditText
                         android:id="@+id/et_share"
                         android:textColor="@color/bill_record_et_text"
-                        android:textColorHint="@color/bill_record_et_hint_text"
                         app:tableName="bill"
                         app:tableColumnName="share"
                         app:valueType="integer"
                         app:defValueStr="@string/min_share_int"
                         app:minValueStr="@string/min_share_int"
-                        app:hintTypeface="italic"
+                        app:hintShowDefValue="false"
                         style="@style/number_etv" />
 
                     <TextView
