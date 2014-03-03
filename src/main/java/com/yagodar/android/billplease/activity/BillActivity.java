@@ -35,8 +35,11 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -126,21 +129,10 @@ public class BillActivity extends FragmentActivity {
                 startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.btn_lbl_share_bill)));
                 break;
             case R.id.chk_record:
-                if(((CheckBox) button).isChecked()) {
-
-                    if(llBillRecords.getChildCount() > 1) {
-                        DbEditText exEtShare = (DbEditText) llBillRecords.getChildAt(llBillRecords.getChildCount() - 2).findViewById(R.id.et_share);
-                        exEtShare.setNextFocusView(View.FOCUS_FORWARD, etItemName);
-                    }
-
-                    llActionBar.findViewById(R.id.btn_).setVisibility(View.GONE);
-                }
-                else {
-
-                }
+                processCheckingRecord((Long) button.getTag(), ((CheckBox) button).isChecked());
                 break;
             case R.id.chk_all_records:
-
+                processCheckingAllRecords(((CheckBox) button).isChecked());
                 break;
             case R.id.chk_tax_main:
                 toggleTax(((CheckBox) button).isChecked());
@@ -160,6 +152,49 @@ public class BillActivity extends FragmentActivity {
                 break;
             default:
                 break;
+        }
+    }
+
+    private void setRecordChecked(CheckBox recordCheckBox, boolean isChecked) {
+        recordCheckBox.setChecked(isChecked);
+        processCheckingRecord((Long) recordCheckBox.getTag(), isChecked);
+    }
+
+    private void processCheckingRecord(long recordId, boolean isChecked) {
+        if(isChecked) {
+            onCheckRecord(recordId);
+        }
+        else {
+            onUncheckRecord(recordId);
+        }
+    }
+
+    private void onCheckRecord(long recordId) {
+        checkedRecordIds.add(recordId);
+
+        if(!((CheckBox) findViewById(R.id.chk_all_records)).isChecked() && checkedRecordIds.size() != 0 && checkedRecordIds.size() == llBillRecords.getChildCount()) {
+            ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(true);
+        }
+    }
+
+    private void onUncheckRecord(long recordId) {
+        if(((CheckBox) findViewById(R.id.chk_all_records)).isChecked()) {
+            if(checkedRecordIds.size() == llBillRecords.getChildCount()) {//TODO
+                ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+            }
+        }
+        else {
+            if(checkedRecordIds.size() != 0 && checkedRecordIds.size() == llBillRecords.getChildCount()) {
+                ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+            }
+        }
+
+        checkedRecordIds.remove(recordId);
+    }
+
+    private void processCheckingAllRecords(boolean isChecked) {
+        for(int i = 0; i < llBillRecords.getChildCount(); i++) {
+            setRecordChecked((CheckBox) llBillRecords.getChildAt(i).findViewById(R.id.chk_record), isChecked);
         }
     }
 
@@ -233,7 +268,7 @@ public class BillActivity extends FragmentActivity {
             LinearLayout billRecordLl;
             BigDecimal cost;
             BigInteger share;
-            for(int i = 0; i < llBillRecords.getChildCount() - 1; i++) {
+            for(int i = 0; i < llBillRecords.getChildCount(); i++) {
                 try {
                     billRecordLl = (LinearLayout) llBillRecords.getChildAt(i);
                     shareText += ((EditText) billRecordLl.findViewById(R.id.et_item_name)).getText();
@@ -302,8 +337,9 @@ public class BillActivity extends FragmentActivity {
         }
 
         llBillRecords = ((LinearLayout) findViewById(R.id.ll_bill_records));
-
         llBillRecords.removeAllViews();
+
+        checkedRecordIds = new HashSet<Long>();
 
         for (DbTableManager.DbTableRecord dbRecord : dbTableBillManager.getAllRecords()) {
             drawBillRecord(dbRecord.getId(), false);
@@ -397,6 +433,7 @@ public class BillActivity extends FragmentActivity {
         dbTableBillManager.delAllRecords();
         llBillRecords.removeAllViews();
 
+        checkedRecordIds.clear();
         ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
         findViewById(R.id.chk_all_records).setEnabled(false);
 
@@ -412,6 +449,9 @@ public class BillActivity extends FragmentActivity {
         LinearLayout billRecordLl = (LinearLayout) getLayoutInflater().inflate(R.layout.bill_record_llv, null);
 
         billRecordLl.setTag(recordId);
+
+        CheckBox recordCheck = (CheckBox) billRecordLl.findViewById(R.id.chk_record);
+        recordCheck.setTag(recordId);
 
         DbEditText etItemName = (DbEditText) billRecordLl.findViewById(R.id.et_item_name);
         DbEditText etCost = (DbEditText) billRecordLl.findViewById(R.id.et_cost);
@@ -913,6 +953,7 @@ public class BillActivity extends FragmentActivity {
 
     private LinearLayout llActionBar;
     private LinearLayout llBillRecords;
+    private HashSet<Long> checkedRecordIds;
     private AbstractDbEditText lastDbEt;
     private View etHidden;
     private int exMotionEvent;
