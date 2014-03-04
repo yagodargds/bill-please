@@ -108,15 +108,19 @@ public class BillActivity extends FragmentActivity {
                     ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
                 }
                 break;
-            case R.id.btn_del_bill_record:
-                if(lastDbEt != null && isBillRecordEt(lastDbEt)) {
-                    delBillRecord(lastDbEt.getRecordId());
-
-                    if(llBillRecords.getChildCount() == 0) {
-                        ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
-                        findViewById(R.id.chk_all_records).setEnabled(false);
-                    }
+            case R.id.btn_del_chked_records:
+                if(((CheckBox) findViewById(R.id.chk_all_records)).isChecked() && checkedRecordIds.size() == llBillRecords.getChildCount()) {
+                    ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+                    findViewById(R.id.chk_all_records).setEnabled(false);
                 }
+
+                for(long recordId : checkedRecordIds) {
+                    delBillRecord(recordId);
+                }
+
+                checkedRecordIds.clear();
+
+                findViewById(R.id.btn_del_chked_records).setVisibility(View.GONE);
                 break;
             case R.id.btn_create_new_bill:
                 hideFocus();
@@ -174,6 +178,10 @@ public class BillActivity extends FragmentActivity {
     private void onCheckRecord(long recordId) {
         checkedRecordIds.add(recordId);
 
+        if(checkedRecordIds.size() == 1) {
+            findViewById(R.id.btn_del_chked_records).setVisibility(View.VISIBLE);
+        }
+
         if(!((CheckBox) findViewById(R.id.chk_all_records)).isChecked() && checkedRecordIds.size() == llBillRecords.getChildCount()) {
             ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(true);
         }
@@ -182,6 +190,10 @@ public class BillActivity extends FragmentActivity {
     private void onUncheckRecord(long recordId) {
         if(((CheckBox) findViewById(R.id.chk_all_records)).isChecked() && checkedRecordIds.size() == llBillRecords.getChildCount()) {
             ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+        }
+
+        if(checkedRecordIds.size() == 1) {
+            findViewById(R.id.btn_del_chked_records).setVisibility(View.GONE);
         }
 
         checkedRecordIds.remove(recordId);
