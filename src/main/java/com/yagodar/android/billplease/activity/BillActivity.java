@@ -35,11 +35,9 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -100,11 +98,15 @@ public class BillActivity extends FragmentActivity {
     public void onButtonClick(View button) {
         switch(button.getId()) {
             case R.id.btn_add_new_bill_record:
-                if(llBillRecords.getChildCount() == 0) {
+                addBillRecord();
+
+                if(llBillRecords.getChildCount() == 1) {
                     findViewById(R.id.chk_all_records).setEnabled(true);
                 }
 
-                addBillRecord();
+                if(((CheckBox) findViewById(R.id.chk_all_records)).isChecked()) {
+                    ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
+                }
                 break;
             case R.id.btn_del_bill_record:
                 if(lastDbEt != null && isBillRecordEt(lastDbEt)) {
@@ -172,21 +174,14 @@ public class BillActivity extends FragmentActivity {
     private void onCheckRecord(long recordId) {
         checkedRecordIds.add(recordId);
 
-        if(!((CheckBox) findViewById(R.id.chk_all_records)).isChecked() && checkedRecordIds.size() != 0 && checkedRecordIds.size() == llBillRecords.getChildCount()) {
+        if(!((CheckBox) findViewById(R.id.chk_all_records)).isChecked() && checkedRecordIds.size() == llBillRecords.getChildCount()) {
             ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(true);
         }
     }
 
     private void onUncheckRecord(long recordId) {
-        if(((CheckBox) findViewById(R.id.chk_all_records)).isChecked()) {
-            if(checkedRecordIds.size() == llBillRecords.getChildCount()) {//TODO
-                ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
-            }
-        }
-        else {
-            if(checkedRecordIds.size() != 0 && checkedRecordIds.size() == llBillRecords.getChildCount()) {
-                ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
-            }
+        if(((CheckBox) findViewById(R.id.chk_all_records)).isChecked() && checkedRecordIds.size() == llBillRecords.getChildCount()) {
+            ((CheckBox) findViewById(R.id.chk_all_records)).setChecked(false);
         }
 
         checkedRecordIds.remove(recordId);
