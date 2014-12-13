@@ -21,7 +21,7 @@ public class DbManager extends AbstractDbManager {
         ArrayList<AbstractDbTableContract> dbTableContracts = new ArrayList<AbstractDbTableContract>();
 
         dbTableContracts.add(DbTableBillContract.getInstance());
-        dbTableContracts.add(DbTableBillValuesContract.getInstance());
+        dbTableContracts.add(DbTableBillOrderContract.getInstance());
 
         return dbTableContracts;
     }
@@ -37,5 +37,5 @@ public class DbManager extends AbstractDbManager {
     private static DbManager INSTANCE;
 
     private static final String DATABASE_NAME = "bill_please.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 }
