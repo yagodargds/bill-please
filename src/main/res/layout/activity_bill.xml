@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/bill_list_fragment_container"
+        android:id="@+id/bill_order_list_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
@@ -18,7 +18,7 @@
         android:padding="@dimen/screen_edge_intent">
 
         <Button
-            android:id="@+id/bill_append_button"
+            android:id="@+id/bill_order_append_button"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:text="@string/button_append"

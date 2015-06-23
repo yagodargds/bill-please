@@ -17,7 +17,7 @@ public class BillListActivity extends Activity {
         setContentView(R.layout.activity_bill_list);
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction().add(R.id.progress_fragment_container, new BillListFragment()).commit();
+            getFragmentManager().beginTransaction().add(R.id.bill_list_fragment_container, new BillListFragment()).commit();
         }
     }
 
