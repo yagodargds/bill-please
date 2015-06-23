@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/app_llv" >
+<LinearLayout style="@style/app_llv">
 
-    <LinearLayout
+   <!-- <LinearLayout
         style="@style/action_bar_llv" >
 
         <ImageView
@@ -81,7 +78,7 @@
                         <TextView
                             style="@style/alignment_v" />
 
-                        <com.yagodar.android.billplease.custom.DbEditText
+                        <com.yagodar.android.bill_please.custom.DbEditText
                             android:id="@+id/et_def_item_name"
                             android:textColor="@color/bill_record_et_text"
                             android:hint="@string/lbl_item_name"
@@ -107,7 +104,7 @@
                             <TextView
                                 style="@style/alignment_v" />
 
-                            <com.yagodar.android.billplease.custom.DbEditText
+                            <com.yagodar.android.bill_please.custom.DbEditText
                                 android:id="@+id/et_def_cost"
                                 android:textColor="@color/bill_record_et_text"
                                 android:hint="@string/lbl_cost"
@@ -134,7 +131,7 @@
                             <TextView
                                 style="@style/alignment_v" />
 
-                            <com.yagodar.android.billplease.custom.DbEditText
+                            <com.yagodar.android.bill_please.custom.DbEditText
                                 android:id="@+id/et_def_share"
                                 android:textColor="@color/bill_record_et_text"
                                 android:hint="@string/lbl_share"
@@ -306,7 +303,7 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.billplease.custom.DbEditText
+                        <com.yagodar.android.bill_please.custom.DbEditText
                             android:id="@+id/et_tax"
                             app:tableName="bill_values"
                             app:tableColumnName="tax_per"
@@ -338,7 +335,7 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.billplease.custom.DbEditText
+                        <com.yagodar.android.bill_please.custom.DbEditText
                             android:id="@+id/et_tax_sum"
                             app:tableName="bill_values"
                             app:tableColumnName="tax_sum"
@@ -406,7 +403,7 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.billplease.custom.DbEditText
+                        <com.yagodar.android.bill_please.custom.DbEditText
                             android:id="@+id/et_tip"
                             app:tableName="bill_values"
                             app:tableColumnName="tip_per"
@@ -438,7 +435,7 @@
                         <TextView
                             style="@style/fill_v" />
 
-                        <com.yagodar.android.billplease.custom.DbEditText
+                        <com.yagodar.android.bill_please.custom.DbEditText
                             android:id="@+id/et_tip_sum"
                             app:tableName="bill_values"
                             app:tableColumnName="tip_sum"
@@ -529,6 +526,6 @@
             <requestFocus />
         </EditText>
 
-    </LinearLayout>
+    </LinearLayout>-->
 
 </LinearLayout>

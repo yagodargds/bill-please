@@ -2,21 +2,7 @@
 <resources>
 
     <string name="version_name">1.0.9.0a</string>
-
     <string name="app_tag">#BillPlease</string>
-
-    <string name="min_cost_double">0.0</string>
-    <string name="min_share_int">1</string>
-
-    <string name="min_tax_double">0.0</string>
-
-    <string name="def_tip_per_double">10.0</string>
-    <string name="min_tip_double">0.0</string>
-
-    <integer name="push_to_db_delay_millisecs">1000</integer>
-
-    <integer name="min_fraction_digits">2</integer>
-    <integer name="max_fraction_digits">2</integer>
 
     <string name="on_btn_click_method_name">onButtonClick</string>
 

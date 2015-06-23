@@ -23,4 +23,17 @@
     <string name="dlg_confirm">Confirm</string>
     <string name="dlg_cancel">Cancel</string>
 
+
+    <string name="no_data">No data</string>
+
+    <string name="button_append">Append</string>
+    <string name="button_edit">Edit</string>
+    <string name="button_update">Update</string>
+    <string name="button_remove">Remove</string>
+
+    <string name="err_load_failed">load failed</string>
+    <string name="err_append_failed">append failed</string>
+    <string name="err_update_failed">update failed</string>
+    <string name="err_remove_failed">remove failed</string>
+
 </resources>
