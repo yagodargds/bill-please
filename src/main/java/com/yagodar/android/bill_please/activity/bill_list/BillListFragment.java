@@ -1,5 +1,6 @@
 package com.yagodar.android.bill_please.activity.bill_list;
 
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.widget.Button;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
+import com.yagodar.android.bill_please.activity.bill.BillActivity;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
@@ -20,19 +22,21 @@ public class BillListFragment extends AbsLoaderProgressListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        BillList billList = BillList.getInstance();
+
         BillListOnClickListener onClickListener = new BillListOnClickListener();
+
+        setListAdapter(new BillListAdapter(getActivity(), onClickListener, billList));
 
         setEmptyText(getString(R.string.no_data));
 
-        setListAdapter(new BillListAdapter(getActivity(), onClickListener));
-
-        buttonAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
-        buttonAppend.setOnClickListener(onClickListener);
+        mButtonBillAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
+        mButtonBillAppend.setOnClickListener(onClickListener);
 
         setAvailable(true);
 
         if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) == null) {
-            if (!BillList.getInstance().isLoaded()) {
+            if (!billList.isLoaded()) {
                 startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
             }
         } else {
@@ -73,7 +77,7 @@ public class BillListFragment extends AbsLoaderProgressListFragment {
     @Override
     public void setAvailable(boolean available) {
         super.setAvailable(available);
-        buttonAppend.setEnabled(available);
+        mButtonBillAppend.setEnabled(available);
     }
 
     private class BillListOnClickListener implements View.OnClickListener {
@@ -81,13 +85,12 @@ public class BillListFragment extends AbsLoaderProgressListFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bill_append_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), (Bundle) v.getTag());
+                    startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
                     break;
                 case R.id.bill_edit_button:
-                    //nothing yet //TODO
-                    break;
-                case R.id.bill_update_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), (Bundle) v.getTag());
+                    Intent intent = new Intent(getActivity(), BillActivity.class);
+                    intent.putExtras((Bundle) v.getTag());
+                    startActivity(intent);
                     break;
                 case R.id.bill_remove_button:
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), (Bundle) v.getTag());
@@ -98,5 +101,5 @@ public class BillListFragment extends AbsLoaderProgressListFragment {
         }
     }
 
-    private Button buttonAppend;
+    private Button mButtonBillAppend;
 }

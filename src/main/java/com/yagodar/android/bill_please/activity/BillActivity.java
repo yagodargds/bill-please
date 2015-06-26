@@ -3,36 +3,11 @@ package com.yagodar.android.bill_please.activity;
 import android.support.v4.app.FragmentActivity;
 
 public class BillActivity extends FragmentActivity {
-   /* @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if(lastDbEt != null) {
-                hideFocus();
-                return true;
-            }
-        }
-
-        return super.onKeyDown(keyCode, event);
-    }
-
+   /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.bill_please_llv);
 
         timer = new Timer();
-
-        decimalFormat = new DecimalFormat();
-        decimalFormat.setMinimumFractionDigits(getResources().getInteger(R.integer.min_fraction_digits));
-        decimalFormat.setMaximumFractionDigits(getResources().getInteger(R.integer.max_fraction_digits));
-        decimalFormat.setGroupingUsed(false);
-
-        DecimalFormatSymbols custom = new DecimalFormatSymbols();
-        custom.setDecimalSeparator('.');
-        decimalFormat.setDecimalFormatSymbols(custom);
-
-        bigValuesScale = getResources().getInteger(R.integer.min_fraction_digits) * getResources().getInteger(R.integer.max_fraction_digits);
 
         exMotionEvent = NONE_MOTION_EVENT;
 
@@ -41,19 +16,6 @@ public class BillActivity extends FragmentActivity {
         billTextWatcher = new BillTextWatcher();
         billOnEditorActionListener = new BillOnEditorActionListener();
 
-        dbTableBillManager = DbManager.getInstance(this).getTableManager(DbTableBillOrderContract.getInstance());
-        dbTableBillValuesManager = DbManager.getInstance(this).getTableManager(DbTableBillContract.getInstance());
-
-        initDefValuesRecordId();
-
-        loadBill();
-
-        redrawAllSums();
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        //Skipped. Not in need. Everything is redraws in onCreate(). P.S. If use it, may be bugs with draw EditText views.
     }
 
     public void onButtonClick(View button) {

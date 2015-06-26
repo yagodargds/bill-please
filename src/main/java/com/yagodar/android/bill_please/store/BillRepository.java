@@ -1,16 +1,19 @@
 package com.yagodar.android.bill_please.store;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.provider.BaseColumns;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.store.db.DbManager;
 import com.yagodar.android.bill_please.store.db.DbTableBillContract;
+import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
+import com.yagodar.android.database.sqlite.DbHelper;
 import com.yagodar.android.database.sqlite.DbTableManager;
 import com.yagodar.essential.model.rep.IMultRepository;
 import com.yagodar.essential.operation.OperationResult;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +24,7 @@ import java.util.Map;
 public class BillRepository implements IMultRepository<Bill> {
 
     private BillRepository() {
+        mManager = DbManager.getInstance();
         mTableManager = DbManager.getInstance().getTableManager(DbTableBillContract.getInstance());
     }
 
@@ -72,11 +76,7 @@ public class BillRepository implements IMultRepository<Bill> {
                     taxType = Bill.TaxTipType.valueOf(dbTaxType);
                 }
 
-                BigDecimal taxVal = null;
                 String dbTaxVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TAX_VAL);
-                if(dbTaxVal != null) {
-                    taxVal = new BigDecimal(dbTaxVal);
-                }
 
                 Bill.TaxTipType tipType = null;
                 String dbTipType = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_TYPE);
@@ -84,13 +84,9 @@ public class BillRepository implements IMultRepository<Bill> {
                     tipType = Bill.TaxTipType.valueOf(dbTipType);
                 }
 
-                BigDecimal tipVal = null;
                 String dbTipVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_VAL);
-                if(dbTipVal != null) {
-                    tipVal = new BigDecimal(dbTipVal);
-                }
 
-                Bill bill = new Bill(id, name, taxType, taxVal, tipType, tipVal);
+                Bill bill = new Bill(id, name, taxType, dbTaxVal, tipType, dbTipVal);
 
                 billList.add(bill);
             }
@@ -156,13 +152,33 @@ public class BillRepository implements IMultRepository<Bill> {
 
     @Override
     public OperationResult<Integer> delete(long id) {
-        OperationResult<Integer> opResult = mTableManager.delete(id);
+        OperationResult<Integer> opResult = new OperationResult<>();
 
-        if(!opResult.isSuccessful()) {
-            opResult.setFailMessageId(R.string.err_remove_failed);
+        SQLiteDatabase db = null;
+        try {
+            db = mManager.getDatabase();
+            db.beginTransaction();
+
+            int rowsAffected = db.delete(DbTableBillContract.getInstance().getTableName(), BaseColumns._ID + DbHelper.SYMB_OP_EQUALITY + id, null);
+            opResult.setData(rowsAffected);
+
+            rowsAffected = db.delete(DbTableBillOrderContract.getInstance().getTableName(), DbTableBillOrderContract.COLUMN_NAME_BILL_ID + DbHelper.SYMB_OP_EQUALITY + id, null);
+            opResult.setData(opResult.getData() + rowsAffected);
+
+            db.setTransactionSuccessful();
+        } catch(Exception e) {
+            opResult.setFailThrowable(e);
+        } finally {
+            db.endTransaction();
+            mManager.closeDatabase(db);
         }
 
         return opResult;
+    }
+
+    @Override
+    public OperationResult<Integer> delete(Bill model) {
+        return delete(model.getId());
     }
 
     @Deprecated
@@ -181,6 +197,7 @@ public class BillRepository implements IMultRepository<Bill> {
         return contentValues;
     }
 
+    private DbManager mManager;
     private DbTableManager mTableManager;
 
     private static volatile BillRepository INSTANCE;

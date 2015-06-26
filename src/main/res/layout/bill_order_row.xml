@@ -10,10 +10,10 @@
         android:layout_width="@dimen/number_width"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingRight="@dimen/view_edge_small_gap" >
+        android:paddingRight="@dimen/view_edge_small_gap">
 
         <TextView
-            android:id="@+id/bill_number"
+            android:id="@+id/bill_order_number"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
@@ -28,7 +28,7 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/view_edge_small_gap"
-        android:paddingRight="@dimen/view_edge_small_gap" >
+        android:paddingRight="@dimen/view_edge_small_gap">
 
         <TableLayout
             android:layout_width="match_parent"
@@ -51,7 +51,7 @@
                     android:layout_marginRight="@dimen/view_edge_small_gap" />
 
                 <TextView
-                    android:id="@+id/bill_name"
+                    android:id="@+id/bill_order_name"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -73,13 +73,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical|right"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/cost"
                     android:gravity="center_vertical|start"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/tax"
                     android:layout_marginRight="@dimen/view_edge_small_gap" />
 
                 <TextView
-                    android:id="@+id/bill_tax_val"
+                    android:id="@+id/bill_order_cost"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -89,8 +89,25 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_marginRight="@dimen/view_edge_small_gap" />
 
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/view_edge_small_gap"
+                android:paddingBottom="@dimen/view_edge_small_gap">
+
                 <TextView
-                    android:id="@+id/bill_tax_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical|right"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/share"
+                    android:gravity="center_vertical|start"
+                    android:layout_marginRight="@dimen/view_edge_small_gap" />
+
+                <TextView
+                    android:id="@+id/bill_order_share"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -99,7 +116,6 @@
                     android:layout_marginLeft="@dimen/view_edge_small_gap"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_marginRight="@dimen/view_edge_small_gap" />
-
 
             </TableRow>
 
@@ -112,24 +128,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical|right"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/subtotal"
                     android:gravity="center_vertical|start"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/tip"
                     android:layout_marginRight="@dimen/view_edge_small_gap" />
 
                 <TextView
-                    android:id="@+id/bill_tip_val"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_small_gap"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-                <TextView
-                    android:id="@+id/bill_tip_type"
+                    android:id="@+id/bill_order_subtotal"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -150,25 +155,25 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingLeft="@dimen/view_edge_small_gap" >
+        android:paddingLeft="@dimen/view_edge_small_gap">
 
         <Button
-            android:id="@+id/bill_edit_button"
+            android:id="@+id/bill_order_edit_button"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:text="@string/button_edit"
             android:minHeight="@dimen/row_button_min_height"
-            android:layout_weight="0.5" />
+            android:layout_weight="1" />
 
         <Button
-            android:id="@+id/bill_remove_button"
+            android:id="@+id/bill_order_remove_button"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:text="@string/button_remove"
             android:minHeight="@dimen/row_button_min_height"
-            android:layout_weight="0.5" />
+            android:layout_weight="1" />
 
     </LinearLayout>
 

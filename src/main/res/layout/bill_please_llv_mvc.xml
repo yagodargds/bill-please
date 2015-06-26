@@ -83,7 +83,7 @@
                         <EditText
                             android:id="@+id/et_def_item_name"
                             android:textColor="@color/bill_record_et_text"
-                            android:hint="@string/lbl_item_name"
+                            android:hint="@string/name"
                             android:textColorHint="@color/bill_record_et_hint_text"
                             style="@style/input_etv" />
 
@@ -104,7 +104,7 @@
                             <EditText
                                 android:id="@+id/et_def_cost"
                                 android:textColor="@color/bill_record_et_text"
-                                android:hint="@string/lbl_cost"
+                                android:hint="@string/cost"
                                 android:textColorHint="@color/bill_record_et_hint_text"
                                 style="@style/number_decimal_etv" />
 
@@ -122,7 +122,7 @@
                             <EditText
                                 android:id="@+id/et_def_share"
                                 android:textColor="@color/bill_record_et_text"
-                                android:hint="@string/lbl_share"
+                                android:hint="@string/share"
                                 android:textColorHint="@color/bill_record_et_hint_text"
                                 style="@style/number_etv" />
 
@@ -202,7 +202,7 @@
                     style="@style/alignment_v" />
 
                 <TextView
-                    android:text="@string/lbl_subtotal"
+                    android:text="@string/subtotal"
                     style="@style/footer_tv_lbl" />
 
                 <TextView
@@ -261,7 +261,7 @@
                     style="@style/alignment_v" />
 
                 <TextView
-                    android:text="@string/lbl_tax"
+                    android:text="@string/tax"
                     style="@style/footer_tv_lbl" />
 
                 <TextView
@@ -345,7 +345,7 @@
                     style="@style/alignment_v" />
 
                 <TextView
-                    android:text="@string/lbl_tip"
+                    android:text="@string/tip"
                     style="@style/footer_tv_lbl" />
 
                 <TextView
@@ -429,7 +429,7 @@
                     style="@style/alignment_v" />
 
                 <TextView
-                    android:text="@string/lbl_total"
+                    android:text="@string/total"
                     style="@style/footer_tv_total" />
 
                 <TextView

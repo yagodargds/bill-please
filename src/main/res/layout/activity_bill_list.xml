@@ -2,7 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" >
 
     <FrameLayout
         android:id="@+id/bill_list_fragment_container"
@@ -15,14 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="@dimen/screen_edge_intent">
+        android:paddingTop="@dimen/view_edge_small_gap">
 
         <Button
             android:id="@+id/bill_append_button"
-            android:layout_width="1dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/button_append"
-            android:layout_weight="1"
+            android:minHeight="@dimen/row_button_min_height"
             android:singleLine="true"
             android:scrollHorizontally="true"
             android:ellipsize="marquee" />
