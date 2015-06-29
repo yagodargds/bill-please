@@ -15,6 +15,5 @@ public class BillList extends ConcurrentListModel<Bill> {
         return INSTANCE;
     }
 
-
     private static final BillList INSTANCE = new BillList();
 }

@@ -32,7 +32,7 @@ public class BillListAdapter extends AbsListAdapter<Bill> {
             viewHolder = new ViewHolder();
 
             viewHolder.textViewNumber = (TextView) convertView.findViewById(R.id.bill_number);
-            viewHolder.textViewName = (TextView) convertView.findViewById(R.id.bill_name);
+            viewHolder.textViewName = (TextView) convertView.findViewById(R.id.bill_et_name);
             viewHolder.textViewTaxVal = (TextView) convertView.findViewById(R.id.bill_tax_val);
             viewHolder.textViewTaxType = (TextView) convertView.findViewById(R.id.bill_tax_type);
             viewHolder.textViewTipVal = (TextView) convertView.findViewById(R.id.bill_tip_val);

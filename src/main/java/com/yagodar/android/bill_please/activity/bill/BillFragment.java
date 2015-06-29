@@ -1,11 +1,15 @@
 package com.yagodar.android.bill_please.activity.bill;
 
+import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -17,13 +21,14 @@ import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.store.db.DbTableBillContract;
+import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 
 /**
  * Created by yagodar on 23.06.2015.
  */
-public class BillFragment extends AbsLoaderProgressListFragment {
+public class BillFragment extends AbsLoaderProgressListFragment implements IOnActivityBackPressedListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -46,7 +51,7 @@ public class BillFragment extends AbsLoaderProgressListFragment {
 
         CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new BillOnCheckedChangeListener();
 
-        mEditTextName = (EditText) getActivity().findViewById(R.id.bill_name);
+        mEditTextName = (EditText) getActivity().findViewById(R.id.bill_et_name);
         mTextViewSubtotal = (TextView) getActivity().findViewById(R.id.bill_subtotal);
         mToggleTax = (ToggleButton) getActivity().findViewById(R.id.bill_toggle_tax);
         mEditTextTaxPer = (EditText) getActivity().findViewById(R.id.bill_et_tax_per_val);
@@ -71,34 +76,48 @@ public class BillFragment extends AbsLoaderProgressListFragment {
             mEditTextTipPer.setEnabled(!mToggleTip.isChecked());
             mTextViewTotal.setText(savedInstanceState.getString(TOTAL_TAG));
         } else {
-            mEditTextName.setText(mBill.getName());
             notifyBillLoaded();
         }
 
         mToggleTax.setOnCheckedChangeListener(onCheckedChangeListener);
         mToggleTip.setOnCheckedChangeListener(onCheckedChangeListener);
 
-        TextWatcher nameTextWatcher = new BillNameTextWatcher();
-        mEditTextName.addTextChangedListener(nameTextWatcher);
-
+        mEditTextName.addTextChangedListener(new BillNameTextWatcher());
         mEditTextTaxAbs.addTextChangedListener(new BillTaxAbsTextWatcher());
         mEditTextTaxPer.addTextChangedListener(new BillTaxPerTextWatcher());
+        mEditTextTipAbs.addTextChangedListener(new BillTipAbsTextWatcher());
+        mEditTextTipPer.addTextChangedListener(new BillTipPerTextWatcher());
 
-        mEditTextTaxAbs.addTextChangedListener(new BillTipAbsTextWatcher());
-        mEditTextTaxPer.addTextChangedListener(new BillTipPerTextWatcher());
+        View.OnFocusChangeListener onFocusChangeListener = new BillOnFocusChangeListener();
+
+        mEditTextName.setOnFocusChangeListener(onFocusChangeListener);
+        mEditTextTaxAbs.setOnFocusChangeListener(onFocusChangeListener);
+        mEditTextTaxPer.setOnFocusChangeListener(onFocusChangeListener);
+        mEditTextTipAbs.setOnFocusChangeListener(onFocusChangeListener);
+        mEditTextTipPer.setOnFocusChangeListener(onFocusChangeListener);
+
+        mEditTextHidden = (EditText) getActivity().findViewById(R.id.bill_et_hidden);
+        mEditTextHidden.setEnabled(false);
+        mEditTextHidden.setOnFocusChangeListener(onFocusChangeListener);
+
+        TextView.OnEditorActionListener onEditorActionListener = new BillOnEditorActionListener();
+        mEditTextName.setOnEditorActionListener(onEditorActionListener);
+        mEditTextTaxAbs.setOnEditorActionListener(onEditorActionListener);
+        mEditTextTaxPer.setOnEditorActionListener(onEditorActionListener);
+        mEditTextTipAbs.setOnEditorActionListener(onEditorActionListener);
+        mEditTextTipPer.setOnEditorActionListener(onEditorActionListener);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         setAvailable(true);
 
-        if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal()) == null) {
-            if (!mBill.isLoaded()) {
-                startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), getArguments());
-            }
-        } else {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), null);
-        }
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), getArguments());
 
         if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null);
+            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null, true);
         }
 
         if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) != null) {
@@ -155,10 +174,20 @@ public class BillFragment extends AbsLoaderProgressListFragment {
         mButtonBillOrderAppend.setEnabled(available);
         setTaxRowEnabled(available);
         setTipRowEnabled(available);
-        mButtonBillUpdate.setEnabled(available);
+    }
+
+    @Override
+    public boolean onActivityBackPressed() {
+        if(mLastEditText != null) {
+            hideFocus();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void notifyBillLoaded() {
+        onNameLoaded();
         onSubtotalChanged();
         onTaxLoaded();
         onTaxChanged();
@@ -188,14 +217,20 @@ public class BillFragment extends AbsLoaderProgressListFragment {
         mBill.setName(mEditTextName.getText().toString());
     }
 
+    private void onNameLoaded() {
+        mEditTextName.setText(mBill.getName());
+    }
+
     private void onSubtotalChanged() {
         mTextViewSubtotal.setText(mBill.getFormattedSubtotal());
     }
 
     private void onTaxLoaded() {
         if(mBill.getTaxType() == Bill.TaxTipType.ABSOLUTE) {
+            mToggleTax.setChecked(true);
             mEditTextTaxAbs.setText(mBill.getFormattedTaxVal());
         } else if(mBill.getTaxType() == Bill.TaxTipType.PERCENT) {
+            mToggleTax.setChecked(false);
             mEditTextTaxPer.setText(mBill.getFormattedTaxVal());
         }
     }
@@ -213,14 +248,21 @@ public class BillFragment extends AbsLoaderProgressListFragment {
             mEditTextTaxPer.setText(mBill.getFormattedTaxVal(Bill.TaxTipType.PERCENT));
             mEditTextTaxAbs.setEnabled(true);
             mEditTextTaxPer.setEnabled(false);
+            if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
+                mEditTextTaxAbs.setNextFocusDownId(R.id.bill_et_tip_abs_val);
+            }
         } else if(mBill.getTaxType() == Bill.TaxTipType.PERCENT) {
             mEditTextTaxAbs.setText(mBill.getFormattedTaxVal(Bill.TaxTipType.ABSOLUTE));
             mEditTextTaxPer.setEnabled(true);
             mEditTextTaxAbs.setEnabled(false);
+            if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
+                mEditTextTaxPer.setNextFocusDownId(R.id.bill_et_tip_abs_val);
+            }
         }
     }
 
     private void setTaxRowEnabled(boolean enabled) {
+        mToggleTax.setEnabled(enabled);
         if(mBill.getTaxType() == Bill.TaxTipType.ABSOLUTE) {
             mEditTextTaxAbs.setEnabled(enabled);
         } else if(mBill.getTaxType() == Bill.TaxTipType.PERCENT) {
@@ -230,8 +272,10 @@ public class BillFragment extends AbsLoaderProgressListFragment {
 
     private void onTipLoaded() {
         if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
+            mToggleTip.setChecked(true);
             mEditTextTipAbs.setText(mBill.getFormattedTipVal());
         } else if(mBill.getTipType() == Bill.TaxTipType.PERCENT) {
+            mToggleTip.setChecked(false);
             mEditTextTipPer.setText(mBill.getFormattedTipVal());
         }
     }
@@ -247,14 +291,17 @@ public class BillFragment extends AbsLoaderProgressListFragment {
     private void onTipChanged() {
         if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
             mEditTextTipPer.setText(mBill.getFormattedTipVal(Bill.TaxTipType.PERCENT));
+            mEditTextTipAbs.setEnabled(true);
             mEditTextTipPer.setEnabled(false);
-        } else if(mBill.getTaxType() == Bill.TaxTipType.PERCENT) {
+        } else if(mBill.getTipType() == Bill.TaxTipType.PERCENT) {
             mEditTextTipAbs.setText(mBill.getFormattedTipVal(Bill.TaxTipType.ABSOLUTE));
+            mEditTextTipPer.setEnabled(true);
             mEditTextTipAbs.setEnabled(false);
         }
     }
 
     private void setTipRowEnabled(boolean enabled) {
+        mToggleTip.setEnabled(enabled);
         if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
             mEditTextTipAbs.setEnabled(enabled);
         } else if(mBill.getTipType() == Bill.TaxTipType.PERCENT) {
@@ -266,12 +313,23 @@ public class BillFragment extends AbsLoaderProgressListFragment {
         mTextViewTotal.setText(mBill.getFormattedTotal());
     }
 
+    private void hideFocus() {
+        hideSoftKeyboard(mLastEditText);
+        mEditTextHidden.requestFocus();
+    }
+
+    private void hideSoftKeyboard(View view) {
+        if(view != null) {
+            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
     private class BillOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bill_update_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), getArguments());
+                    startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), getArguments(), true);
                     break;
                 case R.id.bill_order_append_button:
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), getArguments());
@@ -281,6 +339,44 @@ public class BillFragment extends AbsLoaderProgressListFragment {
                     break;
                 case R.id.bill_order_remove_button:
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal(), (Bundle) v.getTag());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private class BillOnFocusChangeListener implements View.OnFocusChangeListener {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            switch(v.getId()) {
+                case R.id.bill_et_name:
+                    if(hasFocus) {
+                        mLastEditText = (EditText) v;
+                    } else {
+                        onNameLoaded();
+                    }
+                    break;
+                case R.id.bill_et_tax_abs_val:
+                case R.id.bill_et_tax_per_val:
+                    if(hasFocus) {
+                        mLastEditText = (EditText) v;
+                    } else {
+                        onTaxLoaded();
+                    }
+                    break;
+                case R.id.bill_et_tip_abs_val:
+                case R.id.bill_et_tip_per_val:
+                    if(hasFocus) {
+                        mLastEditText = (EditText) v;
+                    } else {
+                        onTipLoaded();
+                    }
+                    break;
+                case R.id.bill_et_hidden:
+                    if(hasFocus) {
+                        mLastEditText = null;
+                    }
                     break;
                 default:
                     break;
@@ -303,6 +399,8 @@ public class BillFragment extends AbsLoaderProgressListFragment {
                 default:
                     break;
             }
+
+            hideFocus();
         }
     }
 
@@ -364,6 +462,39 @@ public class BillFragment extends AbsLoaderProgressListFragment {
         public void afterTextChanged(Editable s) {}
     }
 
+    private class BillOnEditorActionListener implements TextView.OnEditorActionListener {
+        @Override
+        public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+            if(actionId == EditorInfo.IME_ACTION_NEXT) {
+                switch(textView.getId()) {
+                    case R.id.bill_et_name:
+                        if(mToggleTax.isChecked()) {
+                            mEditTextTaxAbs.requestFocus();
+                        } else {
+                            mEditTextTaxPer.requestFocus();
+                        }
+                        return true;
+                    case R.id.bill_et_tax_abs_val:
+                    case R.id.bill_et_tax_per_val:
+                        if(mToggleTip.isChecked()) {
+                            mEditTextTipAbs.requestFocus();
+                        } else {
+                            mEditTextTipPer.requestFocus();
+                        }
+                        return true;
+                    case R.id.bill_et_tip_abs_val:
+                    case R.id.bill_et_tip_per_val:
+                        hideFocus();
+                        return true;
+                    default:
+                        break;
+                }
+            }
+
+            return false;
+        }
+    }
+
     private Bill mBill;
 
     private Button mButtonBillOrderAppend;
@@ -378,6 +509,10 @@ public class BillFragment extends AbsLoaderProgressListFragment {
     private EditText mEditTextTipPer;
     private EditText mEditTextTipAbs;
     private TextView mTextViewTotal;
+
+    private EditText mEditTextHidden;
+
+    private EditText mLastEditText;
 
     private final static String NAME_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME;
     private final static String SUBTOTAL_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME + "_subtotal";

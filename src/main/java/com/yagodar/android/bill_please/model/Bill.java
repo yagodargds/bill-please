@@ -1,6 +1,6 @@
 package com.yagodar.android.bill_please.model;
 
-import com.yagodar.essential.model.ListModel;
+import com.yagodar.essential.model.ConcurrentListModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,7 +10,7 @@ import java.text.DecimalFormatSymbols;
 /**
  * Created by АППДКт78М on 24.10.2014.
  */
-public class Bill extends ListModel<BillOrder> {
+public class Bill extends ConcurrentListModel<BillOrder> {
     public Bill(long id) {
         this(id, null, null, null, null, null);
     }
@@ -40,12 +40,16 @@ public class Bill extends ListModel<BillOrder> {
             mTaxType = taxType;
         }
 
-        if(taxVal == null) {
-            mTaxVal = MIN_TAX_TIP_VAL;
-        } else {
-            mTaxVal = new BigDecimal(taxVal);
-            if(mTaxVal.compareTo(MIN_TAX_TIP_VAL) < 0) {
+        BigDecimal taxValNumber = null;
+        try {
+            taxValNumber = new BigDecimal(taxVal);
+        } catch(NullPointerException ignored) {
+        } catch(NumberFormatException ignored) {
+        } finally {
+            if(taxValNumber == null || taxValNumber.compareTo(MIN_TAX_TIP_VAL) < 0) {
                 mTaxVal = MIN_TAX_TIP_VAL;
+            } else {
+                mTaxVal = taxValNumber;
             }
         }
     }
@@ -73,12 +77,16 @@ public class Bill extends ListModel<BillOrder> {
             mTipType = tipType;
         }
 
-        if(tipVal == null) {
-            mTipVal = MIN_TAX_TIP_VAL;
-        } else {
-            mTipVal = new BigDecimal(tipVal);
-            if(mTipVal.compareTo(MIN_TAX_TIP_VAL) < 0) {
+        BigDecimal tipValNumber = null;
+        try {
+            tipValNumber = new BigDecimal(tipVal);
+        } catch(NullPointerException ignored) {
+        } catch(NumberFormatException ignored) {
+        } finally {
+            if(tipValNumber == null || tipValNumber.compareTo(MIN_TAX_TIP_VAL) < 0) {
                 mTipVal = MIN_TAX_TIP_VAL;
+            } else {
+                mTipVal = tipValNumber;
             }
         }
     }
@@ -112,18 +120,30 @@ public class Bill extends ListModel<BillOrder> {
     }
 
     private BigDecimal getTaxTipVal(TaxTipType intentType, TaxTipType type, BigDecimal val) {
+        BigDecimal intentVal;
+
         if(intentType == type) {
-            return val;
+            intentVal = val;
+        } else {
+            BigDecimal subtotal = getSubtotal();
+            if(subtotal.compareTo(BigDecimal.ZERO) == 0) {
+                intentVal = MIN_TAX_TIP_VAL;
+            } else {
+                switch (intentType) {
+                    case ABSOLUTE:
+                        intentVal = subtotal.multiply(val).divide(FULL_TAX_TIP_PERCENT_VAL, BIG_VALUES_SCALE, BIG_VALUES_ROUNDING_MODE);
+                        break;
+                    case PERCENT:
+                        intentVal = val.multiply(FULL_TAX_TIP_PERCENT_VAL).divide(subtotal, BIG_VALUES_SCALE, BIG_VALUES_ROUNDING_MODE);
+                        break;
+                    default:
+                        intentVal = MIN_TAX_TIP_VAL;
+                        break;
+                }
+            }
         }
 
-        switch(intentType) {
-            case ABSOLUTE:
-                return getSubtotal().multiply(val).divide(FULL_TAX_TIP_PERCENT_VAL, BIG_VALUES_SCALE, BIG_VALUES_ROUNDING_MODE);
-            case PERCENT:
-                return val.multiply(FULL_TAX_TIP_PERCENT_VAL).divide(getSubtotal(), BIG_VALUES_SCALE, BIG_VALUES_ROUNDING_MODE);
-        }
-
-        return MIN_TAX_TIP_VAL;
+        return intentVal;
     }
 
     public enum TaxTipType {

@@ -16,14 +16,22 @@ public class BillActivity extends Activity {
 
         setContentView(R.layout.activity_bill);
 
-        BillFragment billFragment = new BillFragment();
-        billFragment.setArguments(getIntent().getExtras());
-
         if (savedInstanceState == null) {
+            billFragment = new BillFragment();
+            billFragment.setArguments(getIntent().getExtras());
             getFragmentManager().beginTransaction().add(R.id.bill_order_list_fragment_container, billFragment).commit();
+        } else {
+            billFragment = (BillFragment) getFragmentManager().findFragmentById(R.id.bill_order_list_fragment_container);
         }
 
         //getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!billFragment.onActivityBackPressed()) {
+            super.onBackPressed();
+        }
     }
 
     /*@Override
@@ -38,4 +46,6 @@ public class BillActivity extends Activity {
 
         return true;
     }*/
+
+    private BillFragment billFragment;
 }

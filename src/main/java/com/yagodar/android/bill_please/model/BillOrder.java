@@ -23,13 +23,17 @@ public class BillOrder extends Model {
         return Bill.DECIMAL_FORMAT.format(mCost);
     }
 
-    public void setCost(String cost) {
-        if(mCost == null) {
-            mCost = MIN_COST;
-        } else {
-            mCost = new BigDecimal(cost);
-            if(mCost.compareTo(MIN_COST) < 0) {
+    public void setCost(String costVal) {
+        BigDecimal costValNumber = null;
+        try {
+            costValNumber = new BigDecimal(costVal);
+        } catch(NullPointerException ignored) {
+        } catch(NumberFormatException ignored) {
+        } finally {
+            if(costValNumber == null || costValNumber.compareTo(MIN_COST) < 0) {
                 mCost = MIN_COST;
+            } else {
+                mCost = costValNumber;
             }
         }
     }
@@ -38,13 +42,17 @@ public class BillOrder extends Model {
         return Bill.DECIMAL_FORMAT.format(mShare);
     }
 
-    public void setShare(String share) {
-        if(share == null) {
-            mShare = MIN_SHARE;
-        } else {
-            mShare = new BigInteger(share);
-            if(mShare.compareTo(MIN_SHARE) < 0) {
+    public void setShare(String shareVal) {
+        BigInteger shareValNumber = null;
+        try {
+            shareValNumber = new BigInteger(shareVal);
+        } catch(NullPointerException ignored) {
+        } catch(NumberFormatException ignored) {
+        } finally {
+            if(shareValNumber == null || shareValNumber.compareTo(MIN_SHARE) < 0) {
                 mShare = MIN_SHARE;
+            } else {
+                mShare = shareValNumber;
             }
         }
     }

@@ -51,7 +51,7 @@
                     android:layout_marginRight="@dimen/view_edge_small_gap" />
 
                 <TextView
-                    android:id="@+id/bill_name"
+                    android:id="@+id/bill_et_name"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"

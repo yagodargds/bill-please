@@ -32,29 +32,23 @@ public class BillListFragment extends AbsLoaderProgressListFragment {
 
         mButtonBillAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
         mButtonBillAppend.setOnClickListener(onClickListener);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         setAvailable(true);
 
-        if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) == null) {
-            if (!billList.isLoaded()) {
-                startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
-            }
-        } else {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
-        }
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
 
         if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) != null) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
         }
 
-        if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null);
-        }
-
         if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal()) != null) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), null);
         }
-
     }
 
     @Override
