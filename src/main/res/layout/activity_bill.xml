@@ -149,7 +149,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:gravity="center_vertical|start"
                     android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_gap"
+                    android:layout_marginLeft="@dimen/view_edge_small_gap"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
             </TableRow>
@@ -199,7 +199,7 @@
                     android:layout_gravity="top|left"
                     android:gravity="center_vertical|start"
                     android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_gap"
+                    android:layout_marginLeft="@dimen/view_edge_small_gap"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
             </TableRow>
@@ -225,7 +225,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_gap"
+                    android:layout_marginLeft="@dimen/view_edge_small_gap"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
             </TableRow>
@@ -256,7 +256,8 @@
     <EditText
         android:id="@+id/bill_et_hidden"
         android:layout_width="0dp"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:enabled="false">
         <requestFocus />
     </EditText>
 

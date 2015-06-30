@@ -1,11 +1,10 @@
 package com.yagodar.android.bill_please.activity.bill;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,7 +16,9 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.yagodar.android.bill_please.R;
+import com.yagodar.android.bill_please.activity.AbsBillPleaseTextWatcher;
 import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
+import com.yagodar.android.bill_please.activity.bill_order.BillOrderActivity;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.store.db.DbTableBillContract;
@@ -97,7 +98,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         mEditTextTipPer.setOnFocusChangeListener(onFocusChangeListener);
 
         mEditTextHidden = (EditText) getActivity().findViewById(R.id.bill_et_hidden);
-        mEditTextHidden.setEnabled(false);
         mEditTextHidden.setOnFocusChangeListener(onFocusChangeListener);
 
         TextView.OnEditorActionListener onEditorActionListener = new BillOnEditorActionListener();
@@ -162,11 +162,8 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
             }
         }
 
-        finishLoading(loader.getId());
+        super.onLoaderResult(loader, loaderResult);
     }
-
-    @Override
-    public void onLoaderReset(Loader<LoaderResult> loader) {}
 
     @Override
     public void setAvailable(boolean available) {
@@ -183,6 +180,17 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void hideFocus() {
+        hideSoftKeyboard(mLastEditText);
+        mEditTextHidden.requestFocus();
+    }
+
+    private void hideSoftKeyboard(View view) {
+        if(view != null) {
+            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 
@@ -313,17 +321,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         mTextViewTotal.setText(mBill.getFormattedTotal());
     }
 
-    private void hideFocus() {
-        hideSoftKeyboard(mLastEditText);
-        mEditTextHidden.requestFocus();
-    }
-
-    private void hideSoftKeyboard(View view) {
-        if(view != null) {
-            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
     private class BillOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -335,7 +332,9 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), getArguments());
                     break;
                 case R.id.bill_order_edit_button:
-                    //nothing yet //TODO
+                    Intent intent = new Intent(getActivity(), BillOrderActivity.class);
+                    intent.putExtras((Bundle) v.getTag());
+                    startActivity(intent);
                     break;
                 case R.id.bill_order_remove_button:
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal(), (Bundle) v.getTag());
@@ -404,14 +403,14 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         }
     }
 
-    private class BillNameTextWatcher extends AbsBillTextWatcher {
+    private class BillNameTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             updateModelName();
         }
     }
 
-    private class BillTaxAbsTextWatcher extends AbsBillTextWatcher {
+    private class BillTaxAbsTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(mToggleTax.isChecked()) {
@@ -421,7 +420,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         }
     }
 
-    private class BillTaxPerTextWatcher extends AbsBillTextWatcher {
+    private class BillTaxPerTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(!mToggleTax.isChecked()) {
@@ -431,7 +430,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         }
     }
 
-    private class BillTipAbsTextWatcher extends AbsBillTextWatcher {
+    private class BillTipAbsTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(mToggleTip.isChecked()) {
@@ -441,7 +440,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         }
     }
 
-    private class BillTipPerTextWatcher extends AbsBillTextWatcher {
+    private class BillTipPerTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(!mToggleTip.isChecked()) {
@@ -449,17 +448,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
                 notifyTipChanged();
             }
         }
-    }
-
-    private abstract class AbsBillTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public abstract void onTextChanged(CharSequence s, int start, int before, int count);
-
-        @Override
-        public void afterTextChanged(Editable s) {}
     }
 
     private class BillOnEditorActionListener implements TextView.OnEditorActionListener {

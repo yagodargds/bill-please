@@ -9,15 +9,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.database.sqlite.custom.AbstractDbEditText;
 
-import java.math.RoundingMode;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,7 +21,6 @@ public class BillActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         timer = new Timer();
-        exMotionEvent = NONE_MOTION_EVENT;
     }
 
     private void hideFocus() {
@@ -122,39 +117,6 @@ public class BillActivity extends FragmentActivity {
         public void afterTextChanged(Editable s) {}
     }
 
-    private class BillOnEditorActionListener implements TextView.OnEditorActionListener {
-        @Override
-        public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
-                View nextFocusView = null;
-
-                switch(textView.getId()) {
-                    case R.id.et_item_name:
-                    case R.id.et_cost:
-                    case R.id.et_share:
-                    case R.id.et_def_item_name:
-                    case R.id.et_def_cost:
-                    case R.id.et_def_share:
-                    case R.id.et_tip:
-                    case R.id.et_tip_sum:
-                    case R.id.et_tax:
-                    case R.id.et_tax_sum:
-                        nextFocusView = ((AbstractDbEditText) textView).getNextFocusView(View.FOCUS_FORWARD);
-                        break;
-                    default:
-                        break;
-                }
-
-                if(nextFocusView != null) {
-                    nextFocusView.requestFocus();
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
-
     public static class CreateNewBillDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -214,10 +176,7 @@ public class BillActivity extends FragmentActivity {
 
     private AbstractDbEditText lastDbEt;
     private View etHidden;
-    private int exMotionEvent;
     private Timer timer;
 
-    private static final int NONE_MOTION_EVENT = -1;
     private static final String INTENT_TYPE_SHARE = "text/plain";
-    private static final RoundingMode BIG_VALUES_ROUNDING_MODE = RoundingMode.HALF_UP;
 }

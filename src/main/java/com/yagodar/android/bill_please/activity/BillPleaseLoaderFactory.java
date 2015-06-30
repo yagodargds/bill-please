@@ -11,7 +11,7 @@ import com.yagodar.android.bill_please.activity.bill.loader.UpdateBillLoader;
 import com.yagodar.android.bill_please.activity.bill_list.loader.AppendBillLoader;
 import com.yagodar.android.bill_please.activity.bill_list.loader.LoadBillListLoader;
 import com.yagodar.android.bill_please.activity.bill_list.loader.RemoveBillLoader;
-import com.yagodar.android.bill_please.activity.order.loader.UpdateBillOrderLoader;
+import com.yagodar.android.bill_please.activity.bill_order.loader.UpdateBillOrderLoader;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 
 import java.lang.reflect.InvocationTargetException;
@@ -62,8 +62,8 @@ public class BillPleaseLoaderFactory {
 
         BILL_LOADER_BY_ID.put(BillLoaderType.LOAD_BILL.ordinal(), LoadBillLoader.class);
         BILL_LOADER_BY_ID.put(BillLoaderType.APPEND_BILL_ORDER.ordinal(), AppendBillOrderLoader.class);
-        BILL_LOADER_BY_ID.put(BillLoaderType.UPDATE_BILL_ORDER.ordinal(), UpdateBillOrderLoader.class);
         BILL_LOADER_BY_ID.put(BillLoaderType.REMOVE_BILL_ORDER.ordinal(), RemoveBillOrderLoader.class);
+        BILL_LOADER_BY_ID.put(BillLoaderType.UPDATE_BILL_ORDER.ordinal(), UpdateBillOrderLoader.class);
     }
 
     private static final String LOG_TAG = BillPleaseLoaderFactory.class.getSimpleName();

@@ -62,11 +62,8 @@ public class BillListFragment extends AbsLoaderProgressListFragment {
             ((BillListAdapter) getListAdapter()).notifyDataSetChanged();
         }
 
-        finishLoading(loader.getId());
+        super.onLoaderResult(loader, loaderResult);
     }
-
-    @Override
-    public void onLoaderReset(Loader<LoaderResult> loader) {}
 
     @Override
     public void setAvailable(boolean available) {

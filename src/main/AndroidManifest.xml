@@ -21,7 +21,8 @@
         </activity>
         <activity android:name=".activity.bill.BillActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
-
+        <activity android:name=".activity.bill_order.BillOrderActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
     </application>
 
     <!-- TODO only for debug -->

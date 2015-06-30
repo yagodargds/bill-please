@@ -39,7 +39,7 @@ public class BillOrder extends Model {
     }
 
     public String getFormattedShare() {
-        return Bill.DECIMAL_FORMAT.format(mShare);
+        return mShare.toString();
     }
 
     public void setShare(String shareVal) {

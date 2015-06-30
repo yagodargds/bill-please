@@ -22,11 +22,11 @@ public class UpdateBillLoader extends AbsAsyncTaskLoader {
     @Override
     public LoaderResult loadInBackground() {
         LoaderResult loaderResult = new LoaderResult();
+        loaderResult.setNotifyDataSet(false);
 
         if(!BillList.getInstance().isLoaded()) {
             loaderResult.setFailMessageId(R.string.err_update_failed);
             loaderResult.setFailThrowable(new IllegalStateException("Can`t update bill in unloaded list!"));
-            loaderResult.setNotifyDataSet(false);
             return loaderResult;
         }
 
@@ -34,19 +34,15 @@ public class UpdateBillLoader extends AbsAsyncTaskLoader {
         if (args == null || !args.containsKey(BaseColumns._ID)) {
             loaderResult.setFailMessageId(R.string.err_update_failed);
             loaderResult.setFailThrowable(new IllegalArgumentException("Can`t update bill in list with unset args!"));
-            loaderResult.setNotifyDataSet(false);
             return loaderResult;
         }
 
         long billId = args.getLong(BaseColumns._ID);
         OperationResult<Integer> opResult = BillRepository.getInstance().update(BillList.getInstance().getModel(billId));
-        if(opResult.isSuccessful()) {
-            loaderResult.setNotifyDataSet(true);
-        } else {
+        if(!opResult.isSuccessful()) {
             loaderResult.setFailMessage(opResult.getFailMessage());
             loaderResult.setFailMessageId(opResult.getFailMessageId());
             loaderResult.setFailThrowable(opResult.getFailThrowable());
-            loaderResult.setNotifyDataSet(false);
         }
 
         return loaderResult;
