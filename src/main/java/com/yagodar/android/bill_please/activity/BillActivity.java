@@ -7,15 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.database.sqlite.custom.AbstractDbEditText;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class BillActivity extends FragmentActivity {
     @Override
@@ -96,27 +93,6 @@ public class BillActivity extends FragmentActivity {
     }
 
 
-    private class BillTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            timer.cancel();
-
-            if(lastDbEt != null && lastDbEt.isFocused()) {
-                timer = new Timer();
-                try {
-                    //timer.schedule(new PushToDbTimerTask(), getResources().getInteger(R.integer.push_to_db_delay_millisecs));
-                }
-                catch(Exception ignored) {}
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {}
-    }
-
     public static class CreateNewBillDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -150,29 +126,7 @@ public class BillActivity extends FragmentActivity {
         private DialogInterface.OnClickListener onClickListener = new CreateNewBillDialogOnClickListener();
     }
 
-    private class PushToDbTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            if(lastDbEt != null) {
-                switch(lastDbEt.getId()) {
-                    case R.id.et_tax:
-                    case R.id.et_tax_sum:
-                        lastDbEt.pushToDb();
-                        //redrawTaxSum(calcSubtotalSum());
-                        break;
-                    case R.id.et_tip:
-                    case R.id.et_tip_sum:
-                        lastDbEt.pushToDb();
-                        //redrawTipSum(calcSubtotalSum());
-                        break;
-                    default:
-                        lastDbEt.pushToDb();
-                        //redrawAllSums();
-                        break;
-                }
-            }
-        }
-    }
+
 
     private AbstractDbEditText lastDbEt;
     private View etHidden;

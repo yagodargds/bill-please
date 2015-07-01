@@ -26,6 +26,9 @@ import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by yagodar on 23.06.2015.
  */
@@ -46,9 +49,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
 
         mButtonBillOrderAppend = (Button) getActivity().findViewById(R.id.bill_order_append_button);
         mButtonBillOrderAppend.setOnClickListener(onClickListener);
-
-        mButtonBillUpdate = (Button) getActivity().findViewById(R.id.bill_update_button);
-        mButtonBillUpdate.setOnClickListener(onClickListener);
 
         CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new BillOnCheckedChangeListener();
 
@@ -321,13 +321,27 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         mTextViewTotal.setText(mBill.getFormattedTotal());
     }
 
+    private void scheduleUpdateTimerTask() {
+        cancelUpdateTimerTask();
+        mUpdateTimer = new Timer();
+        try {
+            mUpdateTimer.schedule(new BillUpdateTimerTask(), UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
+        }
+        catch(IllegalArgumentException ignored) {}
+        catch(IllegalStateException ignored) {}
+    }
+
+    private void cancelUpdateTimerTask() {
+        if(mUpdateTimer != null) {
+            mUpdateTimer.cancel();
+            mUpdateTimer.purge();
+        }
+    }
+
     private class BillOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.bill_update_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), getArguments(), true);
-                    break;
                 case R.id.bill_order_append_button:
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), getArguments());
                     break;
@@ -389,10 +403,12 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
             switch (buttonView.getId()) {
                 case R.id.bill_toggle_tax:
                     updateModelTax();
+                    scheduleUpdateTimerTask();
                     notifyTaxChanged();
                     break;
                 case R.id.bill_toggle_tip:
                     updateModelTip();
+                    scheduleUpdateTimerTask();
                     notifyTipChanged();
                     break;
                 default:
@@ -407,6 +423,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             updateModelName();
+            scheduleUpdateTimerTask();
         }
     }
 
@@ -415,6 +432,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(mToggleTax.isChecked()) {
                 updateModelTax();
+                scheduleUpdateTimerTask();
                 notifyTaxChanged();
             }
         }
@@ -425,6 +443,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(!mToggleTax.isChecked()) {
                 updateModelTax();
+                scheduleUpdateTimerTask();
                 notifyTaxChanged();
             }
         }
@@ -435,6 +454,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(mToggleTip.isChecked()) {
                 updateModelTip();
+                scheduleUpdateTimerTask();
                 notifyTipChanged();
             }
         }
@@ -445,6 +465,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if(!mToggleTip.isChecked()) {
                 updateModelTip();
+                scheduleUpdateTimerTask();
                 notifyTipChanged();
             }
         }
@@ -483,10 +504,16 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         }
     }
 
+    private class BillUpdateTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), getArguments(), true);
+        }
+    }
+
     private Bill mBill;
 
     private Button mButtonBillOrderAppend;
-    private Button mButtonBillUpdate;
 
     private EditText mEditTextName;
     private TextView mTextViewSubtotal;
@@ -502,6 +529,8 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
 
     private EditText mLastEditText;
 
+    private Timer mUpdateTimer;
+
     private final static String NAME_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME;
     private final static String SUBTOTAL_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME + "_subtotal";
     private final static String TAX_TYPE_TAG = DbTableBillContract.COLUMN_NAME_TAX_TYPE;
@@ -511,4 +540,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private final static String TIP_ABS_VAL_TAG = DbTableBillContract.COLUMN_NAME_TIP_VAL + "_abs";
     private final static String TIP_PER_VAL_TAG = DbTableBillContract.COLUMN_NAME_TIP_VAL + "_per";
     private final static String TOTAL_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME + "_total";
+
+    private final static long UPDATE_BILL_TIMER_TASK_DELAY_MILLIS = 1500L;
 }

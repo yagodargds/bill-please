@@ -15,25 +15,6 @@
         android:paddingTop="@dimen/view_edge_small_gap"
         android:paddingBottom="@dimen/view_edge_small_gap" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="@dimen/view_edge_small_gap" >
-
-        <Button
-            android:id="@+id/bill_order_update_button"
-            android:layout_width="1dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_update"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:scrollHorizontally="true"
-            android:ellipsize="marquee" />
-
-    </LinearLayout>
-
     <EditText
         android:id="@+id/bill_order_et_hidden"
         android:layout_width="0dp"

@@ -20,7 +20,6 @@
 
     <string name="button_append">Append</string>
     <string name="button_edit">Edit</string>
-    <string name="button_update">Update</string>
     <string name="button_remove">Remove</string>
 
     <string name="err_load_failed">load failed</string>

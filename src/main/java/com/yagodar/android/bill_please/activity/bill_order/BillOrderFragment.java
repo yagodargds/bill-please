@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -20,6 +19,9 @@ import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by yagodar on 30.06.2015.
@@ -36,11 +38,6 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         mBillOrder = mBill.getModel(billOrderId);
 
         setContentView(R.layout.bill_order_view);
-
-        View.OnClickListener onClickListener = new BillOrderOnClickListener();
-
-        mButtonBillOrderUpdate = (Button) getActivity().findViewById(R.id.bill_order_update_button);
-        mButtonBillOrderUpdate.setOnClickListener(onClickListener);
 
         mEditTextName = (EditText) getActivity().findViewById(R.id.bill_order_et_name);
         mEditTextCost = (EditText) getActivity().findViewById(R.id.bill_order_et_cost);
@@ -79,6 +76,12 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal()) != null) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), null, true);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        cancelUpdateTimerTask();
     }
 
     @Override
@@ -155,16 +158,20 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         mTextViewSubtotal.setText(mBillOrder.getFormattedSubtotal());
     }
 
-    private class BillOrderOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.bill_order_update_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), getArguments(), true);
-                    break;
-                default:
-                    break;
-            }
+    private void scheduleUpdateTimerTask() {
+        cancelUpdateTimerTask();
+        mUpdateTimer = new Timer();
+        try {
+            mUpdateTimer.schedule(new BillOrderUpdateTimerTask(), UPDATE_BILL_ORDER_TIMER_TASK_DELAY_MILLIS);
+        }
+        catch(IllegalArgumentException ignored) {}
+        catch(IllegalStateException ignored) {}
+    }
+
+    private void cancelUpdateTimerTask() {
+        if(mUpdateTimer != null) {
+            mUpdateTimer.cancel();
+            mUpdateTimer.purge();
         }
     }
 
@@ -208,6 +215,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             updateModelName();
+            scheduleUpdateTimerTask();
         }
     }
 
@@ -215,6 +223,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             updateModelCost();
+            scheduleUpdateTimerTask();
             notifyOrderChanged();
         }
     }
@@ -223,14 +232,20 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             updateModelShare();
+            scheduleUpdateTimerTask();
             notifyOrderChanged();
+        }
+    }
+
+    private class BillOrderUpdateTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), getArguments(), true);
         }
     }
 
     private Bill mBill;
     private BillOrder mBillOrder;
-
-    private Button mButtonBillOrderUpdate;
 
     private EditText mEditTextName;
     private EditText mEditTextCost;
@@ -241,8 +256,12 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
 
     private EditText mLastEditText;
 
+    private Timer mUpdateTimer;
+
     private final static String NAME_TAG = DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME;
     private final static String COST_TAG = DbTableBillOrderContract.COLUMN_NAME_COST;
     private final static String SHARE_TAG = DbTableBillOrderContract.COLUMN_NAME_SHARE;
     private final static String SUBTOTAL_TAG = DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME + "_subtotal";
+
+    private final static long UPDATE_BILL_ORDER_TIMER_TASK_DELAY_MILLIS = 1500L;
 }
