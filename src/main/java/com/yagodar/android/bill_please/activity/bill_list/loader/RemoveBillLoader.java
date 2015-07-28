@@ -20,7 +20,7 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
     }
 
     @Override
-    public LoaderResult loadInBackground() {
+    public LoaderResult load() {
         LoaderResult loaderResult = new LoaderResult();
 
         if(!BillList.getInstance().isLoaded()) {

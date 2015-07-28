@@ -23,7 +23,7 @@ public class UpdateBillOrderLoader extends AbsAsyncTaskLoader {
     }
 
     @Override
-    public LoaderResult loadInBackground() {
+    public LoaderResult load() {
         LoaderResult loaderResult = new LoaderResult();
         loaderResult.setNotifyDataSet(false);
 
