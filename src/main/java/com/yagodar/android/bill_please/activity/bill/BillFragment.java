@@ -323,8 +323,9 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     }
 
     private void startUpdateBillLoader() {
-        if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
-            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), true);
+        Loader updateBillLoader = getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal());
+        if (updateBillLoader != null && updateBillLoader.isStarted()) {
+            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal());
         }
         startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), mUpdateBillBundle, true);
     }
