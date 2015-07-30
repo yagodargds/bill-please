@@ -36,6 +36,8 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mLoadingBill = true;
+
         mUpdateBillBundle = new Bundle(getArguments());
         mUpdateBillBundle.putLong(AbsAsyncTaskLoader.DELAY_START_MILLISECONDS_TAG, UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
 
@@ -115,6 +117,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
 
         setAvailable(true);
 
+        mLoadingBill = true;
         startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), getArguments());
 
         if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
@@ -157,6 +160,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
                     ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                     notifyBillLoaded();
                 }
+                mLoadingBill = false;
             } else if(loaderResult.isNotifyDataSet()) {
                 ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                 notifyOrderListChanged();
@@ -392,6 +396,10 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(mLoadingBill) {
+                return;
+            }
+
             switch (buttonView.getId()) {
                 case R.id.bill_toggle_tax:
                     updateModelTax();
@@ -414,6 +422,10 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillNameTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(mLoadingBill) {
+                return;
+            }
+
             updateModelName();
             startUpdateBillLoader();
         }
@@ -422,6 +434,10 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillTaxAbsTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(mLoadingBill) {
+                return;
+            }
+
             if(mToggleTax.isChecked()) {
                 updateModelTax();
                 startUpdateBillLoader();
@@ -433,6 +449,10 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillTaxPerTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(mLoadingBill) {
+                return;
+            }
+
             if(!mToggleTax.isChecked()) {
                 updateModelTax();
                 startUpdateBillLoader();
@@ -444,6 +464,10 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillTipAbsTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(mLoadingBill) {
+                return;
+            }
+
             if(mToggleTip.isChecked()) {
                 updateModelTip();
                 startUpdateBillLoader();
@@ -455,6 +479,10 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillTipPerTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(mLoadingBill) {
+                return;
+            }
+
             if(!mToggleTip.isChecked()) {
                 updateModelTip();
                 startUpdateBillLoader();
@@ -495,6 +523,8 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
             return false;
         }
     }
+
+    private boolean mLoadingBill;
 
     private Bundle mUpdateBillBundle;
 
