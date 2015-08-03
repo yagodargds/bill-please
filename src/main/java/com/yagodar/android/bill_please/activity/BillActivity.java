@@ -1,12 +1,12 @@
 package com.yagodar.android.bill_please.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.yagodar.android.bill_please.R;
@@ -14,11 +14,11 @@ import com.yagodar.android.database.sqlite.custom.AbstractDbEditText;
 
 import java.util.Timer;
 
-public class BillActivity extends FragmentActivity {
-    @Override
+public class BillActivity extends Activity {
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         timer = new Timer();
-    }
+    }*/
 
     private void hideFocus() {
         etHidden.requestFocus();
