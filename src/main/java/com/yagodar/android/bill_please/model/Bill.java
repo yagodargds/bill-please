@@ -21,6 +21,10 @@ public class Bill extends ConcurrentListModel<BillOrder> {
         setTipVal(tipType, tipVal);
     }
 
+    public BigDecimal getTaxVal() {
+        return mTaxVal;
+    }
+
     public String getFormattedTaxVal() {
         return DECIMAL_FORMAT.format(mTaxVal);
     }
@@ -56,6 +60,10 @@ public class Bill extends ConcurrentListModel<BillOrder> {
 
     public TaxTipType getTaxType() {
         return mTaxType;
+    }
+
+    public BigDecimal getTipVal() {
+        return mTipVal;
     }
 
     public String getFormattedTipVal() {

@@ -19,6 +19,10 @@ public class BillOrder extends Model {
         setShare(share);
     }
 
+    public BigDecimal getCost() {
+        return mCost;
+    }
+
     public String getFormattedCost() {
         return Bill.DECIMAL_FORMAT.format(mCost);
     }
@@ -36,6 +40,10 @@ public class BillOrder extends Model {
                 mCost = costValNumber;
             }
         }
+    }
+
+    public BigInteger getShare() {
+        return mShare;
     }
 
     public String getFormattedShare() {

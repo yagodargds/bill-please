@@ -27,6 +27,8 @@ import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListFragmen
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
 
+import java.math.BigDecimal;
+
 /**
  * Created by yagodar on 23.06.2015.
  */
@@ -35,8 +37,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mLoadingBill = true;
 
         mUpdateBillBundle = new Bundle(getArguments());
         mUpdateBillBundle.putLong(AbsAsyncTaskLoader.DELAY_START_MILLISECONDS_TAG, UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
@@ -117,7 +117,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
 
         setAvailable(true);
 
-        mLoadingBill = true;
         startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), getArguments());
 
         if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
@@ -160,7 +159,6 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
                     ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                     notifyBillLoaded();
                 }
-                mLoadingBill = false;
             } else if(loaderResult.isNotifyDataSet()) {
                 ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                 notifyOrderListChanged();
@@ -226,12 +224,17 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         onTotalChanged();
     }
 
-    private void updateModelName() {
+    private boolean updateModelName() {
+        String oldValue = mBill.getName();
         mBill.setName(mEditTextName.getText().toString());
+        String newValue = mBill.getName();
+        return !newValue.equals(oldValue);
     }
 
     private void onNameLoaded() {
+        mLoading = true;
         mEditTextName.setText(mBill.getName());
+        mLoading = false;
     }
 
     private void onSubtotalChanged() {
@@ -239,6 +242,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     }
 
     private void onTaxLoaded() {
+        mLoading = true;
         if(mBill.getTaxType() == Bill.TaxTipType.ABSOLUTE) {
             mToggleTax.setChecked(true);
             mEditTextTaxAbs.setText(mBill.getFormattedTaxVal());
@@ -246,17 +250,27 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
             mToggleTax.setChecked(false);
             mEditTextTaxPer.setText(mBill.getFormattedTaxVal());
         }
+        mLoading = false;
     }
 
-    private void updateModelTax() {
+    private boolean updateModelTax() {
+        Bill.TaxTipType oldTypeValue = mBill.getTaxType();
+        BigDecimal oldValue = mBill.getTaxVal();
+
         if(mToggleTax.isChecked()) {
             mBill.setTaxVal(Bill.TaxTipType.ABSOLUTE, mEditTextTaxAbs.getText().toString());
         } else {
             mBill.setTaxVal(Bill.TaxTipType.PERCENT, mEditTextTaxPer.getText().toString());
         }
+
+        Bill.TaxTipType newTypeValue = mBill.getTaxType();
+        BigDecimal newValue = mBill.getTaxVal();
+
+        return !newTypeValue.equals(oldTypeValue) || newValue.compareTo(oldValue) != 0;
     }
 
     private void onTaxChanged() {
+        mLoading = true;
         if(mBill.getTaxType() == Bill.TaxTipType.ABSOLUTE) {
             mEditTextTaxPer.setText(mBill.getFormattedTaxVal(Bill.TaxTipType.PERCENT));
             mEditTextTaxAbs.setEnabled(true);
@@ -272,6 +286,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
                 mEditTextTaxPer.setNextFocusDownId(R.id.bill_et_tip_abs_val);
             }
         }
+        mLoading = false;
     }
 
     private void setTaxRowEnabled(boolean enabled) {
@@ -284,6 +299,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     }
 
     private void onTipLoaded() {
+        mLoading = true;
         if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
             mToggleTip.setChecked(true);
             mEditTextTipAbs.setText(mBill.getFormattedTipVal());
@@ -291,17 +307,27 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
             mToggleTip.setChecked(false);
             mEditTextTipPer.setText(mBill.getFormattedTipVal());
         }
+        mLoading = false;
     }
 
-    private void updateModelTip() {
+    private boolean updateModelTip() {
+        Bill.TaxTipType oldTypeValue = mBill.getTipType();
+        BigDecimal oldValue = mBill.getTipVal();
+
         if(mToggleTip.isChecked()) {
             mBill.setTipVal(Bill.TaxTipType.ABSOLUTE, mEditTextTipAbs.getText().toString());
         } else {
             mBill.setTipVal(Bill.TaxTipType.PERCENT, mEditTextTipPer.getText().toString());
         }
+
+        Bill.TaxTipType newTypeValue = mBill.getTipType();
+        BigDecimal newValue = mBill.getTipVal();
+
+        return !newTypeValue.equals(oldTypeValue) || newValue.compareTo(oldValue) != 0;
     }
 
     private void onTipChanged() {
+        mLoading = true;
         if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
             mEditTextTipPer.setText(mBill.getFormattedTipVal(Bill.TaxTipType.PERCENT));
             mEditTextTipAbs.setEnabled(true);
@@ -311,6 +337,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
             mEditTextTipPer.setEnabled(true);
             mEditTextTipAbs.setEnabled(false);
         }
+        mLoading = false;
     }
 
     private void setTipRowEnabled(boolean enabled) {
@@ -396,20 +423,22 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if(mLoadingBill) {
+            if(mLoading) {
                 return;
             }
 
             switch (buttonView.getId()) {
                 case R.id.bill_toggle_tax:
-                    updateModelTax();
-                    startUpdateBillLoader();
-                    notifyTaxChanged();
+                    if(updateModelTax()) {
+                        startUpdateBillLoader();
+                        notifyTaxChanged();
+                    }
                     break;
                 case R.id.bill_toggle_tip:
-                    updateModelTip();
-                    startUpdateBillLoader();
-                    notifyTipChanged();
+                    if(updateModelTip()) {
+                        startUpdateBillLoader();
+                        notifyTipChanged();
+                    }
                     break;
                 default:
                     break;
@@ -422,26 +451,26 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillNameTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(mLoadingBill) {
+            if(mLoading) {
                 return;
             }
-
-            updateModelName();
-            startUpdateBillLoader();
+            if(updateModelName()) {
+                startUpdateBillLoader();
+            }
         }
     }
 
     private class BillTaxAbsTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(mLoadingBill) {
+            if(mLoading) {
                 return;
             }
-
             if(mToggleTax.isChecked()) {
-                updateModelTax();
-                startUpdateBillLoader();
-                notifyTaxChanged();
+                if(updateModelTax()) {
+                    startUpdateBillLoader();
+                    notifyTaxChanged();
+                }
             }
         }
     }
@@ -449,14 +478,14 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillTaxPerTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(mLoadingBill) {
+            if(mLoading) {
                 return;
             }
-
             if(!mToggleTax.isChecked()) {
-                updateModelTax();
-                startUpdateBillLoader();
-                notifyTaxChanged();
+                if(updateModelTax()) {
+                    startUpdateBillLoader();
+                    notifyTaxChanged();
+                }
             }
         }
     }
@@ -464,14 +493,14 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillTipAbsTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(mLoadingBill) {
+            if(mLoading) {
                 return;
             }
-
             if(mToggleTip.isChecked()) {
-                updateModelTip();
-                startUpdateBillLoader();
-                notifyTipChanged();
+                if(updateModelTip()) {
+                    startUpdateBillLoader();
+                    notifyTipChanged();
+                }
             }
         }
     }
@@ -479,14 +508,14 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     private class BillTipPerTextWatcher extends AbsBillPleaseTextWatcher {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(mLoadingBill) {
+            if(mLoading) {
                 return;
             }
-
             if(!mToggleTip.isChecked()) {
-                updateModelTip();
-                startUpdateBillLoader();
-                notifyTipChanged();
+                if(updateModelTip()) {
+                    startUpdateBillLoader();
+                    notifyTipChanged();
+                }
             }
         }
     }
@@ -524,7 +553,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         }
     }
 
-    private boolean mLoadingBill;
+    private boolean mLoading;
 
     private Bundle mUpdateBillBundle;
 
