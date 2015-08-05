@@ -27,8 +27,6 @@ import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListFragmen
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
 
-import java.math.BigDecimal;
-
 /**
  * Created by yagodar on 23.06.2015.
  */
@@ -225,10 +223,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     }
 
     private boolean updateModelName() {
-        String oldValue = mBill.getName();
-        mBill.setName(mEditTextName.getText().toString());
-        String newValue = mBill.getName();
-        return !newValue.equals(oldValue);
+        return mBill.setName(mEditTextName.getText().toString());
     }
 
     private void onNameLoaded() {
@@ -254,19 +249,11 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     }
 
     private boolean updateModelTax() {
-        Bill.TaxTipType oldTypeValue = mBill.getTaxType();
-        BigDecimal oldValue = mBill.getTaxVal();
-
         if(mToggleTax.isChecked()) {
-            mBill.setTaxVal(Bill.TaxTipType.ABSOLUTE, mEditTextTaxAbs.getText().toString());
+            return mBill.setTaxVal(Bill.TaxTipType.ABSOLUTE, mEditTextTaxAbs.getText().toString());
         } else {
-            mBill.setTaxVal(Bill.TaxTipType.PERCENT, mEditTextTaxPer.getText().toString());
+            return mBill.setTaxVal(Bill.TaxTipType.PERCENT, mEditTextTaxPer.getText().toString());
         }
-
-        Bill.TaxTipType newTypeValue = mBill.getTaxType();
-        BigDecimal newValue = mBill.getTaxVal();
-
-        return !newTypeValue.equals(oldTypeValue) || newValue.compareTo(oldValue) != 0;
     }
 
     private void onTaxChanged() {
@@ -311,19 +298,11 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
     }
 
     private boolean updateModelTip() {
-        Bill.TaxTipType oldTypeValue = mBill.getTipType();
-        BigDecimal oldValue = mBill.getTipVal();
-
         if(mToggleTip.isChecked()) {
-            mBill.setTipVal(Bill.TaxTipType.ABSOLUTE, mEditTextTipAbs.getText().toString());
+            return mBill.setTipVal(Bill.TaxTipType.ABSOLUTE, mEditTextTipAbs.getText().toString());
         } else {
-            mBill.setTipVal(Bill.TaxTipType.PERCENT, mEditTextTipPer.getText().toString());
+            return mBill.setTipVal(Bill.TaxTipType.PERCENT, mEditTextTipPer.getText().toString());
         }
-
-        Bill.TaxTipType newTypeValue = mBill.getTipType();
-        BigDecimal newValue = mBill.getTipVal();
-
-        return !newTypeValue.equals(oldTypeValue) || newValue.compareTo(oldValue) != 0;
     }
 
     private void onTipChanged() {

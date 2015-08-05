@@ -19,15 +19,11 @@ public class BillOrder extends Model {
         setShare(share);
     }
 
-    public BigDecimal getCost() {
-        return mCost;
-    }
-
     public String getFormattedCost() {
         return Bill.DECIMAL_FORMAT.format(mCost);
     }
 
-    public void setCost(String costVal) {
+    public boolean setCost(String costVal) {
         BigDecimal costValNumber = null;
         try {
             costValNumber = new BigDecimal(costVal);
@@ -35,22 +31,27 @@ public class BillOrder extends Model {
         } catch(NumberFormatException ignored) {
         } finally {
             if(costValNumber == null || costValNumber.compareTo(MIN_COST) < 0) {
-                mCost = MIN_COST;
+                costValNumber = MIN_COST;
             } else {
-                mCost = costValNumber;
+                costValNumber = costValNumber.round(Bill.MATH_CONTEXT);
             }
         }
-    }
 
-    public BigInteger getShare() {
-        return mShare;
+        boolean changed = false;
+
+        if(mCost == null || costValNumber.compareTo(mCost) != 0) {
+            mCost = costValNumber;
+            changed = true;
+        }
+
+        return changed;
     }
 
     public String getFormattedShare() {
         return mShare.toString();
     }
 
-    public void setShare(String shareVal) {
+    public boolean setShare(String shareVal) {
         BigInteger shareValNumber = null;
         try {
             shareValNumber = new BigInteger(shareVal);
@@ -58,11 +59,18 @@ public class BillOrder extends Model {
         } catch(NumberFormatException ignored) {
         } finally {
             if(shareValNumber == null || shareValNumber.compareTo(MIN_SHARE) < 0) {
-                mShare = MIN_SHARE;
-            } else {
-                mShare = shareValNumber;
+                shareValNumber = MIN_SHARE;
             }
         }
+
+        boolean changed = false;
+
+        if(mShare == null || shareValNumber.compareTo(mShare) != 0) {
+            mShare = shareValNumber;
+            changed = true;
+        }
+
+        return changed;
     }
 
     public BigDecimal getSubtotal() {

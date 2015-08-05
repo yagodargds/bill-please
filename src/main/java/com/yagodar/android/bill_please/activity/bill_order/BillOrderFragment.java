@@ -21,9 +21,6 @@ import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressFragment;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 /**
  * Created by yagodar on 30.06.2015.
  */
@@ -129,10 +126,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private boolean updateModelName() {
-        String oldValue = mBillOrder.getName();
-        mBillOrder.setName(mEditTextName.getText().toString());
-        String newValue = mBillOrder.getName();
-        return !newValue.equals(oldValue);
+        return mBillOrder.setName(mEditTextName.getText().toString());
     }
 
     private void onNameLoaded() {
@@ -142,10 +136,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private boolean updateModelCost() {
-        BigDecimal oldValue = mBillOrder.getCost();
-        mBillOrder.setCost(mEditTextCost.getText().toString());
-        BigDecimal newValue = mBillOrder.getCost();
-        return newValue.compareTo(oldValue) != 0;
+        return mBillOrder.setCost(mEditTextCost.getText().toString());
     }
 
     private void onCostLoaded() {
@@ -155,10 +146,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private boolean updateModelShare() {
-        BigInteger oldValue = mBillOrder.getShare();
-        mBillOrder.setShare(mEditTextShare.getText().toString());
-        BigInteger newValue = mBillOrder.getShare();
-        return newValue.compareTo(oldValue) != 0;
+        return mBillOrder.setShare(mEditTextShare.getText().toString());
     }
 
     private void onShareLoaded() {

@@ -3,6 +3,7 @@ package com.yagodar.android.bill_please.model;
 import com.yagodar.essential.model.ConcurrentListModel;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -21,10 +22,6 @@ public class Bill extends ConcurrentListModel<BillOrder> {
         setTipVal(tipType, tipVal);
     }
 
-    public BigDecimal getTaxVal() {
-        return mTaxVal;
-    }
-
     public String getFormattedTaxVal() {
         return DECIMAL_FORMAT.format(mTaxVal);
     }
@@ -37,33 +34,29 @@ public class Bill extends ConcurrentListModel<BillOrder> {
         return DECIMAL_FORMAT.format(getTaxTipVal(intentType, mTaxType, mTaxVal));
     }
 
-    public void setTaxVal(TaxTipType taxType, String taxVal) {
+    public boolean setTaxVal(TaxTipType taxType, String taxVal) {
         if(taxType == null) {
-            mTaxType = DEF_TAX_TIP_TYPE;
-        } else {
+            taxType = DEF_TAX_TIP_TYPE;
+        }
+        BigDecimal taxValNumber = parseTaxTipVal(taxVal);
+
+        boolean changed = false;
+
+        if(mTaxType == null || !taxType.equals(mTaxType)) {
             mTaxType = taxType;
+            changed = true;
         }
 
-        BigDecimal taxValNumber = null;
-        try {
-            taxValNumber = new BigDecimal(taxVal);
-        } catch(NullPointerException ignored) {
-        } catch(NumberFormatException ignored) {
-        } finally {
-            if(taxValNumber == null || taxValNumber.compareTo(MIN_TAX_TIP_VAL) < 0) {
-                mTaxVal = MIN_TAX_TIP_VAL;
-            } else {
-                mTaxVal = taxValNumber;
-            }
+        if(mTaxVal == null || taxValNumber.compareTo(mTaxVal) != 0) {
+            mTaxVal = taxValNumber;
+            changed = true;
         }
+
+        return changed;
     }
 
     public TaxTipType getTaxType() {
         return mTaxType;
-    }
-
-    public BigDecimal getTipVal() {
-        return mTipVal;
     }
 
     public String getFormattedTipVal() {
@@ -78,25 +71,25 @@ public class Bill extends ConcurrentListModel<BillOrder> {
         return DECIMAL_FORMAT.format(getTaxTipVal(intentType, mTipType, mTipVal));
     }
 
-    public void setTipVal(TaxTipType tipType, String tipVal) {
+    public boolean setTipVal(TaxTipType tipType, String tipVal) {
         if(tipType == null) {
-            mTipType = DEF_TAX_TIP_TYPE;
-        } else {
+            tipType = DEF_TAX_TIP_TYPE;
+        }
+        BigDecimal tipValNumber = parseTaxTipVal(tipVal);
+
+        boolean changed = false;
+
+        if(mTipType == null || !tipType.equals(mTipType)) {
             mTipType = tipType;
+            changed = true;
         }
 
-        BigDecimal tipValNumber = null;
-        try {
-            tipValNumber = new BigDecimal(tipVal);
-        } catch(NullPointerException ignored) {
-        } catch(NumberFormatException ignored) {
-        } finally {
-            if(tipValNumber == null || tipValNumber.compareTo(MIN_TAX_TIP_VAL) < 0) {
-                mTipVal = MIN_TAX_TIP_VAL;
-            } else {
-                mTipVal = tipValNumber;
-            }
+        if(mTipVal == null || tipValNumber.compareTo(mTipVal) != 0) {
+            mTipVal = tipValNumber;
+            changed = true;
         }
+
+        return changed;
     }
 
     public TaxTipType getTipType() {
@@ -125,6 +118,23 @@ public class Bill extends ConcurrentListModel<BillOrder> {
 
     public String getFormattedTotal() {
         return DECIMAL_FORMAT.format(getTotal());
+    }
+
+    private BigDecimal parseTaxTipVal(String val) {
+        BigDecimal valNumber = null;
+        try {
+            valNumber = new BigDecimal(val);
+        } catch(NullPointerException ignored) {
+        } catch(NumberFormatException ignored) {
+        } finally {
+            if(valNumber == null || valNumber.compareTo(MIN_TAX_TIP_VAL) < 0) {
+                valNumber = MIN_TAX_TIP_VAL;
+            }
+            else {
+                valNumber = valNumber.round(MATH_CONTEXT);
+            }
+        }
+        return valNumber;
     }
 
     private BigDecimal getTaxTipVal(TaxTipType intentType, TaxTipType type, BigDecimal val) {
@@ -169,6 +179,7 @@ public class Bill extends ConcurrentListModel<BillOrder> {
     protected static final int BIG_VALUES_MAX_FRACTION_DIGITS = 2;
     protected static final int BIG_VALUES_SCALE = BIG_VALUES_MIN_FRACTION_DIGITS * BIG_VALUES_MAX_FRACTION_DIGITS;
     protected static final RoundingMode BIG_VALUES_ROUNDING_MODE = RoundingMode.HALF_UP;
+    protected static final MathContext MATH_CONTEXT = new MathContext(BIG_VALUES_MAX_FRACTION_DIGITS, BIG_VALUES_ROUNDING_MODE);
     protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
     static {
         DECIMAL_FORMAT.setMinimumFractionDigits(BIG_VALUES_MIN_FRACTION_DIGITS);
