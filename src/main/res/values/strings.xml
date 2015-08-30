@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Bill, Please!</string>
+    <string name="app_name">Bill Please</string>
 
     <string name="btn_lbl_add_new_bill_record">Add new record</string>
     <string name="btn_lbl_del_bill_record">Delete record</string>

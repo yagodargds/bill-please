@@ -4,7 +4,7 @@
     android:versionName="@string/version_name" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="8"
         android:targetSdkVersion="22" />
 
     <application
@@ -24,6 +24,9 @@
         <activity android:name=".activity.bill_order.BillOrderActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
     </application>
+
+    <meta-data android:name="android.app.searchable"
+        android:resource="@xml/searchable"/>
 
     <!-- TODO only for debug -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

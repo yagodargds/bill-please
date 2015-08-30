@@ -1,7 +1,4 @@
 <resources>
-    <style name="AppTheme" parent="@android:style/Theme.NoTitleBar">
-    </style>
-
     <style name="app_v">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>

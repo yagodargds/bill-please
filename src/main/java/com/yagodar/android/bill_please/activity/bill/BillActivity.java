@@ -1,14 +1,14 @@
 package com.yagodar.android.bill_please.activity.bill;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.yagodar.android.bill_please.R;
 
 /**
  * Created by yagodar on 23.06.2015.
  */
-public class BillActivity extends Activity {
+public class BillActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,9 +19,9 @@ public class BillActivity extends Activity {
         if (savedInstanceState == null) {
             billFragment = new BillFragment();
             billFragment.setArguments(getIntent().getExtras());
-            getFragmentManager().beginTransaction().add(R.id.bill_order_list_fragment_container, billFragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.bill_order_list_fragment_container, billFragment).commit();
         } else {
-            billFragment = (BillFragment) getFragmentManager().findFragmentById(R.id.bill_order_list_fragment_container);
+            billFragment = (BillFragment) getSupportFragmentManager().findFragmentById(R.id.bill_order_list_fragment_container);
         }
 
         //getActionBar().setDisplayHomeAsUpEnabled(true);
