@@ -18,6 +18,8 @@
 
     <string name="no_data">No data</string>
 
+    <string name="search_hint">Search</string>
+
     <string name="button_append">Append</string>
     <string name="button_edit">Edit</string>
     <string name="button_remove">Remove</string>
