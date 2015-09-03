@@ -3,6 +3,7 @@ package com.yagodar.android.bill_please.activity.bill_list;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -10,13 +11,13 @@ import android.widget.TextView;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.Bill;
-import com.yagodar.android.custom.adapter.AbsListAdapter;
+import com.yagodar.android.custom.adapter.AbsRecyclerViewAdapter;
 import com.yagodar.essential.model.ListModel;
 
 /**
  * Created by yagodar on 18.06.2015.
  */
-public class BillListAdapter extends AbsListAdapter<Bill> {
+public class BillListAdapter extends AbsRecyclerViewAdapter<Bill> {
 
     public BillListAdapter(Context context, View.OnClickListener onClickListener, ListModel<Bill> listModel) {
         super(context, onClickListener, listModel);
@@ -65,6 +66,15 @@ public class BillListAdapter extends AbsListAdapter<Bill> {
         viewHolder.buttonRemove.setTag(buttonArgs);
 
         return convertView;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView mTextView;
+
+        public ViewHolder(View v) {
+            super(v);
+        }
     }
 
     private static class ViewHolder {

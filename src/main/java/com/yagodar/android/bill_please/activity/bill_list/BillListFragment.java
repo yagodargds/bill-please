@@ -10,13 +10,13 @@ import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
 import com.yagodar.android.bill_please.activity.bill.BillActivity;
 import com.yagodar.android.bill_please.model.BillList;
-import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListViewFragment;
+import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressRecyclerViewFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 
 /**
  * Created by yagodar on 17.06.2015.
  */
-public class BillListFragment extends AbsLoaderProgressListViewFragment {
+public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -26,9 +26,9 @@ public class BillListFragment extends AbsLoaderProgressListViewFragment {
 
         BillListOnClickListener onClickListener = new BillListOnClickListener();
 
-        setListAdapter(new BillListAdapter(getActivity(), onClickListener, billList));
+        setRecyclerAdapter(new BillListAdapter(getActivity(), onClickListener, billList));
 
-        setEmptyText(getString(R.string.no_data));
+        //setEmptyText(getString(R.string.no_data)); TODO
 
         mButtonBillAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
         mButtonBillAppend.setOnClickListener(onClickListener);
@@ -59,7 +59,7 @@ public class BillListFragment extends AbsLoaderProgressListViewFragment {
     @Override
     public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult loaderResult) {
         if(loaderResult.isSuccessful() && loaderResult.isNotifyDataSet()) {
-            ((BillListAdapter) getListAdapter()).notifyDataSetChanged();
+            getRecycleAdapter().notifyDataSetChanged();
         }
 
         super.onLoaderResult(loader, loaderResult);

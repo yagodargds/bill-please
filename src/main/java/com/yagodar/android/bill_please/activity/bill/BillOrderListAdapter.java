@@ -11,13 +11,13 @@ import android.widget.TextView;
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.BillOrder;
 import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
-import com.yagodar.android.custom.adapter.AbsListAdapter;
+import com.yagodar.android.custom.adapter.AbsListViewAdapter;
 import com.yagodar.essential.model.ListModel;
 
 /**
  * Created by yagodar on 24.06.2015.
  */
-public class BillOrderListAdapter extends AbsListAdapter<BillOrder> {
+public class BillOrderListAdapter extends AbsListViewAdapter<BillOrder> {
 
     public BillOrderListAdapter(Context context, View.OnClickListener onClickListener, ListModel<BillOrder> listModel) {
         super(context, onClickListener, listModel);
