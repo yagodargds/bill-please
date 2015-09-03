@@ -23,14 +23,14 @@ import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.store.db.DbTableBillContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
-import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListFragment;
+import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListViewFragment;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
 
 /**
  * Created by yagodar on 23.06.2015.
  */
-public class BillFragment extends AbsLoaderProgressListFragment implements IOnActivityBackPressedListener {
+public class BillFragment extends AbsLoaderProgressListViewFragment implements IOnActivityBackPressedListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

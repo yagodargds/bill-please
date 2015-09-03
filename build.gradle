@@ -18,6 +18,5 @@ android {
 dependencies {
     compile project(':android-custom')
     compile project(':android-sqlite-manager')
-    compile project(':ya-essential')
     compile 'com.android.support:design:23.0.0'
 }

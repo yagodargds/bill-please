@@ -10,13 +10,13 @@ import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
 import com.yagodar.android.bill_please.activity.bill.BillActivity;
 import com.yagodar.android.bill_please.model.BillList;
-import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListFragment;
+import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListViewFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 
 /**
  * Created by yagodar on 17.06.2015.
  */
-public class BillListFragment extends AbsLoaderProgressListFragment {
+public class BillListFragment extends AbsLoaderProgressListViewFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

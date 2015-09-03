@@ -5,7 +5,6 @@ import android.app.SearchableInfo;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -25,15 +24,9 @@ public class BillListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_bill_list);
 
-        ActionBar actionBar = getSupportActionBar();
-
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
-
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.bill_list_fragment_container, new BillListFragment()).commit();
         }
-
     }
 
     @Override
