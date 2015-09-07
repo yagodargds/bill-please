@@ -29,46 +29,46 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
 
     public static class ViewHolder extends AbsRecyclerViewAdapter.AbsViewHolder<Bill> {
 
-        public TextView textViewNumber;
-        public TextView textViewName;
-        public TextView textViewTaxVal;
-        public TextView textViewTaxType;
-        public TextView textViewTipVal;
-        public TextView textViewTipType;
-        public Button buttonEdit;
-        public Button buttonRemove;
+        private TextView mTextViewNumber;
+        private TextView mTextViewName;
+        private TextView mTextViewTaxVal;
+        private TextView mTextViewTaxType;
+        private TextView mTextViewTipVal;
+        private TextView mTextViewTipType;
+        private Button mButtonEdit;
+        private Button mButtonRemove;
 
         public ViewHolder(View itemView, View.OnClickListener onClickListener) {
             super(itemView);
 
-            textViewNumber = (TextView) itemView.findViewById(R.id.bill_number);
-            textViewName = (TextView) itemView.findViewById(R.id.bill_et_name);
-            textViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
-            textViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
-            textViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
-            textViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
+            mTextViewNumber = (TextView) itemView.findViewById(R.id.bill_number);
+            mTextViewName = (TextView) itemView.findViewById(R.id.bill_et_name);
+            mTextViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
+            mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
+            mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
+            mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
 
-            buttonEdit = (Button) itemView.findViewById(R.id.bill_edit_button);
-            buttonEdit.setOnClickListener(onClickListener);
+            mButtonEdit = (Button) itemView.findViewById(R.id.bill_edit_button);
+            mButtonEdit.setOnClickListener(onClickListener);
 
-            buttonRemove = (Button) itemView.findViewById(R.id.bill_remove_button);
-            buttonRemove.setOnClickListener(onClickListener);
+            mButtonRemove = (Button) itemView.findViewById(R.id.bill_remove_button);
+            mButtonRemove.setOnClickListener(onClickListener);
         }
 
         @Override
         public void onBind(Bill model, int position) {
-            textViewNumber.setText(String.valueOf(position + 1));
-            textViewName.setText(model.getName());
-            textViewTaxVal.setText(model.getFormattedTaxVal());
-            textViewTaxType.setText(model.getTaxType().toString());
-            textViewTipVal.setText(model.getFormattedTipVal());
-            textViewTipType.setText(model.getTipType().toString());
+            mTextViewNumber.setText(String.valueOf(position + 1));
+            mTextViewName.setText(model.getName());
+            mTextViewTaxVal.setText(model.getFormattedTaxVal());
+            mTextViewTaxType.setText(model.getTaxType().toString());
+            mTextViewTipVal.setText(model.getFormattedTipVal());
+            mTextViewTipType.setText(model.getTipType().toString());
 
             Bundle buttonArgs = new Bundle();
             buttonArgs.putLong(BaseColumns._ID, model.getId());
 
-            buttonEdit.setTag(buttonArgs);
-            buttonRemove.setTag(buttonArgs);
+            mButtonEdit.setTag(buttonArgs);
+            mButtonRemove.setTag(buttonArgs);
         }
 
     }
