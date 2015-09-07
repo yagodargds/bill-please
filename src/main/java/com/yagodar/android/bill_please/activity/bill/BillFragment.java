@@ -23,7 +23,7 @@ import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.store.db.DbTableBillContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
-import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressListViewFragment;
+import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListViewFragment;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
 

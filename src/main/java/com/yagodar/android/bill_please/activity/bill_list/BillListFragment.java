@@ -10,7 +10,7 @@ import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
 import com.yagodar.android.bill_please.activity.bill.BillActivity;
 import com.yagodar.android.bill_please.model.BillList;
-import com.yagodar.android.custom.fragment.progress.AbsLoaderProgressRecyclerViewFragment;
+import com.yagodar.android.custom.fragment.progress.recycler_view.AbsLoaderProgressRecyclerViewFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 
 /**
