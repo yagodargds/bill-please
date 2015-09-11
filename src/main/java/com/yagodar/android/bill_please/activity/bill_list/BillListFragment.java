@@ -22,15 +22,20 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        BillList billList = BillList.getInstance();
+        mBillList = BillList.getInstance();
 
         BillListOnClickListener onClickListener = new BillListOnClickListener();
 
-        setRecyclerAdapter(new BillListAdapter(getActivity(), onClickListener, billList));
+        setRecyclerAdapter(new BillListAdapter(getActivity(), onClickListener, mBillList));
 
         //setEmptyText(getString(R.string.no_data)); TODO
 
         mButtonBillAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
+
+        if (savedInstanceState != null) {
+            getRecyclerView().getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable(RECYCLER_LAYOUT_PARCELABLE_TAG));
+        }
+
         mButtonBillAppend.setOnClickListener(onClickListener);
     }
 
@@ -40,7 +45,10 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
         setAvailable(true);
 
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
+        if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) != null
+                || !mBillList.isLoaded()) {
+            startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
+        }
 
         if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) != null) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
@@ -49,6 +57,12 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal()) != null) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), null);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(RECYCLER_LAYOUT_PARCELABLE_TAG, getRecyclerView().getLayoutManager().onSaveInstanceState());
     }
 
     @Override
@@ -92,5 +106,9 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         }
     }
 
+    private BillList mBillList;
+
     private Button mButtonBillAppend;
+
+    private final static String RECYCLER_LAYOUT_PARCELABLE_TAG = "recycler_layout_parcelable";
 }
