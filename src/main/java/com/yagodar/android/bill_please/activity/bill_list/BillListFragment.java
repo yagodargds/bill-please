@@ -40,6 +40,11 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -95,7 +100,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                 case R.id.bill_edit_button:
                     Intent intent = new Intent(getActivity(), BillActivity.class);
                     intent.putExtras((Bundle) v.getTag());
-                    startActivity(intent);
+                    startActivityForResult(intent, 1);
                     break;
                 case R.id.bill_remove_button:
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), (Bundle) v.getTag());
