@@ -107,6 +107,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         mEditTextTaxPer.setOnEditorActionListener(onEditorActionListener);
         mEditTextTipAbs.setOnEditorActionListener(onEditorActionListener);
         mEditTextTipPer.setOnEditorActionListener(onEditorActionListener);
+
     }
 
     @Override
@@ -118,7 +119,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), getArguments());
 
         if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null, true);
+            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null, ProgressShowType.HIDDEN);
         }
 
         if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) != null) {
@@ -335,9 +336,9 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     private void startUpdateBillLoader() {
         Loader updateBillLoader = getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal());
         if (updateBillLoader != null && updateBillLoader.isStarted()) {
-            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal());
+            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null);
         }
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), mUpdateBillBundle, true);
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), mUpdateBillBundle, ProgressShowType.HIDDEN);
     }
 
     private class BillOnClickListener implements View.OnClickListener {

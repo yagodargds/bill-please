@@ -38,7 +38,7 @@ public class LoadBillListLoader extends AbsAsyncTaskLoader {
                 loaderResult.setNotifyDataSet(false);
             }
         } else {
-            loaderResult.setNotifyDataSet(true);
+            loaderResult.setNotifyDataSet(false);
         }
 
         return loaderResult;

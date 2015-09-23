@@ -41,7 +41,11 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
+            int appendItemPosition = getRecycleAdapter().getItemCount() - 1;
+            getRecycleAdapter().notifyItemInserted(appendItemPosition);
+            getRecyclerView().smoothScrollToPosition(appendItemPosition);
+        }
     }
 
     @Override
@@ -50,8 +54,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
         setAvailable(true);
 
-        if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) != null
-                || !mBillList.isLoaded()) {
+        if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) != null || !mBillList.isLoaded()) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
         }
 
@@ -77,8 +80,14 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
     @Override
     public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult loaderResult) {
-        if(loaderResult.isSuccessful() && loaderResult.isNotifyDataSet()) {
-            getRecycleAdapter().notifyDataSetChanged();
+        if (loaderResult.isSuccessful() && loaderResult.isNotifyDataSet()) {
+            if (loader.getId() == BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) {
+                getRecycleAdapter().notifyDataSetChanged();
+            } else if (loader.getId() == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
+                startActivityForResult(BillActivity.class, (Bundle) loaderResult.getData(), BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal());
+            } else if (loader.getId() == BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal()) {
+                getRecycleAdapter().notifyDataSetChanged();
+            }
         }
 
         super.onLoaderResult(loader, loaderResult);
@@ -90,6 +99,12 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         mButtonBillAppend.setEnabled(available);
     }
 
+    private void startActivityForResult(Class<?> cls, Bundle args, int requestCode) {
+        Intent intent = new Intent(getActivity(), cls);
+        intent.putExtras(args);
+        startActivityForResult(intent, requestCode);
+    }
+
     private class BillListOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -98,9 +113,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
                     break;
                 case R.id.bill_edit_button:
-                    Intent intent = new Intent(getActivity(), BillActivity.class);
-                    intent.putExtras((Bundle) v.getTag());
-                    startActivityForResult(intent, 1);
+                    startActivityForResult(BillActivity.class, (Bundle) v.getTag(), BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal());
                     break;
                 case R.id.bill_remove_button:
                     startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), (Bundle) v.getTag());

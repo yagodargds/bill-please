@@ -75,7 +75,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         setAvailable(true);
 
         if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), null, true);
+            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), null, ProgressShowType.HIDDEN);
         }
     }
 
@@ -162,9 +162,9 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     private void startUpdateBillOrderLoader() {
         Loader updateBillLoader = getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal());
         if (updateBillLoader != null && updateBillLoader.isStarted()) {
-            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal());
+            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), null);
         }
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), mUpdateBillOrderBundle, true);
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), mUpdateBillOrderBundle, ProgressShowType.HIDDEN);
     }
 
     private class BillOrderOnFocusChangeListener implements View.OnFocusChangeListener {

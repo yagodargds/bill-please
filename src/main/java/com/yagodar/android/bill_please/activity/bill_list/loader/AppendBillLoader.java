@@ -2,6 +2,7 @@ package com.yagodar.android.bill_please.activity.bill_list.loader;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.Bill;
@@ -34,6 +35,11 @@ public class AppendBillLoader extends AbsAsyncTaskLoader {
         if(opResult.isSuccessful()) {
             long newBillId = opResult.getData();
             BillList.getInstance().putModel(new Bill(newBillId));
+
+            Bundle dataArgs = new Bundle();
+            dataArgs.putLong(BaseColumns._ID, newBillId);
+            loaderResult.setData(dataArgs);
+
             loaderResult.setNotifyDataSet(true);
         } else {
             loaderResult.setFailMessage(opResult.getFailMessage());
