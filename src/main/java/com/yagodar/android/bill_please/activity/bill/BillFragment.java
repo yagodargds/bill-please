@@ -1,9 +1,11 @@
 package com.yagodar.android.bill_please.activity.bill;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +28,7 @@ import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListViewFragment;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
+import com.yagodar.android.util.Log;
 
 /**
  * Created by yagodar on 23.06.2015.
@@ -36,22 +39,16 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mUpdateBillBundle = new Bundle(getArguments());
-        mUpdateBillBundle.putLong(AbsAsyncTaskLoader.DELAY_START_MILLISECONDS_TAG, UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
+        setRetainInstance(true);
 
-        long billId = getArguments().getLong(BaseColumns._ID);
-        mBill = BillList.getInstance().getModel(billId);
+        mOnClickListener = new BillOnClickListener();
 
-        View.OnClickListener onClickListener = new BillOnClickListener();
-
-        setListAdapter(new BillOrderListAdapter(getActivity(), onClickListener, mBill));
+        initBill(getArguments());
 
         setEmptyText(getString(R.string.no_data));
 
         mButtonBillOrderAppend = (Button) getActivity().findViewById(R.id.bill_order_append_button);
-        mButtonBillOrderAppend.setOnClickListener(onClickListener);
-
-        CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new BillOnCheckedChangeListener();
+        mButtonBillOrderAppend.setOnClickListener(mOnClickListener);
 
         mEditTextName = (EditText) getActivity().findViewById(R.id.bill_et_name);
         mTextViewSubtotal = (TextView) getActivity().findViewById(R.id.bill_subtotal);
@@ -62,6 +59,11 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         mEditTextTipPer = (EditText) getActivity().findViewById(R.id.bill_et_tip_per_val);
         mEditTextTipAbs = (EditText) getActivity().findViewById(R.id.bill_et_tip_abs_val);
         mTextViewTotal = (TextView) getActivity().findViewById(R.id.bill_total);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
 
         if (savedInstanceState != null) {
             mEditTextName.setText(savedInstanceState.getString(NAME_TAG));
@@ -77,9 +79,13 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             mEditTextTipPer.setText(savedInstanceState.getString(TIP_PER_VAL_TAG));
             mEditTextTipPer.setEnabled(!mToggleTip.isChecked());
             mTextViewTotal.setText(savedInstanceState.getString(TOTAL_TAG));
+
+            savedInstanceState.clear();
         } else {
             notifyBillLoaded();
         }
+
+        CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new BillOnCheckedChangeListener();
 
         mToggleTax.setOnCheckedChangeListener(onCheckedChangeListener);
         mToggleTip.setOnCheckedChangeListener(onCheckedChangeListener);
@@ -107,7 +113,20 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         mEditTextTaxPer.setOnEditorActionListener(onEditorActionListener);
         mEditTextTipAbs.setOnEditorActionListener(onEditorActionListener);
         mEditTextTipPer.setOnEditorActionListener(onEditorActionListener);
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Log.f(LOG_TAG, toString() + " onStart()");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Log.f(LOG_TAG, toString() + " onStop()");
     }
 
     @Override
@@ -116,18 +135,39 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
         setAvailable(true);
 
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), getArguments());
+        //LoaderManager loaderManager = getActivity().getSupportLoaderManager(); - NOT EQUAL!
+        LoaderManager loaderManager = getLoaderManager();
+        Log.f(LOG_TAG, toString() + " onResume() LoaderManager=" + loaderManager.toString());
 
-        if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null, ProgressShowType.HIDDEN);
+        Bundle args = getArguments();
+        Loader appendBillLoader = loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal());
+
+        String logMsg = null;
+        if(appendBillLoader != null) {
+            logMsg = appendBillLoader.toString();
         }
+        Log.f(LOG_TAG, toString() + " onResume() APPEND_BILL=" + logMsg);
 
-        if(getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), null);
-        }
+        if (appendBillLoader != null
+                || args == null && mBill == null) {
+            startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
+        } else {
+            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal()) != null
+                    || mBill != null && !mBill.isLoaded()) {
+                startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), args);
+            }
 
-        if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal(), null);
+            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
+                startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null, ProgressShowType.HIDDEN);
+            }
+
+            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) != null) {
+                startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), null);
+            }
+
+            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal()) != null) {
+                startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal(), null);
+            }
         }
     }
 
@@ -147,21 +187,63 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
+        if (id == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
+            Log.f(LOG_TAG, toString() + " CREATE APPEND_BILL");
+        }
+
         return BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
     }
 
     @Override
     public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult loaderResult) {
-        if(loaderResult.isSuccessful()) {
-            if(loader.getId() == BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal()) {
-                if(loaderResult.isNotifyDataSet()) {
+        int loaderId = loader.getId();
+        boolean successful = loaderResult.isSuccessful();
+        boolean notifyDataSet = loaderResult.isNotifyDataSet();
+
+        if (loaderId == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
+
+            Log.f(LOG_TAG, toString() + " FINISH APPEND_BILL");
+
+            if(successful) {
+                if(notifyDataSet) {
+                    initBill(loaderResult.getData());
+                    notifyBillLoaded();
+                }
+
+                setActivityResult(Activity.RESULT_OK);
+            }
+            else {
+                setActivityResult(Activity.RESULT_CANCELED);
+                getActivity().finish();
+            }
+        }
+        else if (loaderId == BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal()) {
+            if(successful) {
+                if(notifyDataSet) {
                     ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                     notifyBillLoaded();
                 }
-            } else if(loaderResult.isNotifyDataSet()) {
+            }
+            else {
+                getActivity().finish();
+            }
+
+            setActivityResult(Activity.RESULT_CANCELED);
+
+        } else if(successful && notifyDataSet) {
+
+            if (loaderId == BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) {
+                ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
+                notifyOrderListChanged();
+            } else if (loaderId == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) {
+                ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
+                notifyOrderListChanged();
+            } else if (loaderId == BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal()) {
                 ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                 notifyOrderListChanged();
             }
+
+            setActivityResult(Activity.RESULT_OK);
         }
 
         super.onLoaderResult(loader, loaderResult);
@@ -170,6 +252,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     @Override
     public void setAvailable(boolean available) {
         super.setAvailable(available);
+        mEditTextName.setEnabled(available);
         mButtonBillOrderAppend.setEnabled(available);
         setTaxRowEnabled(available);
         setTipRowEnabled(available);
@@ -196,7 +279,34 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         }
     }
 
+    private void initBill(Bundle args) {
+        if(args == null) {
+            return;
+        }
+
+        long billId = args.getLong(BaseColumns._ID);
+        mBill = BillList.getInstance().getModel(billId);
+
+        mUpdateBillBundle = new Bundle(args);
+        mUpdateBillBundle.putLong(AbsAsyncTaskLoader.DELAY_START_MILLISECONDS_TAG, UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
+
+        mAppendBillOrderBundle = args;
+
+        setListAdapter(new BillOrderListAdapter(getActivity(), mOnClickListener, mBill));
+    }
+
+    private void setActivityResult(int resultCode) {
+        if(!mResultSetted) {
+            getActivity().setResult(resultCode);
+            mResultSetted = true;
+        }
+    }
+
     private void notifyBillLoaded() {
+        if(mBill == null) {
+            return;
+        }
+
         onNameLoaded();
         onSubtotalChanged();
         onTaxLoaded();
@@ -279,9 +389,18 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     private void setTaxRowEnabled(boolean enabled) {
         mToggleTax.setEnabled(enabled);
-        if(mBill.getTaxType() == Bill.TaxTipType.ABSOLUTE) {
+
+        Bill.TaxTipType taxType = mBill == null ? null : mBill.getTaxType();
+        if(taxType != null) {
+            if(taxType == Bill.TaxTipType.ABSOLUTE) {
+                mEditTextTaxAbs.setEnabled(enabled);
+            }
+            else if(taxType == Bill.TaxTipType.PERCENT) {
+                mEditTextTaxPer.setEnabled(enabled);
+            }
+        }
+        else {
             mEditTextTaxAbs.setEnabled(enabled);
-        } else if(mBill.getTaxType() == Bill.TaxTipType.PERCENT) {
             mEditTextTaxPer.setEnabled(enabled);
         }
     }
@@ -322,9 +441,18 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     private void setTipRowEnabled(boolean enabled) {
         mToggleTip.setEnabled(enabled);
-        if(mBill.getTipType() == Bill.TaxTipType.ABSOLUTE) {
+
+        Bill.TaxTipType tipType = mBill == null ? null : mBill.getTipType();
+        if(tipType != null) {
+            if(tipType == Bill.TaxTipType.ABSOLUTE) {
+                mEditTextTipAbs.setEnabled(enabled);
+            }
+            else if(tipType == Bill.TaxTipType.PERCENT) {
+                mEditTextTipPer.setEnabled(enabled);
+            }
+        }
+        else {
             mEditTextTipAbs.setEnabled(enabled);
-        } else if(mBill.getTipType() == Bill.TaxTipType.PERCENT) {
             mEditTextTipPer.setEnabled(enabled);
         }
     }
@@ -346,7 +474,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bill_order_append_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), getArguments());
+                    startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), mAppendBillOrderBundle);
                     break;
                 case R.id.bill_order_edit_button:
                     Intent intent = new Intent(getActivity(), BillOrderActivity.class);
@@ -434,6 +562,11 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             if(mLoading) {
                 return;
             }
+
+            if(start == 0 && count == 0 && before == 0 && s.length() == 0) {
+                return;
+            }
+
             if(updateModelName()) {
                 startUpdateBillLoader();
             }
@@ -446,6 +579,11 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             if(mLoading) {
                 return;
             }
+
+            if(start == 0 && count == 0 && before == 0 && s.length() == 0) {
+                return;
+            }
+
             if(mToggleTax.isChecked()) {
                 if(updateModelTax()) {
                     startUpdateBillLoader();
@@ -461,6 +599,11 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             if(mLoading) {
                 return;
             }
+
+            if(start == 0 && count == 0 && before == 0 && s.length() == 0) {
+                return;
+            }
+
             if(!mToggleTax.isChecked()) {
                 if(updateModelTax()) {
                     startUpdateBillLoader();
@@ -476,6 +619,11 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             if(mLoading) {
                 return;
             }
+
+            if(start == 0 && count == 0 && before == 0 && s.length() == 0) {
+                return;
+            }
+
             if(mToggleTip.isChecked()) {
                 if(updateModelTip()) {
                     startUpdateBillLoader();
@@ -491,6 +639,11 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             if(mLoading) {
                 return;
             }
+
+            if(start == 0 && count == 0 && before == 0 && s.length() == 0) {
+                return;
+            }
+
             if(!mToggleTip.isChecked()) {
                 if(updateModelTip()) {
                     startUpdateBillLoader();
@@ -534,8 +687,12 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     private boolean mLoading;
+    private boolean mResultSetted;
+
+    private View.OnClickListener mOnClickListener;
 
     private Bundle mUpdateBillBundle;
+    private Bundle mAppendBillOrderBundle;
 
     private Bill mBill;
 
@@ -566,4 +723,6 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     private final static String TOTAL_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME + "_total";
 
     private final static long UPDATE_BILL_TIMER_TASK_DELAY_MILLIS = 1500L;
+
+    private static final String LOG_TAG = BillFragment.class.getSimpleName();
 }

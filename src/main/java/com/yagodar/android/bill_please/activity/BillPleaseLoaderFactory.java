@@ -4,11 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.yagodar.android.bill_please.activity.bill.loader.AppendBillLoader;
 import com.yagodar.android.bill_please.activity.bill.loader.AppendBillOrderLoader;
 import com.yagodar.android.bill_please.activity.bill.loader.LoadBillLoader;
 import com.yagodar.android.bill_please.activity.bill.loader.RemoveBillOrderLoader;
 import com.yagodar.android.bill_please.activity.bill.loader.UpdateBillLoader;
-import com.yagodar.android.bill_please.activity.bill_list.loader.AppendBillLoader;
 import com.yagodar.android.bill_please.activity.bill_list.loader.LoadBillListLoader;
 import com.yagodar.android.bill_please.activity.bill_list.loader.RemoveBillLoader;
 import com.yagodar.android.bill_please.activity.bill_order.loader.UpdateBillOrderLoader;

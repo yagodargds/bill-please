@@ -23,11 +23,14 @@ public class Log {
             }
 
             BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            bw.append("[" + new SimpleDateFormat("hh:mm:ss").format(new Date()) + "]\t[" + logTag + "]\t" + msg + "\n");
+            bw.append("[" + new SimpleDateFormat("HH:mm:ss:SSS").format(new Date()) + "]\n[" + logTag + "]\n" + msg + "\n");
 
             if(printStackTrace) {
                 bw.append(getStackTraceStr());
+                bw.append("\n");
             }
+
+            bw.append("\n");
 
             bw.close();
         }
@@ -41,7 +44,7 @@ public class Log {
 
         String stackTraceOut = "\tStack trace:\n";
         if(stackTrace != null && stackTrace.length > 0) {
-            for (int i = 0; i < stackTrace.length; i++) {
+            for (int i = 4; i < stackTrace.length; i++) {
                 stackTraceOut += "\tline [" +  stackTrace[i].getLineNumber() + "]\t" + stackTrace[i].getClassName() + "." + stackTrace[i].getMethodName() + " <- \n";
             }
 
