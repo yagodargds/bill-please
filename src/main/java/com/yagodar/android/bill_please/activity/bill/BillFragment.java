@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -28,7 +29,6 @@ import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListViewFragment;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
-import com.yagodar.android.util.Log;
 
 /**
  * Created by yagodar on 23.06.2015.
@@ -119,14 +119,14 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     public void onStart() {
         super.onStart();
 
-        Log.f(LOG_TAG, toString() + " onStart()");
+        Log.d(TAG, toString() + " onStart()");
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        Log.f(LOG_TAG, toString() + " onStop()");
+        Log.d(TAG, toString() + " onStop()");
     }
 
     @Override
@@ -137,7 +137,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
         //LoaderManager loaderManager = getActivity().getSupportLoaderManager(); - NOT EQUAL!
         LoaderManager loaderManager = getLoaderManager();
-        Log.f(LOG_TAG, toString() + " onResume() LoaderManager=" + loaderManager.toString());
+        Log.d(TAG, toString() + " onResume() LoaderManager=" + loaderManager.toString());
 
         Bundle args = getArguments();
         Loader appendBillLoader = loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal());
@@ -146,7 +146,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         if(appendBillLoader != null) {
             logMsg = appendBillLoader.toString();
         }
-        Log.f(LOG_TAG, toString() + " onResume() APPEND_BILL=" + logMsg);
+        Log.d(TAG, toString() + " onResume() APPEND_BILL=" + logMsg);
 
         if (appendBillLoader != null
                 || args == null && mBill == null) {
@@ -188,7 +188,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
         if (id == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
-            Log.f(LOG_TAG, toString() + " CREATE APPEND_BILL");
+            Log.d(TAG, toString() + " CREATE APPEND_BILL");
         }
 
         return BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
@@ -202,7 +202,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
         if (loaderId == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
 
-            Log.f(LOG_TAG, toString() + " FINISH APPEND_BILL");
+            Log.d(TAG, toString() + " FINISH APPEND_BILL");
 
             if(successful) {
                 if(notifyDataSet) {
@@ -724,5 +724,5 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     private final static long UPDATE_BILL_TIMER_TASK_DELAY_MILLIS = 1500L;
 
-    private static final String LOG_TAG = BillFragment.class.getSimpleName();
+    public static final String TAG = BillFragment.class.getSimpleName();
 }
