@@ -39,8 +39,6 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setRetainInstance(true);
-
         mOnClickListener = new BillOnClickListener();
 
         initBill(getArguments());

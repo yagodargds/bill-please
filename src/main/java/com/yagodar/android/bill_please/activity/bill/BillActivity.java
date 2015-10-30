@@ -19,12 +19,10 @@ public class BillActivity extends FragmentActivity {
         if (savedInstanceState == null) {
             billFragment = new BillFragment();
             billFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.bill_order_list_fragment_container, billFragment).commitAllowingStateLoss();
+            getSupportFragmentManager().beginTransaction().add(R.id.bill_order_list_fragment_container, billFragment).commit();
         } else {
             billFragment = (BillFragment) getSupportFragmentManager().findFragmentById(R.id.bill_order_list_fragment_container);
         }
-
-
 
         //getActionBar().setDisplayHomeAsUpEnabled(true);
     }
