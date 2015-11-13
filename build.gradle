@@ -18,5 +18,5 @@ android {
 dependencies {
     compile project(':android-custom')
     compile project(':android-sqlite-manager')
-    compile 'com.android.support:design:23.1.0'
+    compile 'com.android.support:design:23.1.1'
 }
