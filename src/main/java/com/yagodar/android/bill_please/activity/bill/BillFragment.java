@@ -156,7 +156,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             }
 
             if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
-                startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null, ProgressShowType.HIDDEN);
+                startUpdateBillLoader();
             }
 
             if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) != null) {
@@ -185,11 +185,11 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        if (id == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
-            Log.d(TAG, toString() + " CREATE APPEND_BILL");
+        AbsAsyncTaskLoader loader = BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
+        if (id == BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) {
+            loader.setUpdateThrottle(UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
         }
-
-        return BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
+        return loader;
     }
 
     @Override
@@ -284,9 +284,6 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
         long billId = args.getLong(BaseColumns._ID);
         mBill = BillList.getInstance().getModel(billId);
-
-        mUpdateBillBundle = new Bundle(args);
-        mUpdateBillBundle.putLong(AbsAsyncTaskLoader.DELAY_START_MILLISECONDS_TAG, UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
 
         mAppendBillOrderBundle = args;
 
@@ -460,11 +457,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     private void startUpdateBillLoader() {
-        Loader updateBillLoader = getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal());
-        if (updateBillLoader != null && updateBillLoader.isStarted()) {
-            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), null);
-        }
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), mUpdateBillBundle, ProgressShowType.HIDDEN);
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), getArguments(), ProgressShowType.HIDDEN);
     }
 
     private class BillOnClickListener implements View.OnClickListener {
@@ -689,7 +682,6 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     private View.OnClickListener mOnClickListener;
 
-    private Bundle mUpdateBillBundle;
     private Bundle mAppendBillOrderBundle;
 
     private Bill mBill;

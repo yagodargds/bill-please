@@ -30,9 +30,6 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mUpdateBillOrderBundle = new Bundle(getArguments());
-        mUpdateBillOrderBundle.putLong(AbsAsyncTaskLoader.DELAY_START_MILLISECONDS_TAG, UPDATE_BILL_ORDER_TIMER_TASK_DELAY_MILLIS);
-
         long billId = getArguments().getLong(DbTableBillOrderContract.COLUMN_NAME_BILL_ID);
         long billOrderId = getArguments().getLong(BaseColumns._ID);
         mBill = BillList.getInstance().getModel(billId);
@@ -75,7 +72,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
         setAvailable(true);
 
         if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), null, ProgressShowType.HIDDEN);
+            startUpdateBillOrderLoader();
         }
     }
 
@@ -90,7 +87,11 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        return BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
+        AbsAsyncTaskLoader loader = BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
+        if (id == BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal()) {
+            loader.setUpdateThrottle(UPDATE_BILL_ORDER_TIMER_TASK_DELAY_MILLIS);
+        }
+        return loader;
     }
 
     @Override
@@ -160,11 +161,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private void startUpdateBillOrderLoader() {
-        Loader updateBillLoader = getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal());
-        if (updateBillLoader != null && updateBillLoader.isStarted()) {
-            finishLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), null);
-        }
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), mUpdateBillOrderBundle, ProgressShowType.HIDDEN);
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), getArguments(), ProgressShowType.HIDDEN);
     }
 
     private class BillOrderOnFocusChangeListener implements View.OnFocusChangeListener {
@@ -242,8 +239,6 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private boolean mLoading;
-
-    private Bundle mUpdateBillOrderBundle;
 
     private Bill mBill;
     private BillOrder mBillOrder;
