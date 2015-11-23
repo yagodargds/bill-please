@@ -38,6 +38,8 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
             return loaderResult;
         }
 
+        //TODO handle cancelation
+
         long billId = args.getLong(BaseColumns._ID);
         OperationResult<Integer> opResult = BillRepository.getInstance().delete(billId);
         if(opResult.isSuccessful()) {

@@ -31,7 +31,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
         setRecyclerAdapter(new BillListAdapter(getActivity(), onClickListener, mBillList));
 
-        //setEmptyText(getString(R.string.no_data)); TODO
+        //TODO setEmptyText(getString(R.string.no_data));
 
         mButtonBillAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
 
@@ -44,7 +44,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, toString() + " onActivityResult() request="+requestCode+" result="+resultCode);
+        Log.d(TAG, toString() + " onActivityResult() request=" + requestCode + " result=" + resultCode);
 
         switch(resultCode) {
             case Activity.RESULT_OK:
@@ -64,33 +64,15 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        Log.d(TAG, toString() + " onStart()");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        Log.d(TAG, toString() + " onStop()");
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-
-        Log.d(TAG, toString() + " onResume()");
 
         setAvailable(true);
 
         LoaderManager loaderManager = getLoaderManager();
-
         if(loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) != null || !mBillList.isLoaded()) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
         }
-
         if(loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal()) != null) {
             startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), null);
         }
@@ -113,8 +95,9 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
             int loaderId = loader.getId();
             if (loaderId == BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) {
                 getRecycleAdapter().notifyDataSetChanged();
-            } else if (loaderId == BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal()) {
-                getRecycleAdapter().notifyDataSetChanged();
+            }
+            if (loaderId == BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal()) {
+                getRecycleAdapter().notifyDataSetChanged(); //TODO
             }
         }
 
@@ -125,10 +108,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     public void setAvailable(boolean available) {
         super.setAvailable(available);
         mButtonBillAppend.setEnabled(available);
-    }
-
-    private void startActivityForResult(Class<?> cls, int requestCode) {
-        startActivityForResult(cls, requestCode, null);
     }
 
     private void startActivityForResult(Class<?> cls, int requestCode, Bundle args) {
@@ -144,7 +123,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bill_append_button:
-                    startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal());
+                    startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
                     break;
                 case R.id.bill_edit_button:
                     startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), (Bundle) v.getTag());
@@ -162,7 +141,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
     private Button mButtonBillAppend;
 
-    private final static String RECYCLER_LAYOUT_PARCELABLE_TAG = "recycler_layout_parcelable";
+    private static final String RECYCLER_LAYOUT_PARCELABLE_TAG = "recycler_layout_parcelable";
 
     public static final String TAG = BillListFragment.class.getSimpleName();
 }
