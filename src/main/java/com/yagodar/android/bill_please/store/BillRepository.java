@@ -157,6 +157,8 @@ public class BillRepository implements IMultRepository<Bill> {
         SQLiteDatabase db = null;
         try {
             db = mManager.getDatabase();
+            //TODO вынести начатую транзакцию наружу с возможностью завершить там
+            //TODO или посмотреть на ContentResolver, там есть механика отмены запроса
             db.beginTransaction();
 
             int rowsAffected = db.delete(DbTableBillContract.getInstance().getTableName(), BaseColumns._ID + DbHelper.SYMB_OP_EQUALITY + id, null);

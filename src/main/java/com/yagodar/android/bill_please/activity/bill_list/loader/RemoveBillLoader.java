@@ -20,6 +20,11 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
     }
 
     @Override
+    public void cancelLoadInBackground() {
+        super.cancelLoadInBackground();
+    }
+
+    @Override
     public LoaderResult load() {
         LoaderResult loaderResult = new LoaderResult();
 
@@ -38,10 +43,14 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
             return loaderResult;
         }
 
-        //TODO handle cancelation
+
 
         long billId = args.getLong(BaseColumns._ID);
+
+        //TODO handle cancelation
         OperationResult<Integer> opResult = BillRepository.getInstance().delete(billId);
+        //TODO handle cancelation
+
         if(opResult.isSuccessful()) {
             BillList.getInstance().removeModel(billId);
             loaderResult.setNotifyDataSet(true);

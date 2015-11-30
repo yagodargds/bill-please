@@ -20,28 +20,6 @@ import com.yagodar.android.custom.loader.LoaderResult;
  * Created by yagodar on 17.06.2015.
  */
 public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mBillList = BillList.getInstance();
-
-        BillListOnClickListener onClickListener = new BillListOnClickListener();
-
-        setRecyclerAdapter(new BillListAdapter(getActivity(), onClickListener, mBillList));
-
-        //TODO setEmptyText(getString(R.string.no_data));
-
-        mButtonBillAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
-
-        if (savedInstanceState != null) {
-            getRecyclerView().getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable(RECYCLER_LAYOUT_PARCELABLE_TAG));
-        }
-
-        mButtonBillAppend.setOnClickListener(onClickListener);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, toString() + " onActivityResult() request=" + requestCode + " result=" + resultCode);
@@ -59,8 +37,29 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                 }
                 break;
             case Activity.RESULT_CANCELED:
-               break;
+                break;
         }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mBillList = BillList.getInstance();
+
+        BillListOnClickListener onClickListener = new BillListOnClickListener();
+
+        setRecyclerAdapter(new BillListAdapter(getActivity(), onClickListener, mBillList));
+
+        //TODO setEmptyText(getString(R.string.no_data));
+
+        mButtonBillAppend = (Button) getActivity().findViewById(R.id.bill_append_button);
+
+        if (savedInstanceState != null) {
+            getRecyclerView().getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable(TAG));
+        }
+
+        mButtonBillAppend.setOnClickListener(onClickListener);
     }
 
     @Override
@@ -81,12 +80,18 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(RECYCLER_LAYOUT_PARCELABLE_TAG, getRecyclerView().getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(TAG, getRecyclerView().getLayoutManager().onSaveInstanceState());
     }
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
         return BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
+    }
+
+    @Override
+    public void setAvailable(boolean available) {
+        super.setAvailable(available);
+        mButtonBillAppend.setEnabled(available);
     }
 
     @Override
@@ -104,12 +109,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         super.onLoaderResult(loader, loaderResult);
     }
 
-    @Override
-    public void setAvailable(boolean available) {
-        super.setAvailable(available);
-        mButtonBillAppend.setEnabled(available);
-    }
-
     private void startActivityForResult(Class<?> cls, int requestCode, Bundle args) {
         Intent intent = new Intent(getActivity(), cls);
         if(args != null) {
@@ -123,7 +122,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bill_append_button:
-                    startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
+                    startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), (Bundle) v.getTag());
                     break;
                 case R.id.bill_edit_button:
                     startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), (Bundle) v.getTag());
@@ -138,10 +137,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     private BillList mBillList;
-
     private Button mButtonBillAppend;
-
-    private static final String RECYCLER_LAYOUT_PARCELABLE_TAG = "recycler_layout_parcelable";
 
     public static final String TAG = BillListFragment.class.getSimpleName();
 }
