@@ -3,7 +3,7 @@ package com.yagodar.android.bill_please.activity.bill.loader;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.util.Log;
+import android.support.v4.os.CancellationSignal;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.Bill;
@@ -16,7 +16,6 @@ import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.operation.OperationResult;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by yagodar on 19.06.2015.
@@ -27,7 +26,7 @@ public class AppendBillLoader extends AbsAsyncTaskLoader {
     }
 
     @Override
-    public LoaderResult load() {
+    public LoaderResult load(CancellationSignal signal) {
         LoaderResult loaderResult = new LoaderResult();
 
         if(!BillList.getInstance().isLoaded()) {
@@ -57,15 +56,6 @@ public class AppendBillLoader extends AbsAsyncTaskLoader {
                 dataArgs.putLong(BaseColumns._ID, newBillId);
                 loaderResult.setData(dataArgs);
                 loaderResult.setNotifyDataSet(true);
-
-                try {
-                    TimeUnit.MILLISECONDS.sleep(10000L);
-                } catch (InterruptedException e) {
-                    Log.e("fdff", e.getMessage(), e);
-                }
-
-                loaderResult.setFailMessageId(R.string.err_append_failed);
-
             } else {
                 loaderResult.setFailMessage(loadOpResult.getFailMessage());
                 loaderResult.setFailMessageId(loadOpResult.getFailMessageId());

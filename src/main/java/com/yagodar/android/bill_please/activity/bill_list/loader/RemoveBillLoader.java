@@ -3,12 +3,15 @@ package com.yagodar.android.bill_please.activity.bill_list.loader;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v4.os.CancellationSignal;
+import android.util.Log;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.store.BillRepository;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
+import com.yagodar.essential.ForStackTraceException;
 import com.yagodar.essential.operation.OperationResult;
 
 /**
@@ -20,12 +23,7 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
     }
 
     @Override
-    public void cancelLoadInBackground() {
-        super.cancelLoadInBackground();
-    }
-
-    @Override
-    public LoaderResult load() {
+    public LoaderResult load(CancellationSignal signal) {
         LoaderResult loaderResult = new LoaderResult();
 
         if(!BillList.getInstance().isLoaded()) {
@@ -43,14 +41,11 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
             return loaderResult;
         }
 
-
-
         long billId = args.getLong(BaseColumns._ID);
-
-        //TODO handle cancelation
-        OperationResult<Integer> opResult = BillRepository.getInstance().delete(billId);
-        //TODO handle cancelation
-
+        OperationResult<Integer> opResult = BillRepository.getInstance().delete(billId, signal);
+        if(DEBUG) {
+            Log.d(TAG, this + " >>> load opResult=" + opResult, new ForStackTraceException());
+        }
         if(opResult.isSuccessful()) {
             BillList.getInstance().removeModel(billId);
             loaderResult.setNotifyDataSet(true);
@@ -63,4 +58,8 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
 
         return loaderResult;
     }
+
+    private static final boolean DEBUG = false;
+
+    public static final String TAG = RemoveBillLoader.class.getSimpleName();
 }

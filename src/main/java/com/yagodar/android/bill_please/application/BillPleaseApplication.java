@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.yagodar.android.bill_please.activity.bill.BillFragment;
+import com.yagodar.android.bill_please.activity.bill_list.loader.RemoveBillLoader;
 import com.yagodar.android.bill_please.store.db.DbManager;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 
@@ -30,6 +31,7 @@ public class BillPleaseApplication extends Application {
                 }
                 String logFilter = "" +
                         AbsAsyncTaskLoader.TAG + ":V " +
+                        RemoveBillLoader.TAG + ":V " +
                         BillFragment.TAG + ":V " +
                         "*:S";
                 Runtime.getRuntime().exec("logcat -c");
@@ -41,6 +43,6 @@ public class BillPleaseApplication extends Application {
         }
     }
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = BillPleaseApplication.class.getSimpleName();
 }

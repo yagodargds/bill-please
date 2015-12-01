@@ -128,7 +128,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                     startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), (Bundle) v.getTag());
                     break;
                 case R.id.bill_remove_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), (Bundle) v.getTag());
+                    startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), (Bundle) v.getTag(), ProgressShowType.HIDDEN);
                     break;
                 default:
                     break;

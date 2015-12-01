@@ -3,6 +3,7 @@ package com.yagodar.android.bill_please.activity.bill.loader;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v4.os.CancellationSignal;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.BillList;
@@ -20,7 +21,7 @@ public class UpdateBillLoader extends AbsAsyncTaskLoader {
     }
 
     @Override
-    public LoaderResult load() {
+    public LoaderResult load(CancellationSignal signal) {
         LoaderResult loaderResult = new LoaderResult();
         loaderResult.setNotifyDataSet(false);
 

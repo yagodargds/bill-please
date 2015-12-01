@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.support.v4.os.CancellationSignal;
+import android.support.v4.os.OperationCanceledException;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.Bill;
@@ -188,9 +189,11 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         SQLiteDatabase db = null;
         try {
             db = mManager.getDatabase();
-            //TODO вынести начатую транзакцию наружу с возможностью завершить там
-            //TODO или посмотреть на ContentResolver, там есть механика отмены запроса
             db.beginTransaction();
+
+            if(signal != null) {
+                signal.throwIfCanceled();
+            }
 
             int rowsAffected = db.delete(DbTableBillContract.getInstance().getTableName(), BaseColumns._ID + DbHelper.SYMB_OP_EQUALITY + id, null);
             opResult.setData(rowsAffected);
@@ -198,7 +201,13 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
             rowsAffected = db.delete(DbTableBillOrderContract.getInstance().getTableName(), DbTableBillOrderContract.COLUMN_NAME_BILL_ID + DbHelper.SYMB_OP_EQUALITY + id, null);
             opResult.setData(opResult.getData() + rowsAffected);
 
+            if(signal != null) {
+                signal.throwIfCanceled();
+            }
+
             db.setTransactionSuccessful();
+        } catch(OperationCanceledException e) {
+            throw e;
         } catch(Exception e) {
             opResult.setFailThrowable(e);
         } finally {
