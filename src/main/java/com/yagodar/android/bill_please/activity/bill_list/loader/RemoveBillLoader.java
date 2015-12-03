@@ -30,36 +30,36 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
             loaderResult.setFailMessageId(R.string.err_remove_failed);
             loaderResult.setFailThrowable(new IllegalStateException("Can`t remove from unloaded bill list!"));
             loaderResult.setNotifyDataSet(false);
-            return loaderResult;
-        }
-
-        Bundle args = getArgs();
-        if (args == null || !args.containsKey(BaseColumns._ID)) {
-            loaderResult.setFailMessageId(R.string.err_remove_failed);
-            loaderResult.setFailThrowable(new IllegalArgumentException("Can`t remove from bill list without set args!"));
-            loaderResult.setNotifyDataSet(false);
-            return loaderResult;
-        }
-
-        long billId = args.getLong(BaseColumns._ID);
-        OperationResult<Integer> opResult = BillRepository.getInstance().delete(billId, signal);
-        if(DEBUG) {
-            Log.d(TAG, this + " >>> load opResult=" + opResult, new ForStackTraceException());
-        }
-        if(opResult.isSuccessful()) {
-            BillList.getInstance().removeModel(billId);
-            loaderResult.setNotifyDataSet(true);
         } else {
-            loaderResult.setFailMessage(opResult.getFailMessage());
-            loaderResult.setFailMessageId(opResult.getFailMessageId());
-            loaderResult.setFailThrowable(opResult.getFailThrowable());
-            loaderResult.setNotifyDataSet(false);
+            Bundle args = getArgs();
+            if (args == null || !args.containsKey(BaseColumns._ID)) {
+                loaderResult.setFailMessageId(R.string.err_remove_failed);
+                loaderResult.setFailThrowable(new IllegalArgumentException("Can`t remove from bill list without set args!"));
+                loaderResult.setNotifyDataSet(false);
+            } else {
+                long billId = args.getLong(BaseColumns._ID);
+                OperationResult<Integer> opResult = BillRepository.getInstance().delete(billId, signal);
+                if (DEBUG) {
+                    Log.d(TAG, this + " >>> load opResult=" + opResult, new ForStackTraceException());
+                }
+                if (opResult.isSuccessful()) {
+                    BillList.getInstance().removeModel(billId);
+                    loaderResult.setNotifyDataSet(true);
+                } else {
+                    loaderResult.setFailMessage(opResult.getFailMessage());
+                    loaderResult.setFailMessageId(opResult.getFailMessageId());
+                    loaderResult.setFailThrowable(opResult.getFailThrowable());
+                    loaderResult.setNotifyDataSet(false);
+                }
+            }
         }
-
+        if(DEBUG) {
+            Log.d(TAG, this + " >>> load loaderResult=" + loaderResult, new ForStackTraceException());
+        }
         return loaderResult;
     }
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final String TAG = RemoveBillLoader.class.getSimpleName();
 }

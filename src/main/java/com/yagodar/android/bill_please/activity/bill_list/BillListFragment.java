@@ -70,10 +70,10 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
         LoaderManager loaderManager = getLoaderManager();
         if(loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal()) != null || !mBillList.isLoaded()) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), null);
+            startLoadBillListLoader(null);
         }
         if(loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal()) != null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), null);
+            startRemoveBillLoader(null);
         }
     }
 
@@ -117,6 +117,14 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         startActivityForResult(intent, requestCode);
     }
 
+    private void startLoadBillListLoader(Bundle args) {
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL_LIST.ordinal(), args, ProgressShowType.NORMAL);
+    }
+
+    private void startRemoveBillLoader(Bundle args) {
+        startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), args, ProgressShowType.HIDDEN);
+    }
+
     private class BillListOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -128,7 +136,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                     startActivityForResult(BillActivity.class, BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), (Bundle) v.getTag());
                     break;
                 case R.id.bill_remove_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL.ordinal(), (Bundle) v.getTag(), ProgressShowType.HIDDEN);
+                    startRemoveBillLoader((Bundle) v.getTag());
                     break;
                 default:
                     break;
