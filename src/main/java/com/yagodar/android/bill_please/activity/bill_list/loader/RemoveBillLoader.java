@@ -11,7 +11,7 @@ import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.store.BillRepository;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
-import com.yagodar.essential.ForStackTraceException;
+import com.yagodar.essential.exception.ForStackTraceException;
 import com.yagodar.essential.operation.OperationResult;
 
 /**

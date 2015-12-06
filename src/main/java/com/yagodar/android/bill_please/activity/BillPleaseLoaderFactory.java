@@ -13,10 +13,7 @@ import com.yagodar.android.bill_please.activity.bill_list.loader.LoadBillListLoa
 import com.yagodar.android.bill_please.activity.bill_list.loader.RemoveBillLoader;
 import com.yagodar.android.bill_please.activity.bill_order.loader.UpdateBillOrderLoader;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import com.yagodar.essential.factory.IdGroupIntFactory;
 
 /**
  * Created by yagodar on 17.06.2015.
@@ -25,46 +22,38 @@ public class BillPleaseLoaderFactory {
 
     public static AbsAsyncTaskLoader createLoader(Context context, int id, Bundle args) {
         try {
-            return (AbsAsyncTaskLoader) BILL_LOADER_BY_ID.get(id).getConstructor(Context.class, Bundle.class).newInstance(context, args);
-        } catch (InstantiationException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-        } catch (NoSuchMethodException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-        } catch (InvocationTargetException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
+
+            //TODO выдача id, несколько лоадеров одновременно. или последовательно.
+
+            //TODO первые несколько бит int - под ordinal группы. остальное - собственно id
+            IdGroupIntFactory test = new IdGroupIntFactory(10);
+            return (AbsAsyncTaskLoader) BillLoaderType.VALUES[id].mLoaderClass.getConstructor(Context.class, Bundle.class).newInstance(context, args);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
         }
 
         return null;
     }
 
     public enum BillLoaderType {
-        LOAD_BILL_LIST,
-        APPEND_BILL,
-        UPDATE_BILL,
-        REMOVE_BILL,
-
-        LOAD_BILL,
-        APPEND_BILL_ORDER,
-        UPDATE_BILL_ORDER,
-        REMOVE_BILL_ORDER,
-
+        LOAD_BILL_LIST(LoadBillListLoader.class),
+        APPEND_BILL(AppendBillLoader.class),
+        UPDATE_BILL(UpdateBillLoader.class),
+        REMOVE_BILL(RemoveBillLoader.class),
+        LOAD_BILL(LoadBillLoader.class),
+        APPEND_BILL_ORDER(AppendBillOrderLoader.class),
+        UPDATE_BILL_ORDER(UpdateBillOrderLoader.class),
+        REMOVE_BILL_ORDER(RemoveBillOrderLoader.class),
         ;
+
+        BillLoaderType(Class<? extends AbsAsyncTaskLoader> loaderClass) {
+            mLoaderClass = loaderClass;
+        }
+
+        private final Class mLoaderClass;
+
+        private static final BillLoaderType[] VALUES = values();
     }
 
-    private static final Map<Integer, Class> BILL_LOADER_BY_ID = new HashMap<>();
-    static {
-        BILL_LOADER_BY_ID.put(BillLoaderType.LOAD_BILL_LIST.ordinal(), LoadBillListLoader.class);
-        BILL_LOADER_BY_ID.put(BillLoaderType.APPEND_BILL.ordinal(), AppendBillLoader.class);
-        BILL_LOADER_BY_ID.put(BillLoaderType.REMOVE_BILL.ordinal(), RemoveBillLoader.class);
-        BILL_LOADER_BY_ID.put(BillLoaderType.UPDATE_BILL.ordinal(), UpdateBillLoader.class);
-
-        BILL_LOADER_BY_ID.put(BillLoaderType.LOAD_BILL.ordinal(), LoadBillLoader.class);
-        BILL_LOADER_BY_ID.put(BillLoaderType.APPEND_BILL_ORDER.ordinal(), AppendBillOrderLoader.class);
-        BILL_LOADER_BY_ID.put(BillLoaderType.REMOVE_BILL_ORDER.ordinal(), RemoveBillOrderLoader.class);
-        BILL_LOADER_BY_ID.put(BillLoaderType.UPDATE_BILL_ORDER.ordinal(), UpdateBillOrderLoader.class);
-    }
-
-    private static final String LOG_TAG = BillPleaseLoaderFactory.class.getSimpleName();
+    private static final String TAG = BillPleaseLoaderFactory.class.getSimpleName();
 }
