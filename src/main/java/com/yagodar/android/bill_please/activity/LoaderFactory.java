@@ -18,24 +18,26 @@ import com.yagodar.essential.factory.IdGroupIntFactory;
 /**
  * Created by yagodar on 17.06.2015.
  */
-public class BillPleaseLoaderFactory {
+public class LoaderFactory {
 
     public static AbsAsyncTaskLoader createLoader(Context context, int id, Bundle args) {
         try {
-
-            //TODO выдача id, несколько лоадеров одновременно. или последовательно.
-
-            //TODO первые несколько бит int - под ordinal группы. остальное - собственно id
-            IdGroupIntFactory test = new IdGroupIntFactory(10);
-            return (AbsAsyncTaskLoader) BillLoaderType.VALUES[id].mLoaderClass.getConstructor(Context.class, Bundle.class).newInstance(context, args);
+            return (AbsAsyncTaskLoader) getType(id).mLoaderClass.getConstructor(Context.class, Bundle.class).newInstance(context, args);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
-
         return null;
     }
 
-    public enum BillLoaderType {
+    public static Type getType(int id) {
+        return Type.get(id);
+    }
+
+    public static int getNextId(Type type) {
+        return type.getNextId();
+    }
+
+    public enum Type {
         LOAD_BILL_LIST(LoadBillListLoader.class),
         APPEND_BILL(AppendBillLoader.class),
         UPDATE_BILL(UpdateBillLoader.class),
@@ -46,14 +48,34 @@ public class BillPleaseLoaderFactory {
         REMOVE_BILL_ORDER(RemoveBillOrderLoader.class),
         ;
 
-        BillLoaderType(Class<? extends AbsAsyncTaskLoader> loaderClass) {
+        Type(Class loaderClass) {
             mLoaderClass = loaderClass;
+            mLastId = ordinal();
         }
 
+        public void onStart() {
+
+        }
+
+        public void onFinish() {
+
+        }
+
+        private int getNextId() {
+            mLastId = ID_FACTORY.getNextItemId(mLastId);
+            return mLastId;
+        }
+
+        private static Type get(int id) {
+            return VALUES[ID_FACTORY.getGroupId(id)];
+        }
+
+        private int mLastId;
         private final Class mLoaderClass;
 
-        private static final BillLoaderType[] VALUES = values();
+        private static final Type[] VALUES = values();
+        private static final IdGroupIntFactory ID_FACTORY = new IdGroupIntFactory(VALUES.length);
     }
 
-    private static final String TAG = BillPleaseLoaderFactory.class.getSimpleName();
+    private static final String TAG = LoaderFactory.class.getSimpleName();
 }

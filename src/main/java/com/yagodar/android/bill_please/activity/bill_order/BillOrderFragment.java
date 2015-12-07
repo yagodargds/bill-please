@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.activity.AbsBillPleaseTextWatcher;
-import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
+import com.yagodar.android.bill_please.activity.LoaderFactory;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.model.BillOrder;
@@ -71,7 +71,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
 
         setAvailable(true);
 
-        if (getLoaderManager().getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal()) != null) {
+        if (getLoaderManager().getLoader(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal()) != null) {
             startUpdateBillOrderLoader();
         }
     }
@@ -87,8 +87,8 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        AbsAsyncTaskLoader loader = BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
-        if (id == BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal()) {
+        AbsAsyncTaskLoader loader = LoaderFactory.createLoader(getActivity(), id, args);
+        if (id == LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal()) {
             loader.setUpdateThrottle(UPDATE_BILL_ORDER_TIMER_TASK_DELAY_MILLIS);
         }
         return loader;
@@ -161,7 +161,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private void startUpdateBillOrderLoader() {
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL_ORDER.ordinal(), getArguments(), ProgressShowType.HIDDEN);
+        startLoading(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal(), getArguments(), ProgressShowType.HIDDEN);
     }
 
     private class BillOrderOnFocusChangeListener implements View.OnFocusChangeListener {

@@ -20,7 +20,7 @@ import android.widget.ToggleButton;
 
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.activity.AbsBillPleaseTextWatcher;
-import com.yagodar.android.bill_please.activity.BillPleaseLoaderFactory;
+import com.yagodar.android.bill_please.activity.LoaderFactory;
 import com.yagodar.android.bill_please.activity.bill_order.BillOrderActivity;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
@@ -138,7 +138,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         Log.d(TAG, toString() + " onResume() LoaderManager=" + loaderManager.toString());
 
         Bundle args = getArguments();
-        Loader appendBillLoader = loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal());
+        Loader appendBillLoader = loaderManager.getLoader(LoaderFactory.Type.APPEND_BILL.ordinal());
 
         String logMsg = null;
         if(appendBillLoader != null) {
@@ -148,23 +148,23 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
         if (appendBillLoader != null
                 || args == null && mBill == null) {
-            startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal(), null);
+            startLoading(LoaderFactory.Type.APPEND_BILL.ordinal(), null);
         } else {
-            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal()) != null
+            if (loaderManager.getLoader(LoaderFactory.Type.LOAD_BILL.ordinal()) != null
                     || mBill != null && !mBill.isLoaded()) {
-                startLoading(BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal(), args);
+                startLoading(LoaderFactory.Type.LOAD_BILL.ordinal(), args);
             }
 
-            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) != null) {
+            if (loaderManager.getLoader(LoaderFactory.Type.UPDATE_BILL.ordinal()) != null) {
                 startUpdateBillLoader();
             }
 
-            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) != null) {
-                startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), null);
+            if (loaderManager.getLoader(LoaderFactory.Type.APPEND_BILL_ORDER.ordinal()) != null) {
+                startLoading(LoaderFactory.Type.APPEND_BILL_ORDER.ordinal(), null);
             }
 
-            if (loaderManager.getLoader(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal()) != null) {
-                startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal(), null);
+            if (loaderManager.getLoader(LoaderFactory.Type.REMOVE_BILL_ORDER.ordinal()) != null) {
+                startLoading(LoaderFactory.Type.REMOVE_BILL_ORDER.ordinal(), null);
             }
         }
     }
@@ -185,8 +185,8 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        AbsAsyncTaskLoader loader = BillPleaseLoaderFactory.createLoader(getActivity(), id, args);
-        if (id == BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) {
+        AbsAsyncTaskLoader loader = LoaderFactory.createLoader(getActivity(), id, args);
+        if (id == LoaderFactory.Type.UPDATE_BILL.ordinal()) {
             loader.setUpdateThrottle(UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
         }
         return loader;
@@ -198,7 +198,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         boolean successful = loaderResult.isSuccessful();
         boolean notifyDataSet = loaderResult.isNotifyDataSet();
 
-        if (loaderId == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL.ordinal()) {
+        if (loaderId == LoaderFactory.Type.APPEND_BILL.ordinal()) {
 
             Log.d(TAG, toString() + " FINISH APPEND_BILL");
 
@@ -215,7 +215,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
                 getActivity().finish();
             }
         }
-        else if (loaderId == BillPleaseLoaderFactory.BillLoaderType.LOAD_BILL.ordinal()) {
+        else if (loaderId == LoaderFactory.Type.LOAD_BILL.ordinal()) {
             if(successful) {
                 if(notifyDataSet) {
                     ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
@@ -230,13 +230,13 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
         } else if(successful && notifyDataSet) {
 
-            if (loaderId == BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal()) {
+            if (loaderId == LoaderFactory.Type.UPDATE_BILL.ordinal()) {
                 ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                 notifyOrderListChanged();
-            } else if (loaderId == BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal()) {
+            } else if (loaderId == LoaderFactory.Type.APPEND_BILL_ORDER.ordinal()) {
                 ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                 notifyOrderListChanged();
-            } else if (loaderId == BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal()) {
+            } else if (loaderId == LoaderFactory.Type.REMOVE_BILL_ORDER.ordinal()) {
                 ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
                 notifyOrderListChanged();
             }
@@ -457,7 +457,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     private void startUpdateBillLoader() {
-        startLoading(BillPleaseLoaderFactory.BillLoaderType.UPDATE_BILL.ordinal(), getArguments(), ProgressShowType.HIDDEN);
+        startLoading(LoaderFactory.Type.UPDATE_BILL.ordinal(), getArguments(), ProgressShowType.HIDDEN);
     }
 
     private class BillOnClickListener implements View.OnClickListener {
@@ -465,7 +465,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bill_order_append_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.APPEND_BILL_ORDER.ordinal(), mAppendBillOrderBundle);
+                    startLoading(LoaderFactory.Type.APPEND_BILL_ORDER.ordinal(), mAppendBillOrderBundle);
                     break;
                 case R.id.bill_order_edit_button:
                     Intent intent = new Intent(getActivity(), BillOrderActivity.class);
@@ -473,7 +473,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
                     startActivity(intent);
                     break;
                 case R.id.bill_order_remove_button:
-                    startLoading(BillPleaseLoaderFactory.BillLoaderType.REMOVE_BILL_ORDER.ordinal(), (Bundle) v.getTag());
+                    startLoading(LoaderFactory.Type.REMOVE_BILL_ORDER.ordinal(), (Bundle) v.getTag());
                     break;
                 default:
                     break;
