@@ -17,9 +17,6 @@ import com.yagodar.android.custom.fragment.progress.recycler_view.AbsLoaderProgr
 import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.model.ListModel;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Created by yagodar on 17.06.2015.
  */
@@ -73,11 +70,13 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
         LoaderManager loaderManager = getLoaderManager();
 
-        if(loaderManager.getLoader(LoaderFactory.Type.LOAD_BILL_LIST.getLastId()) != null || !mBillList.isLoaded()) {
+        if(!mBillList.isLoaded()) {
             startLastLoading(LoaderFactory.Type.LOAD_BILL_LIST, null);
+        } else {
+            LoaderFactory.startAllProcessLoader(this, LoaderFactory.Type.LOAD_BILL_LIST, loaderManager);
         }
 
-        startAllProcessLoader(LoaderFactory.Type.REMOVE_BILL, loaderManager);
+        LoaderFactory.startAllProcessLoader(this, LoaderFactory.Type.REMOVE_BILL, loaderManager);
     }
 
     @Override
@@ -125,20 +124,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
             intent.putExtras(args);
         }
         startActivityForResult(intent, type.ordinal());
-    }
-
-    private void startAllProcessLoader(LoaderFactory.Type type, LoaderManager loaderManager) {
-        Set<Integer> completedLoaderIdSet = new HashSet<>();
-        for (Integer id : type.getProcessLoaderIdSet()) {
-            if(loaderManager.getLoader(id) != null) {
-                startLoading(type, id, null);
-            } else {
-                completedLoaderIdSet.add(id);
-            }
-        }
-        for (Integer id : completedLoaderIdSet) {
-            LoaderFactory.onLoaderCompleted(type, id);
-        }
     }
 
     private void startLastLoading(LoaderFactory.Type type, Bundle args) {

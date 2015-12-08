@@ -2,6 +2,7 @@ package com.yagodar.android.bill_please.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.util.Log;
 
 import com.yagodar.android.bill_please.activity.bill.loader.AppendBillLoader;
@@ -33,12 +34,36 @@ public class LoaderFactory {
         return null;
     }
 
+    public static void startAllProcessLoader(ILoaderProgressContext context, LoaderFactory.Type type, LoaderManager loaderManager) {
+        Set<Integer> processLoaderIdSet = new HashSet<>();
+        Set<Integer> completedLoaderIdSet = new HashSet<>();
+        synchronized (type.mProcessLoaderIdSet) {
+            for (Integer id : type.getProcessLoaderIdSet()) {
+                if (loaderManager.getLoader(id) != null) {
+                    processLoaderIdSet.add(id);
+                } else {
+                    completedLoaderIdSet.add(id);
+                }
+            }
+        }
+        for (Integer id : processLoaderIdSet) {
+            context.startLoading(id, null, type.mProgressShowType);
+        }
+        synchronized (type.mProcessLoaderIdSet) {
+            for (Integer id : completedLoaderIdSet) {
+                type.mProcessLoaderIdSet.remove(id);
+            }
+        }
+    }
+
     public static void onLoaderCreated(int id) {
         onLoaderCreated(Type.get(id), id);
     }
 
     public static void onLoaderCreated(Type type, int id) {
-        type.mProcessLoaderIdSet.add(id);
+        synchronized (type.mProcessLoaderIdSet) {
+            type.mProcessLoaderIdSet.add(id);
+        }
     }
 
     public static void onLoaderCompleted(int id) {
@@ -46,7 +71,10 @@ public class LoaderFactory {
     }
 
     public static void onLoaderCompleted(Type type, int id) {
-        type.mProcessLoaderIdSet.remove(id);
+        synchronized (type.mProcessLoaderIdSet) {
+            type.mProcessLoaderIdSet.remove(id);
+        }
+
     }
 
     public enum Type {
