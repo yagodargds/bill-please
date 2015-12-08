@@ -35,18 +35,18 @@ public class LoaderFactory {
     }
 
     public static void startAllProcessLoader(ILoaderProgressContext context, LoaderFactory.Type type, LoaderManager loaderManager) {
-        Set<Integer> processLoaderIdSet = new HashSet<>();
+        Set<Integer> startingLoaderIdSet = new HashSet<>();
         Set<Integer> completedLoaderIdSet = new HashSet<>();
         synchronized (type.mProcessLoaderIdSet) {
-            for (Integer id : type.getProcessLoaderIdSet()) {
+            for (Integer id : type.mProcessLoaderIdSet) {
                 if (loaderManager.getLoader(id) != null) {
-                    processLoaderIdSet.add(id);
+                    startingLoaderIdSet.add(id);
                 } else {
                     completedLoaderIdSet.add(id);
                 }
             }
         }
-        for (Integer id : processLoaderIdSet) {
+        for (Integer id : startingLoaderIdSet) {
             context.startLoading(id, null, type.mProgressShowType);
         }
         synchronized (type.mProcessLoaderIdSet) {
