@@ -117,7 +117,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     public void onStart() {
         super.onStart();
 
-        Log.d(TAG, toString() + " onStart()");
+        Log.d(TAG, toString() + " onLoaderCreated()");
     }
 
     @Override

@@ -17,10 +17,14 @@ import com.yagodar.android.custom.fragment.progress.recycler_view.AbsLoaderProgr
 import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.model.ListModel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by yagodar on 17.06.2015.
  */
 public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, toString() + " onActivityResult() request=" + requestCode + " result=" + resultCode);
@@ -69,14 +73,11 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
         LoaderManager loaderManager = getLoaderManager();
 
-        //TODO перебор какие выполняются...
+        if(loaderManager.getLoader(LoaderFactory.Type.LOAD_BILL_LIST.getLastId()) != null || !mBillList.isLoaded()) {
+            startLastLoading(LoaderFactory.Type.LOAD_BILL_LIST, null);
+        }
 
-        if(loaderManager.getLoader(LoaderFactory.Type.LOAD_BILL_LIST.ordinal()) != null || !mBillList.isLoaded()) {
-            startNextLoading(LoaderFactory.Type.LOAD_BILL_LIST, null);
-        }
-        if(loaderManager.getLoader(LoaderFactory.Type.REMOVE_BILL.ordinal()) != null) {
-            startNextLoading(LoaderFactory.Type.REMOVE_BILL, null);
-        }
+        startAllProcessLoader(LoaderFactory.Type.REMOVE_BILL, loaderManager);
     }
 
     @Override
@@ -86,33 +87,23 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     @Override
-    public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        return LoaderFactory.createLoader(mActivity, id, args);
-    }
-
-    @Override
-    public void startLoading(int loaderId, Bundle args, ProgressShowType progressShowType) {
-        LoaderFactory.getType(loaderId).onStart();
-        super.startLoading(loaderId, args, progressShowType);
-    }
-
-    @Override
-    public void finishLoading(int loaderId, LoaderResult loaderResult) {
-        LoaderFactory.getType(loaderId).onFinish();
-        super.finishLoading(loaderId, loaderResult);
-    }
-
-    @Override
     public void setAvailable(boolean available) {
         super.setAvailable(available);
-        mButtonBillAppend.setEnabled(available);
+        mButtonBillAppend.setEnabled(available); //TODO при ремув - недоступна только строчка с ремувом
+    }
+
+    @Override
+    public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
+        Loader<LoaderResult> loader = LoaderFactory.createLoader(mActivity, id, args);
+        LoaderFactory.onLoaderCreated(id);
+        return loader;
     }
 
     @Override
     public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult loaderResult) {
+        int id = loader.getId();
         if (loaderResult.isSuccessful() && loaderResult.isNotifyDataSet()) {
-            int loaderId = loader.getId();
-            LoaderFactory.Type loaderType = LoaderFactory.getType(loaderId);
+            LoaderFactory.Type loaderType = LoaderFactory.Type.get(id);
             switch (loaderType) {
                 case LOAD_BILL_LIST:
                     getRecycleAdapter().notifyDataSetChanged();
@@ -125,6 +116,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
             }
         }
         super.onLoaderResult(loader, loaderResult);
+        LoaderFactory.onLoaderCompleted(id);
     }
 
     private void startBillActivity(LoaderFactory.Type type, Bundle args) {
@@ -135,21 +127,33 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         startActivityForResult(intent, type.ordinal());
     }
 
-    private void startNextLoading(LoaderFactory.Type type, Bundle args) {
-        ProgressShowType progressShowType;
-        switch (type) {
-            case LOAD_BILL_LIST:
-                progressShowType = ProgressShowType.NORMAL;
-                break;
-            case REMOVE_BILL:
-                progressShowType = ProgressShowType.HIDDEN;
-                break;
-            default:
-                progressShowType = ProgressShowType.NORMAL;
-                break;
+    private void startAllProcessLoader(LoaderFactory.Type type, LoaderManager loaderManager) {
+        Set<Integer> completedLoaderIdSet = new HashSet<>();
+        for (Integer id : type.getProcessLoaderIdSet()) {
+            if(loaderManager.getLoader(id) != null) {
+                startLoading(type, id, null);
+            } else {
+                completedLoaderIdSet.add(id);
+            }
         }
-        int loaderId = LoaderFactory.getNextId(type);
-        startLoading(loaderId, args, progressShowType);
+        for (Integer id : completedLoaderIdSet) {
+            LoaderFactory.onLoaderCompleted(type, id);
+        }
+    }
+
+    private void startLastLoading(LoaderFactory.Type type, Bundle args) {
+        int id = type.getLastId();
+        startLoading(type, id, args);
+    }
+
+    private void startNextLoading(LoaderFactory.Type type, Bundle args) {
+        int id = type.getNextId();
+        startLoading(type, id, args);
+    }
+
+    private void startLoading(LoaderFactory.Type type, int id, Bundle args) {
+        ProgressShowType progressShowType = type.getProgressShowType();
+        startLoading(id, args, progressShowType);
     }
 
     private class OnClickListener implements View.OnClickListener {
