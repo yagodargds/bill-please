@@ -3,6 +3,7 @@ package com.yagodar.android.bill_please.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.yagodar.android.bill_please.activity.bill.loader.AppendBillLoader;
@@ -14,115 +15,139 @@ import com.yagodar.android.bill_please.activity.bill_list.loader.LoadBillListLoa
 import com.yagodar.android.bill_please.activity.bill_list.loader.RemoveBillLoader;
 import com.yagodar.android.bill_please.activity.bill_order.loader.UpdateBillOrderLoader;
 import com.yagodar.android.custom.fragment.progress.ILoaderProgressContext;
-import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
+import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.factory.IdGroupIntFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by yagodar on 17.06.2015.
  */
 public class LoaderFactory {
 
-    public static AbsAsyncTaskLoader createLoader(Context context, int id, Bundle args) {
+    @SuppressWarnings("unchecked")
+    public static AsyncTaskLoader<LoaderResult> createLoader(Context context, int id, Bundle args) {
         try {
-            return (AbsAsyncTaskLoader) Type.get(id).mLoaderClass.getConstructor(Context.class, Bundle.class).newInstance(context, args);
+            Type type = Type.get(id);
+            AsyncTaskLoader<LoaderResult> loader = (AsyncTaskLoader<LoaderResult>) type.mLoaderClass.getConstructor(Context.class, Bundle.class).newInstance(context, args);
+            type.registerCreatedId(id);
+            return loader;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
         return null;
     }
 
-    public static void startAllProcessLoader(ILoaderProgressContext context, LoaderFactory.Type type, LoaderManager loaderManager) {
-        Set<Integer> startingLoaderIdSet = new HashSet<>();
-        Set<Integer> completedLoaderIdSet = new HashSet<>();
-        synchronized (type.mProcessLoaderIdSet) {
-            for (Integer id : type.mProcessLoaderIdSet) {
-                if (loaderManager.getLoader(id) != null) {
-                    startingLoaderIdSet.add(id);
-                } else {
-                    completedLoaderIdSet.add(id);
-                }
-            }
-        }
-        for (Integer id : startingLoaderIdSet) {
-            context.startLoading(id, null, type.mProgressShowType);
-        }
-        synchronized (type.mProcessLoaderIdSet) {
-            for (Integer id : completedLoaderIdSet) {
-                type.mProcessLoaderIdSet.remove(id);
-            }
-        }
-    }
-
-    public static void onLoaderCreated(int id) {
-        onLoaderCreated(Type.get(id), id);
-    }
-
-    public static void onLoaderCreated(Type type, int id) {
-        synchronized (type.mProcessLoaderIdSet) {
-            type.mProcessLoaderIdSet.add(id);
-        }
-    }
-
-    public static void onLoaderCompleted(int id) {
-        onLoaderCompleted(Type.get(id), id);
-    }
-
-    public static void onLoaderCompleted(Type type, int id) {
-        synchronized (type.mProcessLoaderIdSet) {
-            type.mProcessLoaderIdSet.remove(id);
-        }
-
-    }
-
     public enum Type {
-        LOAD_BILL_LIST(LoadBillListLoader.class, ILoaderProgressContext.ProgressShowType.NORMAL),
-        APPEND_BILL(AppendBillLoader.class, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        UPDATE_BILL(UpdateBillLoader.class, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        REMOVE_BILL(RemoveBillLoader.class, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        LOAD_BILL(LoadBillLoader.class, ILoaderProgressContext.ProgressShowType.NORMAL),
-        APPEND_BILL_ORDER(AppendBillOrderLoader.class, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        UPDATE_BILL_ORDER(UpdateBillOrderLoader.class, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        REMOVE_BILL_ORDER(RemoveBillOrderLoader.class, ILoaderProgressContext.ProgressShowType.HIDDEN),
+        LOAD_BILL_LIST(LoadBillListLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.NORMAL),
+        APPEND_BILL(AppendBillLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
+        UPDATE_BILL(UpdateBillLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
+        REMOVE_BILL(RemoveBillLoader.class, IdType.NEXT, ILoaderProgressContext.ProgressShowType.HIDDEN),
+        LOAD_BILL(LoadBillLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.NORMAL),
+        APPEND_BILL_ORDER(AppendBillOrderLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
+        UPDATE_BILL_ORDER(UpdateBillOrderLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
+        REMOVE_BILL_ORDER(RemoveBillOrderLoader.class, IdType.NEXT, ILoaderProgressContext.ProgressShowType.HIDDEN),
         ;
 
-        Type(Class<?> loaderClass, ILoaderProgressContext.ProgressShowType progressShowType) {
+        Type(Class<?> loaderClass, IdType idType, ILoaderProgressContext.ProgressShowType progressShowType) {
             mLastId = ordinal();
             mLoaderClass = loaderClass;
+            mIdType = idType;
             mProgressShowType = progressShowType;
-            mProcessLoaderIdSet = new HashSet<>();
+            mCreatedIdCollection = new HashSet<>();
         }
 
-        public int getLastId() {
-            return mLastId;
+        public void continueLoading(ILoaderProgressContext context, LoaderManager loaderManager) {
+            switch (mIdType) {
+                case UNIT:
+                    int unitId = ordinal();
+                    if (loaderManager.getLoader(unitId) != null) {
+                        context.startLoading(unitId, null, mProgressShowType);
+                    }
+                    break;
+                case NEXT:
+                    Collection<Integer> continueIdCollection = new ArrayList<>();
+                    Collection<Integer> removeIdCollection = new ArrayList<>();
+                    synchronized (mCreatedIdCollection) {
+                        for (int id : mCreatedIdCollection) {
+                            if (loaderManager.getLoader(id) != null) {
+                                continueIdCollection.add(id);
+                            } else {
+                                removeIdCollection.add(id);
+                            }
+                        }
+                    }
+                    for (int id : continueIdCollection) {
+                        context.startLoading(id, null, mProgressShowType);
+                    }
+                    synchronized (mCreatedIdCollection) {
+                        for (int id : removeIdCollection) {
+                            mCreatedIdCollection.remove(id);
+                        }
+                    }
+                    continueIdCollection.clear();
+                    removeIdCollection.clear();
+                    break;
+                default:
+                    break;
+            }
         }
 
-        public int getNextId() {
-            mLastId = ID_FACTORY.getNextItemId(mLastId);
-            return mLastId;
-        }
-
-        public ILoaderProgressContext.ProgressShowType getProgressShowType() {
-            return mProgressShowType;
-        }
-
-        public Set<Integer> getProcessLoaderIdSet() {
-            return mProcessLoaderIdSet;
+        public void startLoading(ILoaderProgressContext context, Bundle args) {
+            int id;
+            switch (mIdType) {
+                case UNIT:
+                    id = ordinal();
+                    break;
+                case NEXT:
+                    id = getNextId();
+                    break;
+                default:
+                    id = ordinal();
+                    break;
+            }
+            context.startLoading(id, args, mProgressShowType);
         }
 
         public static Type get(int id) {
             return VALUES[ID_FACTORY.getGroupId(id)];
         }
 
+        private int getNextId() {
+            mLastId = ID_FACTORY.getNextItemId(mLastId);
+            return mLastId;
+        }
+
+        private void registerCreatedId(int id) {
+            switch (mIdType) {
+                case UNIT:
+                    break;
+                case NEXT:
+                    synchronized (mCreatedIdCollection) {
+                        mCreatedIdCollection.add(id);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private int mLastId;
         private final Class<?> mLoaderClass;
+        private final IdType mIdType;
         private final ILoaderProgressContext.ProgressShowType mProgressShowType;
-        private final Set<Integer> mProcessLoaderIdSet;
+        private final Collection<Integer> mCreatedIdCollection;
 
         private static final Type[] VALUES = values();
         private static final IdGroupIntFactory ID_FACTORY = new IdGroupIntFactory(VALUES.length);
+    }
+
+    public enum IdType {
+        UNIT,
+        NEXT,
+        ;
     }
 
     private static final String TAG = LoaderFactory.class.getSimpleName();

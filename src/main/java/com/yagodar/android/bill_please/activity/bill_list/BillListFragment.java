@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.yagodar.android.bill_please.R;
+import com.yagodar.android.bill_please.activity.FragmentUtils;
 import com.yagodar.android.bill_please.activity.LoaderFactory;
 import com.yagodar.android.bill_please.activity.bill.BillActivity;
 import com.yagodar.android.bill_please.model.Bill;
@@ -47,14 +48,15 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mActivity = getActivity();
+        Activity activity = getActivity();
+
         View.OnClickListener onClickListener = new OnClickListener();
         mBillList = BillList.getInstance();
 
-        setRecyclerAdapter(new BillListAdapter(mActivity, onClickListener, mBillList));
+        setRecyclerAdapter(new BillListAdapter(activity, onClickListener, mBillList));
         //TODO setEmptyText(getString(R.string.no_data));
 
-        mButtonBillAppend = mActivity.findViewById(R.id.bill_append_button);
+        mButtonBillAppend = activity.findViewById(R.id.bill_append_button);
         mButtonBillAppend.setOnClickListener(onClickListener);
 
         if (savedInstanceState != null) {
@@ -69,14 +71,12 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         setAvailable(true);
 
         LoaderManager loaderManager = getLoaderManager();
-
         if(!mBillList.isLoaded()) {
-            startLastLoading(LoaderFactory.Type.LOAD_BILL_LIST, null);
+            LoaderFactory.Type.LOAD_BILL_LIST.startLoading(this, null);
         } else {
-            LoaderFactory.startAllProcessLoader(this, LoaderFactory.Type.LOAD_BILL_LIST, loaderManager);
+            LoaderFactory.Type.LOAD_BILL_LIST.continueLoading(this, loaderManager);
         }
-
-        LoaderFactory.startAllProcessLoader(this, LoaderFactory.Type.REMOVE_BILL, loaderManager);
+        LoaderFactory.Type.REMOVE_BILL.continueLoading(this, loaderManager);
     }
 
     @Override
@@ -87,23 +87,21 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
 
     @Override
     public void setAvailable(boolean available) {
-        super.setAvailable(available);
+        super.setAvailable(available); //maybe bundle, разобраться с hidden в loadercontext
         mButtonBillAppend.setEnabled(available); //TODO при ремув - недоступна только строчка с ремувом
     }
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        Loader<LoaderResult> loader = LoaderFactory.createLoader(mActivity, id, args);
-        LoaderFactory.onLoaderCreated(id);
-        return loader;
+        return LoaderFactory.createLoader(getActivity(), id, args);
     }
 
     @Override
     public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult loaderResult) {
-        int id = loader.getId();
         if (loaderResult.isSuccessful() && loaderResult.isNotifyDataSet()) {
-            LoaderFactory.Type loaderType = LoaderFactory.Type.get(id);
-            switch (loaderType) {
+            int id = loader.getId();
+            LoaderFactory.Type type = LoaderFactory.Type.get(id);
+            switch (type) {
                 case LOAD_BILL_LIST:
                     getRecycleAdapter().notifyDataSetChanged();
                     break;
@@ -115,30 +113,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
             }
         }
         super.onLoaderResult(loader, loaderResult);
-        LoaderFactory.onLoaderCompleted(id);
-    }
-
-    private void startBillActivity(LoaderFactory.Type type, Bundle args) {
-        Intent intent = new Intent(mActivity, BillActivity.class);
-        if(args != null) {
-            intent.putExtras(args);
-        }
-        startActivityForResult(intent, type.ordinal());
-    }
-
-    private void startLastLoading(LoaderFactory.Type type, Bundle args) {
-        int id = type.getLastId();
-        startLoading(type, id, args);
-    }
-
-    private void startNextLoading(LoaderFactory.Type type, Bundle args) {
-        int id = type.getNextId();
-        startLoading(type, id, args);
-    }
-
-    private void startLoading(LoaderFactory.Type type, int id, Bundle args) {
-        ProgressShowType progressShowType = type.getProgressShowType();
-        startLoading(id, args, progressShowType);
     }
 
     private class OnClickListener implements View.OnClickListener {
@@ -146,13 +120,13 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bill_append_button:
-                    startBillActivity(LoaderFactory.Type.APPEND_BILL, (Bundle) v.getTag());
+                    FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.APPEND_BILL, (Bundle) v.getTag());
                     break;
                 case R.id.bill_edit_button:
-                    startBillActivity(LoaderFactory.Type.UPDATE_BILL, (Bundle) v.getTag());
+                    FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.UPDATE_BILL, (Bundle) v.getTag());
                     break;
                 case R.id.bill_remove_button:
-                    startNextLoading(LoaderFactory.Type.REMOVE_BILL, (Bundle) v.getTag());
+                    LoaderFactory.Type.REMOVE_BILL.startLoading(BillListFragment.this, (Bundle) v.getTag());
                     break;
                 default:
                     break;
@@ -160,7 +134,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         }
     }
 
-    private Activity mActivity;
     private ListModel<Bill> mBillList;
     private View mButtonBillAppend;
 

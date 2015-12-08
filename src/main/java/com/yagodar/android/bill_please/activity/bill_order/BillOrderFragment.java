@@ -3,6 +3,7 @@ package com.yagodar.android.bill_please.activity.bill_order;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,7 +19,6 @@ import com.yagodar.android.bill_please.model.BillOrder;
 import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.common_view.AbsLoaderProgressFragment;
-import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
 
 /**
@@ -87,7 +87,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        AbsAsyncTaskLoader loader = LoaderFactory.createLoader(getActivity(), id, args);
+        AsyncTaskLoader loader = LoaderFactory.createLoader(getActivity(), id, args);
         if (id == LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal()) {
             loader.setUpdateThrottle(UPDATE_BILL_ORDER_TIMER_TASK_DELAY_MILLIS);
         }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -27,7 +28,6 @@ import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.store.db.DbTableBillContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListViewFragment;
-import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 import com.yagodar.android.custom.loader.LoaderResult;
 
 /**
@@ -185,7 +185,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     @Override
     public Loader<LoaderResult> onCreateLoader(int id, Bundle args) {
-        AbsAsyncTaskLoader loader = LoaderFactory.createLoader(getActivity(), id, args);
+        AsyncTaskLoader loader = LoaderFactory.createLoader(getActivity(), id, args);
         if (id == LoaderFactory.Type.UPDATE_BILL.ordinal()) {
             loader.setUpdateThrottle(UPDATE_BILL_TIMER_TASK_DELAY_MILLIS);
         }
