@@ -69,7 +69,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     public void onResume() {
         super.onResume();
 
-        setAvailable(true);
+        //setAvailable(true);
 
         if (getLoaderManager().getLoader(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal()) != null) {
             startUpdateBillOrderLoader();
@@ -161,7 +161,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private void startUpdateBillOrderLoader() {
-        startLoading(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal(), getArguments(), ProgressShowType.HIDDEN);
+        startLoading(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal(), getArguments());
     }
 
     private class BillOrderOnFocusChangeListener implements View.OnFocusChangeListener {

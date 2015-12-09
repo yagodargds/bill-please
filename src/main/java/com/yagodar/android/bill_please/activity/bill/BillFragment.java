@@ -131,7 +131,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     public void onResume() {
         super.onResume();
 
-        setAvailable(true);
+        //setAvailable(true);
 
         //LoaderManager loaderManager = getActivity().getSupportLoaderManager(); - NOT EQUAL!
         LoaderManager loaderManager = getLoaderManager();
@@ -193,10 +193,10 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     @Override
-    public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult loaderResult) {
+    public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult result) {
         int loaderId = loader.getId();
-        boolean successful = loaderResult.isSuccessful();
-        boolean notifyDataSet = loaderResult.isNotifyDataSet();
+        boolean successful = result.isSuccessful();
+        boolean notifyDataSet = result.isNotifyDataSet();
 
         if (loaderId == LoaderFactory.Type.APPEND_BILL.ordinal()) {
 
@@ -204,7 +204,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
             if(successful) {
                 if(notifyDataSet) {
-                    initBill(loaderResult.getData());
+                    initBill(result.getData());
                     notifyBillLoaded();
                 }
 
@@ -244,12 +244,12 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
             setActivityResult(Activity.RESULT_OK);
         }
 
-        super.onLoaderResult(loader, loaderResult);
+        super.onLoaderResult(loader, result);
     }
 
     @Override
-    public void setAvailable(boolean available) {
-        super.setAvailable(available);
+    public void setAvailable(boolean available, int id, Bundle args, LoaderResult result) {
+        super.setAvailable(available, id, args, result);
         mEditTextName.setEnabled(available);
         mButtonBillOrderAppend.setEnabled(available);
         setTaxRowEnabled(available);
@@ -457,7 +457,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     private void startUpdateBillLoader() {
-        startLoading(LoaderFactory.Type.UPDATE_BILL.ordinal(), getArguments(), ProgressShowType.HIDDEN);
+        startLoading(LoaderFactory.Type.UPDATE_BILL.ordinal(), getArguments());
     }
 
     private class BillOnClickListener implements View.OnClickListener {

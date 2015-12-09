@@ -41,21 +41,20 @@ public class LoaderFactory {
     }
 
     public enum Type {
-        LOAD_BILL_LIST(LoadBillListLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.NORMAL),
-        APPEND_BILL(AppendBillLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        UPDATE_BILL(UpdateBillLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        REMOVE_BILL(RemoveBillLoader.class, IdType.NEXT, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        LOAD_BILL(LoadBillLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.NORMAL),
-        APPEND_BILL_ORDER(AppendBillOrderLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        UPDATE_BILL_ORDER(UpdateBillOrderLoader.class, IdType.UNIT, ILoaderProgressContext.ProgressShowType.HIDDEN),
-        REMOVE_BILL_ORDER(RemoveBillOrderLoader.class, IdType.NEXT, ILoaderProgressContext.ProgressShowType.HIDDEN),
+        LOAD_BILL_LIST(LoadBillListLoader.class, IdType.UNIT),
+        APPEND_BILL(AppendBillLoader.class, IdType.UNIT),
+        UPDATE_BILL(UpdateBillLoader.class, IdType.UNIT),
+        REMOVE_BILL(RemoveBillLoader.class, IdType.NEXT),
+        LOAD_BILL(LoadBillLoader.class, IdType.UNIT),
+        APPEND_BILL_ORDER(AppendBillOrderLoader.class, IdType.UNIT),
+        UPDATE_BILL_ORDER(UpdateBillOrderLoader.class, IdType.UNIT),
+        REMOVE_BILL_ORDER(RemoveBillOrderLoader.class, IdType.NEXT),
         ;
 
-        Type(Class<?> loaderClass, IdType idType, ILoaderProgressContext.ProgressShowType progressShowType) {
+        Type(Class<?> loaderClass, IdType idType) {
             mLastId = ordinal();
             mLoaderClass = loaderClass;
             mIdType = idType;
-            mProgressShowType = progressShowType;
             mCreatedIdCollection = new HashSet<>();
         }
 
@@ -64,7 +63,7 @@ public class LoaderFactory {
                 case UNIT:
                     int unitId = ordinal();
                     if (loaderManager.getLoader(unitId) != null) {
-                        context.startLoading(unitId, null, mProgressShowType);
+                        context.startLoading(unitId, null);
                     }
                     break;
                 case NEXT:
@@ -80,7 +79,7 @@ public class LoaderFactory {
                         }
                     }
                     for (int id : continueIdCollection) {
-                        context.startLoading(id, null, mProgressShowType);
+                        context.startLoading(id, null);
                     }
                     synchronized (mCreatedIdCollection) {
                         for (int id : removeIdCollection) {
@@ -108,7 +107,7 @@ public class LoaderFactory {
                     id = ordinal();
                     break;
             }
-            context.startLoading(id, args, mProgressShowType);
+            context.startLoading(id, args);
         }
 
         public static Type get(int id) {
@@ -137,7 +136,6 @@ public class LoaderFactory {
         private int mLastId;
         private final Class<?> mLoaderClass;
         private final IdType mIdType;
-        private final ILoaderProgressContext.ProgressShowType mProgressShowType;
         private final Collection<Integer> mCreatedIdCollection;
 
         private static final Type[] VALUES = values();

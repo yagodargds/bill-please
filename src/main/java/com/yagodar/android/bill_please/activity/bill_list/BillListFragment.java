@@ -68,8 +68,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     public void onResume() {
         super.onResume();
 
-        setAvailable(true);
-
         LoaderManager loaderManager = getLoaderManager();
         if(!mBillList.isLoaded()) {
             LoaderFactory.Type.LOAD_BILL_LIST.startLoading(this, null);
@@ -86,8 +84,8 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     @Override
-    public void setAvailable(boolean available) {
-        super.setAvailable(available); //maybe bundle, разобраться с hidden в loadercontext
+    public void setAvailable(boolean available, int id, Bundle args, LoaderResult result) {
+        super.setAvailable(available, id, args, result);
         mButtonBillAppend.setEnabled(available); //TODO при ремув - недоступна только строчка с ремувом
     }
 
@@ -97,8 +95,8 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     @Override
-    public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult loaderResult) {
-        if (loaderResult.isSuccessful() && loaderResult.isNotifyDataSet()) {
+    public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult result) {
+        if (result.isSuccessful() && result.isNotifyDataSet()) {
             int id = loader.getId();
             LoaderFactory.Type type = LoaderFactory.Type.get(id);
             switch (type) {
@@ -112,7 +110,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                     break;
             }
         }
-        super.onLoaderResult(loader, loaderResult);
+        super.onLoaderResult(loader, result);
     }
 
     private class OnClickListener implements View.OnClickListener {
