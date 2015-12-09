@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -84,9 +85,20 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     @Override
-    public void setAvailable(boolean available, int id, Bundle args, LoaderResult result) {
-        super.setAvailable(available, id, args, result);
-        mButtonBillAppend.setEnabled(available); //TODO при ремув - недоступна только строчка с ремувом
+    public void setAvailable(boolean available, int id, Bundle args) {
+        LoaderFactory.Type type = LoaderFactory.Type.get(id);
+        switch (type) {
+            case LOAD_BILL_LIST:
+                setContentShown(available);
+                mButtonBillAppend.setEnabled(available);
+                break;
+            case REMOVE_BILL:
+                if(!available) {
+                    RecyclerView.ViewHolder viewHolder = getRecyclerView().findViewHolderForItemId(id);
+                    //viewHolder.itemView.setEnabled(false); //TODO npe!
+                }
+                break;
+        }
     }
 
     @Override

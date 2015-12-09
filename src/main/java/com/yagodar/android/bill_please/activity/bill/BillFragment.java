@@ -248,8 +248,8 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     @Override
-    public void setAvailable(boolean available, int id, Bundle args, LoaderResult result) {
-        super.setAvailable(available, id, args, result);
+    public void setAvailable(boolean available, int id, Bundle args) {
+        super.setAvailable(available, id, args);
         mEditTextName.setEnabled(available);
         mButtonBillOrderAppend.setEnabled(available);
         setTaxRowEnabled(available);

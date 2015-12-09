@@ -24,7 +24,7 @@ public class LoadBillListLoader extends AbsAsyncTaskLoader {
 
     @Override
     public LoaderResult load(CancellationSignal signal) {
-        LoaderResult loaderResult = new LoaderResult();
+        LoaderResult loaderResult = new LoaderResult(getArgs());
 
         if(!BillList.getInstance().isLoaded()) {
             OperationResult<List<Bill>> opResult = BillRepository.getInstance().loadAllList();

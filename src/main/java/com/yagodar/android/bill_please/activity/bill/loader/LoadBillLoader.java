@@ -26,7 +26,7 @@ public class LoadBillLoader extends AbsAsyncTaskLoader {
 
     @Override
     public LoaderResult load(CancellationSignal signal) {
-        LoaderResult loaderResult = new LoaderResult();
+        LoaderResult loaderResult = new LoaderResult(getArgs());
 
         if(!BillList.getInstance().isLoaded()) {
             loaderResult.setFailMessageId(R.string.err_load_failed);
