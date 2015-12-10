@@ -22,6 +22,7 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
 
     private BillOrderRepository() {
         mTableManager = DbManager.getInstance().getTableManager(DbTableBillOrderContract.getInstance());
+        mContentValuesHolder = new ContentValues();
     }
 
     public static BillOrderRepository getInstance() {
@@ -35,6 +36,8 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
 
         return INSTANCE;
     }
+
+    //region Deprecated
 
     @Deprecated
     @Override
@@ -108,36 +111,38 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
         throw new UnsupportedOperationException("Load bill order map not supported!");
     }
 
+    //endregion
+
     @Override
     public OperationResult<List<BillOrder>> loadGroupList(long groupId, CancellationSignal signal) {
         OperationResult<List<BillOrder>> opResult = new OperationResult<>();
-
-        OperationResult<List<DbTableManager.DbTableRecord>> getGroupRecordsResult = mTableManager.getGroupRecords(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
+        OperationResult<List<DbTableManager.DbTableRecord>> getGroupRecordsResult;
+        synchronized (this) {
+            getGroupRecordsResult = mTableManager.getGroupRecords(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
+        }
         if(!getGroupRecordsResult.isSuccessful()) {
             opResult.setFailMessage(getGroupRecordsResult.getFailMessage());
             opResult.setFailMessageId(getGroupRecordsResult.getFailMessageId());
             opResult.setFailThrowable(getGroupRecordsResult.getFailThrowable());
         } else {
             List<BillOrder> billOrderList = new LinkedList<>();
-
             long id;
+            String name;
+            String cost;
+            String share;
             for (DbTableManager.DbTableRecord record : getGroupRecordsResult.getData()) {
                 id = record.getId();
-
-                String name = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME);
-                String cost = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_COST);
-                String share = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_SHARE);
-
-                BillOrder billOrder = new BillOrder(id, name, cost, share);
-
-                billOrderList.add(billOrder);
+                name = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME);
+                cost = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_COST);
+                share = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_SHARE);
+                billOrderList.add(new BillOrder(id, name, cost, share));
             }
-
             opResult.setData(billOrderList);
         }
-
         return opResult;
     }
+
+    //region Deprecated
 
     @Deprecated
     @Override
@@ -151,14 +156,17 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
         throw new UnsupportedOperationException("Load bill order all list not supported!");
     }
 
+    //endregion
+
     @Override
     public OperationResult<Long> insert(long groupId, CancellationSignal signal) {
-        OperationResult<Long> opResult = mTableManager.insertToGroup(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
-
+        OperationResult<Long> opResult;
+        synchronized (this) {
+            opResult = mTableManager.insertToGroup(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
+        }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_append_failed);
         }
-
         return opResult;
     }
 
@@ -167,13 +175,14 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
         if(model == null) {
             throw new IllegalArgumentException("Bill Order must not be null!");
         }
-
-        ContentValues contentValues = getContentValues(groupId, model);
-        OperationResult<Long> opResult = mTableManager.insert(contentValues);
+        OperationResult<Long> opResult;
+        synchronized (this) {
+            setContentValues(groupId, model);
+            opResult = mTableManager.insert(mContentValuesHolder);
+        }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_append_failed);
         }
-
         return opResult;
     }
 
@@ -182,15 +191,18 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
         if(model == null) {
             throw new IllegalArgumentException("Bill Order must not be null!");
         }
-
-        ContentValues contentValues = getContentValues(groupId, model);
-        OperationResult<Integer> opResult = mTableManager.update(model.getId(), contentValues);
+        OperationResult<Integer> opResult;
+        synchronized (this) {
+            setContentValues(groupId, model);
+            opResult = mTableManager.update(model.getId(), mContentValuesHolder);
+        }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_update_failed);
         }
-
         return opResult;
     }
+
+    //region Deprecated
 
     @Deprecated
     @Override
@@ -216,14 +228,17 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
         throw new UnsupportedOperationException("Update all bill order groups by list not supported!");
     }
 
+    //endregion
+
     @Override
     public OperationResult<Integer> delete(long groupId, long id, CancellationSignal signal) {
-        OperationResult<Integer> opResult = mTableManager.delete(id);
-
+        OperationResult<Integer> opResult;
+        synchronized (this) {
+            opResult = mTableManager.delete(id);
+        }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_remove_failed);
         }
-
         return opResult;
     }
 
@@ -231,6 +246,8 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
     public OperationResult<Integer> delete(long groupId, BillOrder model, CancellationSignal signal) {
         return delete(groupId, model.getId(), signal);
     }
+
+    //region Deprecated
 
     @Deprecated
     @Override
@@ -244,16 +261,17 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
         throw new UnsupportedOperationException("Delete all bill order groups not supported!");
     }
 
-    private ContentValues getContentValues(long groupId, BillOrder model) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
-        contentValues.put(DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME, model.getName());
-        contentValues.put(DbTableBillOrderContract.COLUMN_NAME_COST, model.getFormattedCost());
-        contentValues.put(DbTableBillOrderContract.COLUMN_NAME_SHARE, model.getFormattedShare());
-        return contentValues;
+    //endregion
+
+    private void setContentValues(long groupId, BillOrder model) {
+        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
+        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME, model.getName());
+        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_COST, model.getFormattedCost());
+        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_SHARE, model.getFormattedShare());
     }
 
-    private DbTableManager mTableManager;
+    private final DbTableManager mTableManager;
+    private final ContentValues mContentValuesHolder;
 
     private static volatile BillOrderRepository INSTANCE;
 }

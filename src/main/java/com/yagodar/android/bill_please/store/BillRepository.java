@@ -27,7 +27,8 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
 
     private BillRepository() {
         mManager = DbManager.getInstance();
-        mTableManager = DbManager.getInstance().getTableManager(DbTableBillContract.getInstance());
+        mTableManager = mManager.getTableManager(DbTableBillContract.getInstance());
+        mContentValuesHolder = new ContentValues();
     }
 
     public static BillRepository getInstance() {
@@ -41,6 +42,8 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
 
         return INSTANCE;
     }
+
+    //region Deprecated
 
     @Deprecated
     @Override
@@ -84,59 +87,60 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         throw new UnsupportedOperationException("Load bill map not supported!");
     }
 
+    //endregion
+
     @Override
     public OperationResult<List<Bill>> loadAllList(CancellationSignal signal) {
         OperationResult<List<Bill>> opResult = new OperationResult<>();
-
-        OperationResult<List<DbTableManager.DbTableRecord>> getAllRecordsResult = mTableManager.getAllRecords();
+        OperationResult<List<DbTableManager.DbTableRecord>> getAllRecordsResult;
+        synchronized (this) {
+            getAllRecordsResult = mTableManager.getAllRecords();
+        }
         if(!getAllRecordsResult.isSuccessful()) {
             opResult.setFailMessage(getAllRecordsResult.getFailMessage());
             opResult.setFailMessageId(getAllRecordsResult.getFailMessageId());
             opResult.setFailThrowable(getAllRecordsResult.getFailThrowable());
         } else {
             List<Bill> billList = new LinkedList<>();
-
             long id;
+            String name;
+            Bill.TaxTipType taxType;
+            String dbTaxType;
+            String dbTaxVal;
+            Bill.TaxTipType tipType;
+            String dbTipType;
+            String dbTipVal;
             for (DbTableManager.DbTableRecord record : getAllRecordsResult.getData()) {
                 id = record.getId();
-
-                String name = (String) record.getValue(DbTableBillContract.COLUMN_NAME_BILL_NAME);
-
-                Bill.TaxTipType taxType = null;
-                String dbTaxType = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TAX_TYPE);
+                name = (String) record.getValue(DbTableBillContract.COLUMN_NAME_BILL_NAME);
+                taxType = null;
+                dbTaxType = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TAX_TYPE);
                 if(dbTaxType != null) {
                     taxType = Bill.TaxTipType.valueOf(dbTaxType);
                 }
-
-                String dbTaxVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TAX_VAL);
-
-                Bill.TaxTipType tipType = null;
-                String dbTipType = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_TYPE);
+                dbTaxVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TAX_VAL);
+                tipType = null;
+                dbTipType = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_TYPE);
                 if(dbTipType != null) {
                     tipType = Bill.TaxTipType.valueOf(dbTipType);
                 }
-
-                String dbTipVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_VAL);
-
-                Bill bill = new Bill(id, name, taxType, dbTaxVal, tipType, dbTipVal);
-
-                billList.add(bill);
+                dbTipVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_VAL);
+                billList.add(new Bill(id, name, taxType, dbTaxVal, tipType, dbTipVal));
             }
-
             opResult.setData(billList);
         }
-
         return opResult;
     }
 
     @Override
     public OperationResult<Long> insert(CancellationSignal signal) {
-        OperationResult<Long> opResult = mTableManager.insert();
-
+        OperationResult<Long> opResult;
+        synchronized (this) {
+            opResult = mTableManager.insert();
+        }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_append_failed);
         }
-
         return opResult;
     }
 
@@ -145,13 +149,14 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         if(model == null) {
             throw new IllegalArgumentException("Bill must not be null!");
         }
-
-        ContentValues contentValues = getContentValues(model);
-        OperationResult<Long> opResult = mTableManager.insert(contentValues);
+        OperationResult<Long> opResult;
+        synchronized (this) {
+            setContentValues(model);
+            opResult = mTableManager.insert(mContentValuesHolder);
+        }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_append_failed);
         }
-
         return opResult;
     }
 
@@ -160,15 +165,18 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         if(model == null) {
             throw new IllegalArgumentException("Bill must not be null!");
         }
-
-        ContentValues contentValues = getContentValues(model);
-        OperationResult<Integer> opResult = mTableManager.update(model.getId(), contentValues);
+        OperationResult<Integer> opResult;
+        synchronized (this) {
+            setContentValues(model);
+            opResult = mTableManager.update(model.getId(), mContentValuesHolder);
+        }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_update_failed);
         }
-
         return opResult;
     }
+
+    //region Deprecated
 
     @Deprecated
     @Override
@@ -182,39 +190,37 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         throw new UnsupportedOperationException("Update all bills by list not supported!");
     }
 
+    //endregion
+
     @Override
-    public synchronized OperationResult<Integer> delete(long id, CancellationSignal signal) {
+    public OperationResult<Integer> delete(long id, CancellationSignal signal) {
         OperationResult<Integer> opResult = new OperationResult<>();
-
-        SQLiteDatabase db = null;
-        try {
-            db = mManager.getDatabase();
-            db.beginTransaction();
-
-            if (signal != null) {
-                signal.throwIfCanceled();
+        synchronized (this) {
+            SQLiteDatabase db = null;
+            try {
+                db = mManager.getDatabase();
+                db.beginTransaction();
+                if (signal != null) {
+                    signal.throwIfCanceled();
+                }
+                int rowsAffected;
+                rowsAffected = db.delete(DbTableBillContract.getInstance().getTableName(), BaseColumns._ID + DbHelper.SYMB_OP_EQUALITY + id, null);
+                opResult.setData(rowsAffected);
+                rowsAffected = db.delete(DbTableBillOrderContract.getInstance().getTableName(), DbTableBillOrderContract.COLUMN_NAME_BILL_ID + DbHelper.SYMB_OP_EQUALITY + id, null);
+                opResult.setData(opResult.getData() + rowsAffected);
+                if (signal != null) {
+                    signal.throwIfCanceled();
+                }
+                db.setTransactionSuccessful();
+            } catch (OperationCanceledException e) {
+                throw e;
+            } catch (Exception e) {
+                opResult.setFailThrowable(e);
+            } finally {
+                mManager.endTransaction(db);
+                mManager.closeDatabase(db);
             }
-
-            int rowsAffected = db.delete(DbTableBillContract.getInstance().getTableName(), BaseColumns._ID + DbHelper.SYMB_OP_EQUALITY + id, null);
-            opResult.setData(rowsAffected);
-
-            rowsAffected = db.delete(DbTableBillOrderContract.getInstance().getTableName(), DbTableBillOrderContract.COLUMN_NAME_BILL_ID + DbHelper.SYMB_OP_EQUALITY + id, null);
-            opResult.setData(opResult.getData() + rowsAffected);
-
-            if (signal != null) {
-                signal.throwIfCanceled();
-            }
-
-            db.setTransactionSuccessful();
-        } catch (OperationCanceledException e) {
-            throw e;
-        } catch (Exception e) {
-            opResult.setFailThrowable(e);
-        } finally {
-            db.endTransaction();
-            mManager.closeDatabase(db);
         }
-
         return opResult;
     }
 
@@ -223,24 +229,27 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         return delete(model.getId(), signal);
     }
 
+    //region Deprecated
+
     @Deprecated
     @Override
     public OperationResult<Integer> deleteAll(CancellationSignal signal) {
         throw new UnsupportedOperationException("Delete all bills not supported!");
     }
 
-    private ContentValues getContentValues(Bill model) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DbTableBillContract.COLUMN_NAME_BILL_NAME, model.getName());
-        contentValues.put(DbTableBillContract.COLUMN_NAME_TAX_TYPE, model.getTaxType().toString());
-        contentValues.put(DbTableBillContract.COLUMN_NAME_TAX_VAL, model.getFormattedTaxVal());
-        contentValues.put(DbTableBillContract.COLUMN_NAME_TIP_TYPE, model.getTipType().toString());
-        contentValues.put(DbTableBillContract.COLUMN_NAME_TIP_VAL, model.getFormattedTipVal());
-        return contentValues;
+    //endregion
+
+    private void setContentValues(Bill model) {
+        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_BILL_NAME, model.getName());
+        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TAX_TYPE, model.getTaxType().toString());
+        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TAX_VAL, model.getFormattedTaxVal());
+        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TIP_TYPE, model.getTipType().toString());
+        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TIP_VAL, model.getFormattedTipVal());
     }
 
-    private DbManager mManager;
-    private DbTableManager mTableManager;
+    private final DbManager mManager;
+    private final DbTableManager mTableManager;
+    private final ContentValues mContentValuesHolder;
 
     private static volatile BillRepository INSTANCE;
 }
