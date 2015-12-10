@@ -3,6 +3,7 @@ package com.yagodar.android.bill_please.activity.bill_list;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
@@ -85,17 +86,46 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     }
 
     @Override
-    public void setAvailable(boolean available, int id, Bundle args) {
+    public void onStartLoading(int id, Bundle args) {
         LoaderFactory.Type type = LoaderFactory.Type.get(id);
         switch (type) {
             case LOAD_BILL_LIST:
-                setContentShown(available);
-                mButtonBillAppend.setEnabled(available);
+                setContentShown(false);
+                mButtonBillAppend.setEnabled(false);
                 break;
             case REMOVE_BILL:
-                if(!available) {
-                    RecyclerView.ViewHolder viewHolder = getRecyclerView().findViewHolderForItemId(id);
-                    //viewHolder.itemView.setEnabled(false); //TODO npe!
+                long recordId = args.getLong(BaseColumns._ID);
+                RecyclerView.ViewHolder viewHolder = getRecyclerView().findViewHolderForItemId(recordId);
+                if(viewHolder == null) {
+                    Log.d(TAG, "onStartLoading REMOVE_BILL viewHolder NULL");
+                    break;
+
+                }
+                Log.d(TAG, "onStartLoading REMOVE_BILL viewHolder setEnabled(false)");
+                viewHolder.itemView.setEnabled(false);
+                break;
+        }
+    }
+
+    @Override
+    public void onFinishLoading(int id, LoaderResult result) {
+        LoaderFactory.Type type = LoaderFactory.Type.get(id);
+        switch (type) {
+            case LOAD_BILL_LIST:
+                setContentShown(true);
+                mButtonBillAppend.setEnabled(true);
+                break;
+            case REMOVE_BILL:
+                if(result == null) {
+                    Log.d(TAG, "onFinishLoading REMOVE_BILL result NULL");
+                    break;
+                }
+                long recordId = result.getLoaderArgs().getLong(BaseColumns._ID);
+                RecyclerView.ViewHolder viewHolder = getRecyclerView().findViewHolderForItemId(recordId);
+                if(viewHolder != null) {
+                    Log.d(TAG, "onFinishLoading REMOVE_BILL viewHolder NOT NULL");
+                    viewHolder.itemView.setEnabled(true);
+                    break;
                 }
                 break;
         }
@@ -116,6 +146,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                     getRecycleAdapter().notifyDataSetChanged();
                     break;
                 case REMOVE_BILL:
+                    Log.d(TAG, "onLoaderResult REMOVE_BILL notify");
                     getRecycleAdapter().notifyDataSetChanged(); //TODO
                     break;
                 default:

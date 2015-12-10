@@ -43,15 +43,26 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
                     Log.d(TAG, this + " >>> load opResult=" + opResult, new ForStackTraceException());
                 }
                 if (opResult.isSuccessful()) {
-                    BillList.getInstance().removeModel(billId);
-                    loaderResult.setNotifyDataSet(true);
+                    int rowsAffected = opResult.getData();
+                    if(rowsAffected > 0) {
+                        BillList.getInstance().removeModel(billId);
+                        loaderResult.setNotifyDataSet(true);
+                    } else {
+                        loaderResult.setNotifyDataSet(false);
+                    }
                 } else {
                     loaderResult.setFailMessage(opResult.getFailMessage());
                     loaderResult.setFailMessageId(opResult.getFailMessageId());
                     loaderResult.setFailThrowable(opResult.getFailThrowable());
                     loaderResult.setNotifyDataSet(false);
                 }
+                loaderResult.setData(opResult);
             }
+        }
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         if(DEBUG) {
             Log.d(TAG, this + " >>> load loaderResult=" + loaderResult, new ForStackTraceException());

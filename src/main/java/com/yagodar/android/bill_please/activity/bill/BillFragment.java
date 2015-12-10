@@ -204,7 +204,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
             if(successful) {
                 if(notifyDataSet) {
-                    initBill(result.getData());
+                    initBill((Bundle)result.getData());
                     notifyBillLoaded();
                 }
 
@@ -248,12 +248,21 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     @Override
-    public void setAvailable(boolean available, int id, Bundle args) {
-        super.setAvailable(available, id, args);
-        mEditTextName.setEnabled(available);
-        mButtonBillOrderAppend.setEnabled(available);
-        setTaxRowEnabled(available);
-        setTipRowEnabled(available);
+    public void onStartLoading(int id, Bundle args) {
+        super.onStartLoading(id, args);
+        mEditTextName.setEnabled(false);
+        mButtonBillOrderAppend.setEnabled(false);
+        setTaxRowEnabled(false);
+        setTipRowEnabled(false);
+    }
+
+    @Override
+    public void onFinishLoading(int id, LoaderResult result) {
+        super.onFinishLoading(id, result);
+        mEditTextName.setEnabled(true);
+        mButtonBillOrderAppend.setEnabled(true);
+        setTaxRowEnabled(true);
+        setTipRowEnabled(true);
     }
 
     @Override

@@ -183,7 +183,7 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
     }
 
     @Override
-    public OperationResult<Integer> delete(long id, CancellationSignal signal) {
+    public synchronized OperationResult<Integer> delete(long id, CancellationSignal signal) {
         OperationResult<Integer> opResult = new OperationResult<>();
 
         SQLiteDatabase db = null;
@@ -191,7 +191,7 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
             db = mManager.getDatabase();
             db.beginTransaction();
 
-            if(signal != null) {
+            if (signal != null) {
                 signal.throwIfCanceled();
             }
 
@@ -201,14 +201,14 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
             rowsAffected = db.delete(DbTableBillOrderContract.getInstance().getTableName(), DbTableBillOrderContract.COLUMN_NAME_BILL_ID + DbHelper.SYMB_OP_EQUALITY + id, null);
             opResult.setData(opResult.getData() + rowsAffected);
 
-            if(signal != null) {
+            if (signal != null) {
                 signal.throwIfCanceled();
             }
 
             db.setTransactionSuccessful();
-        } catch(OperationCanceledException e) {
+        } catch (OperationCanceledException e) {
             throw e;
-        } catch(Exception e) {
+        } catch (Exception e) {
             opResult.setFailThrowable(e);
         } finally {
             db.endTransaction();
