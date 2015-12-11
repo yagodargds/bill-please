@@ -69,7 +69,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     public void onResume() {
         super.onResume();
 
-        //setAvailable(true);
+        //setEnabled(true);
 
         if (getLoaderManager().getLoader(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal()) != null) {
             startUpdateBillOrderLoader();

@@ -28,9 +28,8 @@ public class LoadBillListLoader extends AbsAsyncTaskLoader {
 
         if(!BillList.getInstance().isLoaded()) {
             OperationResult<List<Bill>> opResult = BillRepository.getInstance().loadAllList();
+            loaderResult.setData(opResult);
             if(opResult.isSuccessful()) {
-                List<Bill> billList = opResult.getData();
-                BillList.getInstance().setModelList(billList);
                 loaderResult.setNotifyDataSet(true);
             } else {
                 loaderResult.setFailMessage(opResult.getFailMessage());

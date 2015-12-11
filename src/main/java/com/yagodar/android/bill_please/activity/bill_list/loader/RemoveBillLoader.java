@@ -42,21 +42,16 @@ public class RemoveBillLoader extends AbsAsyncTaskLoader {
                 if (DEBUG) {
                     Log.d(TAG, this + " >>> load opResult=" + opResult, new ForStackTraceException());
                 }
+                loaderResult.setData(opResult);
                 if (opResult.isSuccessful()) {
                     int rowsAffected = opResult.getData();
-                    if(rowsAffected > 0) {
-                        BillList.getInstance().removeModel(billId);
-                        loaderResult.setNotifyDataSet(true);
-                    } else {
-                        loaderResult.setNotifyDataSet(false);
-                    }
+                    loaderResult.setNotifyDataSet(rowsAffected > 0);
                 } else {
                     loaderResult.setFailMessage(opResult.getFailMessage());
                     loaderResult.setFailMessageId(opResult.getFailMessageId());
                     loaderResult.setFailThrowable(opResult.getFailThrowable());
                     loaderResult.setNotifyDataSet(false);
                 }
-                loaderResult.setData(opResult);
             }
         }
         try {

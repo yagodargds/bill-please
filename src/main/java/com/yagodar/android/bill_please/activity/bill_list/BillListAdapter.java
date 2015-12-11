@@ -27,6 +27,8 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
         return new ViewHolder(getLayoutInflater().inflate(R.layout.bill_row, parent, false), getOnClickListener());
     }
 
+
+
     public static class ViewHolder extends AbsRecyclerViewAdapter.AbsViewHolder<Bill> {
 
         private TextView mTextViewNumber;
@@ -69,8 +71,14 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
 
             mButtonEdit.setTag(buttonArgs);
             mButtonRemove.setTag(buttonArgs);
+
+            setEnabled(true); //TODO моргает
         }
 
+        public void setEnabled(boolean value) {
+            mButtonEdit.setEnabled(value);
+            mButtonRemove.setEnabled(value);
+        }
     }
 
 }

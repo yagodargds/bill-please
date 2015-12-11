@@ -10,24 +10,12 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.yagodar.android.bill_please.R;
-import com.yagodar.android.database.sqlite.custom.AbstractDbEditText;
-
-import java.util.Timer;
 
 public class BillActivity extends Activity {
-    /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        timer = new Timer();
-    }*/
-
-    private void hideFocus() {
-        etHidden.requestFocus();
-    }
-
     public void onButtonClick(View button) {
         switch(button.getId()) {
             case R.id.btn_share_bill:
-                hideFocus();
+                //hideFocus();
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, getShareText());
@@ -40,7 +28,7 @@ public class BillActivity extends Activity {
     }
 
     private String getShareText() {
-        String shareText = "";
+        //String shareText = "";
 
         /*//app name tag
         shareText += getResources().getString(R.string.app_tag);
@@ -89,9 +77,8 @@ public class BillActivity extends Activity {
         //total
         shareText += "[" + getResources().getString(R.string.lbl_total) + "]" + ":" + ((TextView) findViewById(R.id.tv_total_sum)).getText();*/
 
-        return shareText;
+        return null;
     }
-
 
     public static class CreateNewBillDialogFragment extends DialogFragment {
         @Override
@@ -125,12 +112,6 @@ public class BillActivity extends Activity {
 
         private DialogInterface.OnClickListener onClickListener = new CreateNewBillDialogOnClickListener();
     }
-
-
-
-    private AbstractDbEditText lastDbEt;
-    private View etHidden;
-    private Timer timer;
 
     private static final String INTENT_TYPE_SHARE = "text/plain";
 }

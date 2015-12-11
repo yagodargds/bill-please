@@ -131,7 +131,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     public void onResume() {
         super.onResume();
 
-        //setAvailable(true);
+        //setEnabled(true);
 
         //LoaderManager loaderManager = getActivity().getSupportLoaderManager(); - NOT EQUAL!
         LoaderManager loaderManager = getLoaderManager();

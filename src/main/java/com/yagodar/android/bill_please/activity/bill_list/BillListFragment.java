@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -19,6 +18,9 @@ import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.custom.fragment.progress.recycler_view.AbsLoaderProgressRecyclerViewFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.model.ListModel;
+import com.yagodar.essential.operation.OperationResult;
+
+import java.util.List;
 
 /**
  * Created by yagodar on 17.06.2015.
@@ -95,14 +97,8 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                 break;
             case REMOVE_BILL:
                 long recordId = args.getLong(BaseColumns._ID);
-                RecyclerView.ViewHolder viewHolder = getRecyclerView().findViewHolderForItemId(recordId);
-                if(viewHolder == null) {
-                    Log.d(TAG, "onStartLoading REMOVE_BILL viewHolder NULL");
-                    break;
-
-                }
-                Log.d(TAG, "onStartLoading REMOVE_BILL viewHolder setEnabled(false)");
-                viewHolder.itemView.setEnabled(false);
+                BillListAdapter.ViewHolder viewHolder = (BillListAdapter.ViewHolder) getRecyclerView().findViewHolderForItemId(recordId);
+                viewHolder.setEnabled(false);
                 break;
         }
     }
@@ -116,17 +112,12 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                 mButtonBillAppend.setEnabled(true);
                 break;
             case REMOVE_BILL:
-                if(result == null) {
-                    Log.d(TAG, "onFinishLoading REMOVE_BILL result NULL");
+                if(result == null || result.isSuccessful()) {
                     break;
                 }
                 long recordId = result.getLoaderArgs().getLong(BaseColumns._ID);
-                RecyclerView.ViewHolder viewHolder = getRecyclerView().findViewHolderForItemId(recordId);
-                if(viewHolder != null) {
-                    Log.d(TAG, "onFinishLoading REMOVE_BILL viewHolder NOT NULL");
-                    viewHolder.itemView.setEnabled(true);
-                    break;
-                }
+                BillListAdapter.ViewHolder viewHolder = (BillListAdapter.ViewHolder) getRecyclerView().findViewHolderForItemId(recordId);
+                viewHolder.setEnabled(true);
                 break;
         }
     }
@@ -136,6 +127,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         return LoaderFactory.createLoader(getActivity(), id, args);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult result) {
         if (result.isSuccessful() && result.isNotifyDataSet()) {
@@ -143,11 +135,18 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
             LoaderFactory.Type type = LoaderFactory.Type.get(id);
             switch (type) {
                 case LOAD_BILL_LIST:
+                    OperationResult<List<Bill>> loadOpResult = (OperationResult<List<Bill>>) result.getData();
+                    List<Bill> billList = loadOpResult.getData();
+                    mBillList.setModelList(billList);
                     getRecycleAdapter().notifyDataSetChanged();
                     break;
                 case REMOVE_BILL:
-                    Log.d(TAG, "onLoaderResult REMOVE_BILL notify");
-                    getRecycleAdapter().notifyDataSetChanged(); //TODO
+                    long billId = result.getLoaderArgs().getLong(BaseColumns._ID);
+                    int billPos = mBillList.getPos(billId);
+                    mBillList.removeModel(billId);
+                    getRecycleAdapter().notifyItemRemoved(billPos); //TODO exception
+                    /*java.lang.IndexOutOfBoundsException: Inconsistency detected. Invalid view holder adapter positionViewHolder{4248a258 position=13 id=44, oldPos=12, pLpos:12 scrap [attachedScrap] tmpDetached no parent}
+                at android.support.v7.widget.RecyclerView$Recycler.validateViewHolderForOffsetPosition(RecyclerView.java:4251)*/
                     break;
                 default:
                     break;
