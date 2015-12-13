@@ -11,7 +11,7 @@ import java.text.DecimalFormatSymbols;
 /**
  * Created by АППДКт78М on 24.10.2014.
  */
-public class Bill extends ConcurrentListModel<BillOrder> {
+public class Bill extends ConcurrentListModel<Order> {
     public Bill(long id) {
         this(id, null, null, null, null, null);
     }
@@ -100,7 +100,7 @@ public class Bill extends ConcurrentListModel<BillOrder> {
         BigDecimal subtotal = BigDecimal.ZERO;
 
         if(isLoaded()) {
-            for (BillOrder order : getModelList()) {
+            for (Order order : getModelList()) {
                 subtotal = subtotal.add(order.getSubtotal());
             }
         }

@@ -14,15 +14,15 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
-        <activity android:name=".activity.bill_list.BillListActivity" >
+        <activity android:name=".activity.BillListActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.bill.BillActivity"
+        <activity android:name=".activity.BillActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
-        <activity android:name=".activity.bill_order.BillOrderActivity"
+        <activity android:name=".activity.OrderActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
     </application>
 

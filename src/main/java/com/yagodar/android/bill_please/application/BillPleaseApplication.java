@@ -4,8 +4,8 @@ import android.app.Application;
 import android.os.Environment;
 import android.util.Log;
 
-import com.yagodar.android.bill_please.activity.bill.BillFragment;
-import com.yagodar.android.bill_please.activity.bill_list.loader.RemoveBillLoader;
+import com.yagodar.android.bill_please.activity.BillFragment;
+import com.yagodar.android.bill_please.activity.loader.RemoveBillLoader;
 import com.yagodar.android.bill_please.store.db.DbManager;
 import com.yagodar.android.custom.loader.AbsAsyncTaskLoader;
 

@@ -20,8 +20,8 @@ public class DbManager extends AbstractDbManager {
     protected List<AbstractDbTableContract> regTableContracts() {
         List<AbstractDbTableContract> dbTableContracts = new ArrayList<>();
 
-        dbTableContracts.add(DbTableBillContract.getInstance());
-        dbTableContracts.add(DbTableBillOrderContract.getInstance());
+        dbTableContracts.add(DbTableBillsContract.getInstance());
+        dbTableContracts.add(DbTableOrdersContract.getInstance());
 
         return dbTableContracts;
     }

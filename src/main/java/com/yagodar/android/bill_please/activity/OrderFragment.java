@@ -1,4 +1,4 @@
-package com.yagodar.android.bill_please.activity.bill_order;
+package com.yagodar.android.bill_please.activity;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,12 +11,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.yagodar.android.bill_please.R;
-import com.yagodar.android.bill_please.activity.AbsBillPleaseTextWatcher;
-import com.yagodar.android.bill_please.activity.LoaderFactory;
+import com.yagodar.android.bill_please.activity.loader.LoaderFactory;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
-import com.yagodar.android.bill_please.model.BillOrder;
-import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
+import com.yagodar.android.bill_please.model.Order;
+import com.yagodar.android.bill_please.store.db.DbTableOrdersContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.common_view.AbsLoaderProgressFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
@@ -24,16 +23,16 @@ import com.yagodar.android.custom.loader.LoaderResult;
 /**
  * Created by yagodar on 30.06.2015.
  */
-public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnActivityBackPressedListener {
+public class OrderFragment extends AbsLoaderProgressFragment implements IOnActivityBackPressedListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        long billId = getArguments().getLong(DbTableBillOrderContract.COLUMN_NAME_BILL_ID);
+        long billId = getArguments().getLong(DbTableOrdersContract.COLUMN_NAME_BILL_ID);
         long billOrderId = getArguments().getLong(BaseColumns._ID);
         mBill = BillList.getInstance().getModel(billId);
-        mBillOrder = mBill.getModel(billOrderId);
+        mOrder = mBill.getModel(billOrderId);
 
         setContentView(R.layout.bill_order_view);
 
@@ -127,37 +126,37 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     }
 
     private boolean updateModelName() {
-        return mBillOrder.setName(mEditTextName.getText().toString());
+        return mOrder.setName(mEditTextName.getText().toString());
     }
 
     private void onNameLoaded() {
         mLoading = true;
-        mEditTextName.setText(mBillOrder.getName());
+        mEditTextName.setText(mOrder.getName());
         mLoading = false;
     }
 
     private boolean updateModelCost() {
-        return mBillOrder.setCost(mEditTextCost.getText().toString());
+        return mOrder.setCost(mEditTextCost.getText().toString());
     }
 
     private void onCostLoaded() {
         mLoading = true;
-        mEditTextCost.setText(mBillOrder.getFormattedCost());
+        mEditTextCost.setText(mOrder.getFormattedCost());
         mLoading = false;
     }
 
     private boolean updateModelShare() {
-        return mBillOrder.setShare(mEditTextShare.getText().toString());
+        return mOrder.setShare(mEditTextShare.getText().toString());
     }
 
     private void onShareLoaded() {
         mLoading = true;
-        mEditTextShare.setText(mBillOrder.getFormattedShare());
+        mEditTextShare.setText(mOrder.getFormattedShare());
         mLoading = false;
     }
 
     private void onSubtotalChanged() {
-        mTextViewSubtotal.setText(mBillOrder.getFormattedSubtotal());
+        mTextViewSubtotal.setText(mOrder.getFormattedSubtotal());
     }
 
     private void startUpdateBillOrderLoader() {
@@ -241,7 +240,7 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
     private boolean mLoading;
 
     private Bill mBill;
-    private BillOrder mBillOrder;
+    private Order mOrder;
 
     private EditText mEditTextName;
     private EditText mEditTextCost;
@@ -252,10 +251,10 @@ public class BillOrderFragment extends AbsLoaderProgressFragment implements IOnA
 
     private EditText mLastEditText;
 
-    private final static String NAME_TAG = DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME;
-    private final static String COST_TAG = DbTableBillOrderContract.COLUMN_NAME_COST;
-    private final static String SHARE_TAG = DbTableBillOrderContract.COLUMN_NAME_SHARE;
-    private final static String SUBTOTAL_TAG = DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME + "_subtotal";
+    private final static String NAME_TAG = DbTableOrdersContract.COLUMN_NAME_ORDER_NAME;
+    private final static String COST_TAG = DbTableOrdersContract.COLUMN_NAME_COST;
+    private final static String SHARE_TAG = DbTableOrdersContract.COLUMN_NAME_SHARE;
+    private final static String SUBTOTAL_TAG = DbTableOrdersContract.COLUMN_NAME_ORDER_NAME + "_subtotal";
 
     private final static long UPDATE_BILL_ORDER_TIMER_TASK_DELAY_MILLIS = 1500L;
 }

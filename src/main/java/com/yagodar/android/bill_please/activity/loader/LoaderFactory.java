@@ -1,4 +1,4 @@
-package com.yagodar.android.bill_please.activity;
+package com.yagodar.android.bill_please.activity.loader;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,14 +6,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.yagodar.android.bill_please.activity.bill.loader.AppendBillLoader;
-import com.yagodar.android.bill_please.activity.bill.loader.AppendBillOrderLoader;
-import com.yagodar.android.bill_please.activity.bill.loader.LoadBillLoader;
-import com.yagodar.android.bill_please.activity.bill.loader.RemoveBillOrderLoader;
-import com.yagodar.android.bill_please.activity.bill.loader.UpdateBillLoader;
-import com.yagodar.android.bill_please.activity.bill_list.loader.LoadBillListLoader;
-import com.yagodar.android.bill_please.activity.bill_list.loader.RemoveBillLoader;
-import com.yagodar.android.bill_please.activity.bill_order.loader.UpdateBillOrderLoader;
 import com.yagodar.android.custom.fragment.progress.ILoaderProgressContext;
 import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.factory.IdGroupIntFactory;
@@ -46,9 +38,9 @@ public class LoaderFactory {
         UPDATE_BILL(UpdateBillLoader.class, IdType.UNIT),
         REMOVE_BILL(RemoveBillLoader.class, IdType.NEXT),
         LOAD_BILL(LoadBillLoader.class, IdType.UNIT),
-        APPEND_BILL_ORDER(AppendBillOrderLoader.class, IdType.UNIT),
-        UPDATE_BILL_ORDER(UpdateBillOrderLoader.class, IdType.UNIT),
-        REMOVE_BILL_ORDER(RemoveBillOrderLoader.class, IdType.NEXT),
+        APPEND_BILL_ORDER(AppendOrderLoader.class, IdType.UNIT),
+        UPDATE_BILL_ORDER(UpdateOrderLoader.class, IdType.UNIT),
+        REMOVE_BILL_ORDER(RemoveOrderLoader.class, IdType.NEXT),
         ;
 
         Type(Class<?> loaderClass, IdType idType) {
@@ -142,7 +134,7 @@ public class LoaderFactory {
         private static final IdGroupIntFactory ID_FACTORY = new IdGroupIntFactory(VALUES.length);
     }
 
-    public enum IdType {
+    private enum IdType {
         UNIT,
         NEXT,
         ;

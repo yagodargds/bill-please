@@ -7,27 +7,11 @@
     android:paddingBottom="@dimen/view_edge_gap">
 
     <LinearLayout
-        android:layout_width="@dimen/number_width"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingRight="@dimen/view_edge_small_gap" >
-
-        <TextView
-            android:id="@+id/bill_number"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:orientation="vertical"
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:paddingLeft="@dimen/view_edge_small_gap"
         android:paddingRight="@dimen/view_edge_small_gap" >
 
         <TableLayout

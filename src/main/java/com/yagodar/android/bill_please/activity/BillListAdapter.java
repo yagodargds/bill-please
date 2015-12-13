@@ -1,4 +1,4 @@
-package com.yagodar.android.bill_please.activity.bill_list;
+package com.yagodar.android.bill_please.activity;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -31,7 +31,6 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
 
     public static class ViewHolder extends AbsRecyclerViewAdapter.AbsViewHolder<Bill> {
 
-        private TextView mTextViewNumber;
         private TextView mTextViewName;
         private TextView mTextViewTaxVal;
         private TextView mTextViewTaxType;
@@ -43,7 +42,6 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
         public ViewHolder(View itemView, View.OnClickListener onClickListener) {
             super(itemView);
 
-            mTextViewNumber = (TextView) itemView.findViewById(R.id.bill_number);
             mTextViewName = (TextView) itemView.findViewById(R.id.bill_et_name);
             mTextViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
             mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
@@ -59,7 +57,6 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
 
         @Override
         public void onBind(Bill model, int position) {
-            mTextViewNumber.setText(String.valueOf(position + 1));
             mTextViewName.setText(model.getName());
             mTextViewTaxVal.setText(model.getFormattedTaxVal());
             mTextViewTaxType.setText(model.getTaxType().toString());

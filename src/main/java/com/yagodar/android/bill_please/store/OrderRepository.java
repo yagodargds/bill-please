@@ -4,9 +4,9 @@ import android.content.ContentValues;
 import android.support.v4.os.CancellationSignal;
 
 import com.yagodar.android.bill_please.R;
-import com.yagodar.android.bill_please.model.BillOrder;
+import com.yagodar.android.bill_please.model.Order;
 import com.yagodar.android.bill_please.store.db.DbManager;
-import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
+import com.yagodar.android.bill_please.store.db.DbTableOrdersContract;
 import com.yagodar.android.custom.model.rep.AbsMultGroupCancelRepository;
 import com.yagodar.android.database.sqlite.DbTableManager;
 import com.yagodar.essential.operation.OperationResult;
@@ -18,18 +18,18 @@ import java.util.Map;
 /**
  * Created by yagodar on 26.06.2015.
  */
-public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder> {
+public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
 
-    private BillOrderRepository() {
-        mTableManager = DbManager.getInstance().getTableManager(DbTableBillOrderContract.getInstance());
+    private OrderRepository() {
+        mTableManager = DbManager.getInstance().getTableManager(DbTableOrdersContract.getInstance());
         mContentValuesHolder = new ContentValues();
     }
 
-    public static BillOrderRepository getInstance() {
+    public static OrderRepository getInstance() {
         if (INSTANCE == null) {
             synchronized (BillRepository.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new BillOrderRepository();
+                    INSTANCE = new OrderRepository();
                 }
             }
         }
@@ -47,43 +47,43 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
 
     @Deprecated
     @Override
-    public OperationResult<Map<Long, BillOrder>> loadGroupMap(long groupId) {
+    public OperationResult<Map<Long, Order>> loadGroupMap(long groupId) {
         return super.loadGroupMap(groupId);
     }
 
     @Deprecated
     @Override
-    public OperationResult<Map<Long, Map<Long, BillOrder>>> loadAllMap() {
+    public OperationResult<Map<Long, Map<Long, Order>>> loadAllMap() {
         return super.loadAllMap();
     }
 
     @Deprecated
     @Override
-    public OperationResult<Map<Long, List<BillOrder>>> loadAllList() {
+    public OperationResult<Map<Long, List<Order>>> loadAllList() {
         return super.loadAllList();
     }
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateGroup(long groupId, Map<Long, BillOrder> modelById) {
+    public OperationResult<Integer> updateGroup(long groupId, Map<Long, Order> modelById) {
         return super.updateGroup(groupId, modelById);
     }
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateGroup(long groupId, List<BillOrder> modelList) {
+    public OperationResult<Integer> updateGroup(long groupId, List<Order> modelList) {
         return super.updateGroup(groupId, modelList);
     }
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateAllMap(Map<Long, Map<Long, BillOrder>> modelByIdByGroup) {
+    public OperationResult<Integer> updateAllMap(Map<Long, Map<Long, Order>> modelByIdByGroup) {
         return super.updateAllMap(modelByIdByGroup);
     }
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateAllList(Map<Long, List<BillOrder>> modelListByGroup) {
+    public OperationResult<Integer> updateAllList(Map<Long, List<Order>> modelListByGroup) {
         return super.updateAllList(modelListByGroup);
     }
 
@@ -101,43 +101,43 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
 
     @Deprecated
     @Override
-    public OperationResult<BillOrder> load(long groupId, long id, CancellationSignal signal) {
+    public OperationResult<Order> load(long groupId, long id, CancellationSignal signal) {
         throw new UnsupportedOperationException("Load bill order by id not supported!");
     }
 
     @Deprecated
     @Override
-    public OperationResult<Map<Long, BillOrder>> loadGroupMap(long groupId, CancellationSignal signal) {
+    public OperationResult<Map<Long, Order>> loadGroupMap(long groupId, CancellationSignal signal) {
         throw new UnsupportedOperationException("Load bill order map not supported!");
     }
 
     //endregion
 
     @Override
-    public OperationResult<List<BillOrder>> loadGroupList(long groupId, CancellationSignal signal) {
-        OperationResult<List<BillOrder>> opResult = new OperationResult<>();
+    public OperationResult<List<Order>> loadGroupList(long groupId, CancellationSignal signal) {
+        OperationResult<List<Order>> opResult = new OperationResult<>();
         OperationResult<List<DbTableManager.DbTableRecord>> getGroupRecordsResult;
         synchronized (this) {
-            getGroupRecordsResult = mTableManager.getGroupRecords(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
+            getGroupRecordsResult = mTableManager.getGroupRecords(DbTableOrdersContract.COLUMN_NAME_BILL_ID, groupId);
         }
         if(!getGroupRecordsResult.isSuccessful()) {
             opResult.setFailMessage(getGroupRecordsResult.getFailMessage());
             opResult.setFailMessageId(getGroupRecordsResult.getFailMessageId());
             opResult.setFailThrowable(getGroupRecordsResult.getFailThrowable());
         } else {
-            List<BillOrder> billOrderList = new LinkedList<>();
+            List<Order> orderList = new LinkedList<>();
             long id;
             String name;
             String cost;
             String share;
             for (DbTableManager.DbTableRecord record : getGroupRecordsResult.getData()) {
                 id = record.getId();
-                name = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME);
-                cost = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_COST);
-                share = (String) record.getValue(DbTableBillOrderContract.COLUMN_NAME_SHARE);
-                billOrderList.add(new BillOrder(id, name, cost, share));
+                name = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME);
+                cost = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_COST);
+                share = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_SHARE);
+                orderList.add(new Order(id, name, cost, share));
             }
-            opResult.setData(billOrderList);
+            opResult.setData(orderList);
         }
         return opResult;
     }
@@ -146,13 +146,13 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
 
     @Deprecated
     @Override
-    public OperationResult<Map<Long, Map<Long, BillOrder>>> loadAllMap(CancellationSignal signal) {
+    public OperationResult<Map<Long, Map<Long, Order>>> loadAllMap(CancellationSignal signal) {
         throw new UnsupportedOperationException("Load bill order all map not supported!");
     }
 
     @Deprecated
     @Override
-    public OperationResult<Map<Long, List<BillOrder>>> loadAllList(CancellationSignal signal) {
+    public OperationResult<Map<Long, List<Order>>> loadAllList(CancellationSignal signal) {
         throw new UnsupportedOperationException("Load bill order all list not supported!");
     }
 
@@ -162,7 +162,7 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
     public OperationResult<Long> insert(long groupId, CancellationSignal signal) {
         OperationResult<Long> opResult;
         synchronized (this) {
-            opResult = mTableManager.insertToGroup(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
+            opResult = mTableManager.insertToGroup(DbTableOrdersContract.COLUMN_NAME_BILL_ID, groupId);
         }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_append_failed);
@@ -171,7 +171,7 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
     }
 
     @Override
-    public OperationResult<Long> insert(long groupId, BillOrder model, CancellationSignal signal) {
+    public OperationResult<Long> insert(long groupId, Order model, CancellationSignal signal) {
         if(model == null) {
             throw new IllegalArgumentException("Bill Order must not be null!");
         }
@@ -187,7 +187,7 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
     }
 
     @Override
-    public OperationResult<Integer> update(long groupId, BillOrder model, CancellationSignal signal) {
+    public OperationResult<Integer> update(long groupId, Order model, CancellationSignal signal) {
         if(model == null) {
             throw new IllegalArgumentException("Bill Order must not be null!");
         }
@@ -206,25 +206,25 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateGroup(long groupId, Map<Long, BillOrder> modelById, CancellationSignal signal) {
+    public OperationResult<Integer> updateGroup(long groupId, Map<Long, Order> modelById, CancellationSignal signal) {
         throw new UnsupportedOperationException("Update bill order group by map not supported!");
     }
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateGroup(long groupId, List<BillOrder> modelList, CancellationSignal signal) {
+    public OperationResult<Integer> updateGroup(long groupId, List<Order> modelList, CancellationSignal signal) {
         throw new UnsupportedOperationException("Update bill order group by list not supported!");
     }
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateAllMap(Map<Long, Map<Long, BillOrder>> modelByIdByGroup, CancellationSignal signal) {
+    public OperationResult<Integer> updateAllMap(Map<Long, Map<Long, Order>> modelByIdByGroup, CancellationSignal signal) {
         throw new UnsupportedOperationException("Update all bill order groups by map not supported!");
     }
 
     @Deprecated
     @Override
-    public OperationResult<Integer> updateAllList(Map<Long, List<BillOrder>> modelListByGroup, CancellationSignal signal) {
+    public OperationResult<Integer> updateAllList(Map<Long, List<Order>> modelListByGroup, CancellationSignal signal) {
         throw new UnsupportedOperationException("Update all bill order groups by list not supported!");
     }
 
@@ -243,7 +243,7 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
     }
 
     @Override
-    public OperationResult<Integer> delete(long groupId, BillOrder model, CancellationSignal signal) {
+    public OperationResult<Integer> delete(long groupId, Order model, CancellationSignal signal) {
         return delete(groupId, model.getId(), signal);
     }
 
@@ -263,15 +263,15 @@ public class BillOrderRepository extends AbsMultGroupCancelRepository<BillOrder>
 
     //endregion
 
-    private void setContentValues(long groupId, BillOrder model) {
-        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, groupId);
-        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_ORDER_NAME, model.getName());
-        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_COST, model.getFormattedCost());
-        mContentValuesHolder.put(DbTableBillOrderContract.COLUMN_NAME_SHARE, model.getFormattedShare());
+    private void setContentValues(long groupId, Order model) {
+        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_BILL_ID, groupId);
+        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME, model.getName());
+        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_COST, model.getFormattedCost());
+        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_SHARE, model.getFormattedShare());
     }
 
     private final DbTableManager mTableManager;
     private final ContentValues mContentValuesHolder;
 
-    private static volatile BillOrderRepository INSTANCE;
+    private static volatile OrderRepository INSTANCE;
 }

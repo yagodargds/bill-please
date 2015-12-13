@@ -1,4 +1,4 @@
-package com.yagodar.android.bill_please.activity.bill;
+package com.yagodar.android.bill_please.activity;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,17 +9,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.yagodar.android.bill_please.R;
-import com.yagodar.android.bill_please.model.BillOrder;
-import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
+import com.yagodar.android.bill_please.model.Order;
+import com.yagodar.android.bill_please.store.db.DbTableOrdersContract;
 import com.yagodar.android.custom.adapter.AbsListViewAdapter;
 import com.yagodar.essential.model.ListModel;
 
 /**
  * Created by yagodar on 24.06.2015.
  */
-public class BillOrderListAdapter extends AbsListViewAdapter<BillOrder> {
+public class BillAdapter extends AbsListViewAdapter<Order> {
 
-    public BillOrderListAdapter(Context context, View.OnClickListener onClickListener, ListModel<BillOrder> listModel) {
+    public BillAdapter(Context context, View.OnClickListener onClickListener, ListModel<Order> listModel) {
         super(context, onClickListener, listModel);
     }
 
@@ -49,17 +49,17 @@ public class BillOrderListAdapter extends AbsListViewAdapter<BillOrder> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        BillOrder billOrder = getItem(position);
+        Order order = getItem(position);
 
         viewHolder.textViewNumber.setText(String.valueOf(position + 1));
-        viewHolder.textViewName.setText(billOrder.getName());
-        viewHolder.textViewCost.setText(billOrder.getFormattedCost());
-        viewHolder.textViewShare.setText(billOrder.getFormattedShare());
-        viewHolder.textViewSubtotal.setText(billOrder.getFormattedSubtotal());
+        viewHolder.textViewName.setText(order.getName());
+        viewHolder.textViewCost.setText(order.getFormattedCost());
+        viewHolder.textViewShare.setText(order.getFormattedShare());
+        viewHolder.textViewSubtotal.setText(order.getFormattedSubtotal());
 
         Bundle buttonArgs = new Bundle();
-        buttonArgs.putLong(DbTableBillOrderContract.COLUMN_NAME_BILL_ID, getListModel().getId());
-        buttonArgs.putLong(BaseColumns._ID, billOrder.getId());
+        buttonArgs.putLong(DbTableOrdersContract.COLUMN_NAME_BILL_ID, getListModel().getId());
+        buttonArgs.putLong(BaseColumns._ID, order.getId());
 
         viewHolder.buttonEdit.setTag(buttonArgs);
         viewHolder.buttonRemove.setTag(buttonArgs);

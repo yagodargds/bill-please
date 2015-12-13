@@ -9,8 +9,8 @@ import android.support.v4.os.OperationCanceledException;
 import com.yagodar.android.bill_please.R;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.store.db.DbManager;
-import com.yagodar.android.bill_please.store.db.DbTableBillContract;
-import com.yagodar.android.bill_please.store.db.DbTableBillOrderContract;
+import com.yagodar.android.bill_please.store.db.DbTableBillsContract;
+import com.yagodar.android.bill_please.store.db.DbTableOrdersContract;
 import com.yagodar.android.custom.model.rep.AbsMultCancelRepository;
 import com.yagodar.android.database.sqlite.DbHelper;
 import com.yagodar.android.database.sqlite.DbTableManager;
@@ -27,7 +27,7 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
 
     private BillRepository() {
         mManager = DbManager.getInstance();
-        mTableManager = mManager.getTableManager(DbTableBillContract.getInstance());
+        mTableManager = mManager.getTableManager(DbTableBillsContract.getInstance());
         mContentValuesHolder = new ContentValues();
     }
 
@@ -112,19 +112,19 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
             String dbTipVal;
             for (DbTableManager.DbTableRecord record : getAllRecordsResult.getData()) {
                 id = record.getId();
-                name = (String) record.getValue(DbTableBillContract.COLUMN_NAME_BILL_NAME);
+                name = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_BILL_NAME);
                 taxType = null;
-                dbTaxType = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TAX_TYPE);
+                dbTaxType = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_TAX_TYPE);
                 if(dbTaxType != null) {
                     taxType = Bill.TaxTipType.valueOf(dbTaxType);
                 }
-                dbTaxVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TAX_VAL);
+                dbTaxVal = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_TAX_VAL);
                 tipType = null;
-                dbTipType = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_TYPE);
+                dbTipType = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_TIP_TYPE);
                 if(dbTipType != null) {
                     tipType = Bill.TaxTipType.valueOf(dbTipType);
                 }
-                dbTipVal = (String) record.getValue(DbTableBillContract.COLUMN_NAME_TIP_VAL);
+                dbTipVal = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_TIP_VAL);
                 billList.add(new Bill(id, name, taxType, dbTaxVal, tipType, dbTipVal));
             }
             opResult.setData(billList);
@@ -151,8 +151,7 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         }
         OperationResult<Long> opResult;
         synchronized (this) {
-            setContentValues(model);
-            opResult = mTableManager.insert(mContentValuesHolder);
+            opResult = mTableManager.insert(pack(model));
         }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_append_failed);
@@ -165,15 +164,7 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         if(model == null) {
             throw new IllegalArgumentException("Bill must not be null!");
         }
-        OperationResult<Integer> opResult;
-        synchronized (this) {
-            setContentValues(model);
-            opResult = mTableManager.update(model.getId(), mContentValuesHolder);
-        }
-        if(!opResult.isSuccessful()) {
-            opResult.setFailMessageId(R.string.err_update_failed);
-        }
-        return opResult;
+        return update(model.getId(), pack(model), signal);
     }
 
     //region Deprecated
@@ -204,9 +195,9 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
                     signal.throwIfCanceled();
                 }
                 int rowsAffected;
-                rowsAffected = db.delete(DbTableBillContract.getInstance().getTableName(), BaseColumns._ID + DbHelper.SYMB_OP_EQUALITY + id, null);
+                rowsAffected = db.delete(DbTableBillsContract.getInstance().getTableName(), BaseColumns._ID + DbHelper.SYMB_OP_EQUALITY + id, null);
                 opResult.setData(rowsAffected);
-                rowsAffected = db.delete(DbTableBillOrderContract.getInstance().getTableName(), DbTableBillOrderContract.COLUMN_NAME_BILL_ID + DbHelper.SYMB_OP_EQUALITY + id, null);
+                rowsAffected = db.delete(DbTableOrdersContract.getInstance().getTableName(), DbTableOrdersContract.COLUMN_NAME_BILL_ID + DbHelper.SYMB_OP_EQUALITY + id, null);
                 opResult.setData(opResult.getData() + rowsAffected);
                 if (signal != null) {
                     signal.throwIfCanceled();
@@ -239,12 +230,37 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
 
     //endregion
 
-    private void setContentValues(Bill model) {
-        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_BILL_NAME, model.getName());
-        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TAX_TYPE, model.getTaxType().toString());
-        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TAX_VAL, model.getFormattedTaxVal());
-        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TIP_TYPE, model.getTipType().toString());
-        mContentValuesHolder.put(DbTableBillContract.COLUMN_NAME_TIP_VAL, model.getFormattedTipVal());
+    public OperationResult<Integer> update(long id, ContentValues modelContentValues, CancellationSignal signal) {
+        OperationResult<Integer> opResult;
+        synchronized (this) {
+            opResult = mTableManager.update(id, modelContentValues);
+        }
+        if(!opResult.isSuccessful()) {
+            opResult.setFailMessageId(R.string.err_update_failed);
+        }
+        return opResult;
+    }
+
+    public static ContentValues createContentValues(Bill model) {
+        if(model == null) {
+            throw new IllegalArgumentException("Bill must not be null!");
+        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbTableBillsContract.COLUMN_NAME_BILL_NAME, model.getName());
+        contentValues.put(DbTableBillsContract.COLUMN_NAME_TAX_TYPE, model.getTaxType().toString());
+        contentValues.put(DbTableBillsContract.COLUMN_NAME_TAX_VAL, model.getFormattedTaxVal());
+        contentValues.put(DbTableBillsContract.COLUMN_NAME_TIP_TYPE, model.getTipType().toString());
+        contentValues.put(DbTableBillsContract.COLUMN_NAME_TIP_VAL, model.getFormattedTipVal());
+        return contentValues;
+    }
+
+    private ContentValues pack(Bill model) {
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_BILL_NAME, model.getName());
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TAX_TYPE, model.getTaxType().toString());
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TAX_VAL, model.getFormattedTaxVal());
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TIP_TYPE, model.getTipType().toString());
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TIP_VAL, model.getFormattedTipVal());
+        return mContentValuesHolder;
     }
 
     private final DbManager mManager;

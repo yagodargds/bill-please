@@ -1,6 +1,7 @@
-package com.yagodar.android.bill_please.activity.bill;
+package com.yagodar.android.bill_please.activity;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,15 +21,19 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.yagodar.android.bill_please.R;
-import com.yagodar.android.bill_please.activity.AbsBillPleaseTextWatcher;
-import com.yagodar.android.bill_please.activity.LoaderFactory;
-import com.yagodar.android.bill_please.activity.bill_order.BillOrderActivity;
+import com.yagodar.android.bill_please.activity.loader.LoaderFactory;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
-import com.yagodar.android.bill_please.store.db.DbTableBillContract;
+import com.yagodar.android.bill_please.model.Order;
+import com.yagodar.android.bill_please.store.BillRepository;
+import com.yagodar.android.bill_please.store.db.DbTableBillsContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListViewFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
+import com.yagodar.essential.model.ListModel;
+import com.yagodar.essential.operation.OperationResult;
+
+import java.util.LinkedList;
 
 /**
  * Created by yagodar on 23.06.2015.
@@ -40,7 +45,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         super.onActivityCreated(savedInstanceState);
 
         mOnClickListener = new BillOnClickListener();
-
+        mBillList = BillList.getInstance();
         initBill(getArguments());
 
         setEmptyText(getString(R.string.no_data));
@@ -194,56 +199,70 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     @Override
     public void onLoaderResult(Loader<LoaderResult> loader, LoaderResult result) {
-        int loaderId = loader.getId();
-        boolean successful = result.isSuccessful();
-        boolean notifyDataSet = result.isNotifyDataSet();
-
-        if (loaderId == LoaderFactory.Type.APPEND_BILL.ordinal()) {
-
-            Log.d(TAG, toString() + " FINISH APPEND_BILL");
-
-            if(successful) {
-                if(notifyDataSet) {
-                    initBill((Bundle)result.getData());
+        OperationResult opResult = result.getData();
+        if (opResult.isSuccessful()) {
+            int id = loader.getId();
+            LoaderFactory.Type type = LoaderFactory.Type.get(id);
+            switch (type) {
+                case APPEND_BILL:
+                    long billId = (Long) opResult.getData();
+                    mBill = new Bill(billId);
+                    mBill.setModelList(new LinkedList<Order>());
+                    mBillList.putModel(mBill);
+                    setListAdapter(new BillAdapter(getActivity(), mOnClickListener, mBill));
                     notifyBillLoaded();
+                    setActivityResult(Activity.RESULT_OK, billId);
+                    break;
+                case UPDATE_BILL:
+                    break;
+                case LOAD_BILL:
+                    break;
+                case APPEND_BILL_ORDER:
+                    break;
+                case REMOVE_BILL_ORDER:
+                    break;
+            }
+
+            /*if (id == LoaderFactory.Type.APPEND_BILL.ordinal()) {
+
+                if (successful) {
+                    if (notifyDataSet) {
+
+                    }
+
+
+                } else {
+                    setActivityResult(Activity.RESULT_CANCELED);
+                    getActivity().finish();
+                }
+            } else if (id == LoaderFactory.Type.LOAD_BILL.ordinal()) {
+                if (successful) {
+                    if (notifyDataSet) {
+                        ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
+                        notifyBillLoaded();
+                    }
+                } else {
+                    getActivity().finish();
+                }
+
+                setActivityResult(Activity.RESULT_CANCELED);
+
+            } else if (successful && notifyDataSet) {
+
+                if (id == LoaderFactory.Type.UPDATE_BILL.ordinal()) {
+                    ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
+                    notifyOrderListChanged();
+                } else if (id == LoaderFactory.Type.APPEND_BILL_ORDER.ordinal()) {
+                    ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
+                    notifyOrderListChanged();
+                } else if (id == LoaderFactory.Type.REMOVE_BILL_ORDER.ordinal()) {
+                    ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
+                    notifyOrderListChanged();
                 }
 
                 setActivityResult(Activity.RESULT_OK);
-            }
-            else {
-                setActivityResult(Activity.RESULT_CANCELED);
-                getActivity().finish();
-            }
+            }*/
         }
-        else if (loaderId == LoaderFactory.Type.LOAD_BILL.ordinal()) {
-            if(successful) {
-                if(notifyDataSet) {
-                    ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
-                    notifyBillLoaded();
-                }
-            }
-            else {
-                getActivity().finish();
-            }
-
-            setActivityResult(Activity.RESULT_CANCELED);
-
-        } else if(successful && notifyDataSet) {
-
-            if (loaderId == LoaderFactory.Type.UPDATE_BILL.ordinal()) {
-                ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
-                notifyOrderListChanged();
-            } else if (loaderId == LoaderFactory.Type.APPEND_BILL_ORDER.ordinal()) {
-                ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
-                notifyOrderListChanged();
-            } else if (loaderId == LoaderFactory.Type.REMOVE_BILL_ORDER.ordinal()) {
-                ((BillOrderListAdapter) getListAdapter()).notifyDataSetChanged();
-                notifyOrderListChanged();
-            }
-
-            setActivityResult(Activity.RESULT_OK);
-        }
-
         super.onLoaderResult(loader, result);
     }
 
@@ -296,12 +315,14 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
         mAppendBillOrderBundle = args;
 
-        setListAdapter(new BillOrderListAdapter(getActivity(), mOnClickListener, mBill));
+        setListAdapter(new BillAdapter(getActivity(), mOnClickListener, mBill));
     }
 
-    private void setActivityResult(int resultCode) {
+    private void setActivityResult(int resultCode, long billId) {
         if(!mResultSetted) {
-            getActivity().setResult(resultCode);
+            Intent data = new Intent();
+            data.putExtra(BaseColumns._ID, billId);
+            getActivity().setResult(resultCode, data);
             mResultSetted = true;
         }
     }
@@ -466,6 +487,8 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     private void startUpdateBillLoader() {
+        ContentValues billContentValues = BillRepository.createContentValues(mBill);
+        getArguments().putParcelable(DbTableBillsContract.TABLE_NAME, billContentValues);
         startLoading(LoaderFactory.Type.UPDATE_BILL.ordinal(), getArguments());
     }
 
@@ -477,7 +500,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
                     startLoading(LoaderFactory.Type.APPEND_BILL_ORDER.ordinal(), mAppendBillOrderBundle);
                     break;
                 case R.id.bill_order_edit_button:
-                    Intent intent = new Intent(getActivity(), BillOrderActivity.class);
+                    Intent intent = new Intent(getActivity(), OrderActivity.class);
                     intent.putExtras((Bundle) v.getTag());
                     startActivity(intent);
                     break;
@@ -690,7 +713,7 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     private boolean mResultSetted;
 
     private View.OnClickListener mOnClickListener;
-
+    private ListModel<Bill> mBillList;
     private Bundle mAppendBillOrderBundle;
 
     private Bill mBill;
@@ -711,15 +734,15 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
 
     private EditText mLastEditText;
 
-    private final static String NAME_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME;
-    private final static String SUBTOTAL_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME + "_subtotal";
-    private final static String TAX_TYPE_TAG = DbTableBillContract.COLUMN_NAME_TAX_TYPE;
-    private final static String TAX_ABS_VAL_TAG = DbTableBillContract.COLUMN_NAME_TAX_VAL + "_abs";
-    private final static String TAX_PER_VAL_TAG = DbTableBillContract.COLUMN_NAME_TAX_VAL + "_per";
-    private final static String TIP_TYPE_TAG = DbTableBillContract.COLUMN_NAME_TIP_TYPE;
-    private final static String TIP_ABS_VAL_TAG = DbTableBillContract.COLUMN_NAME_TIP_VAL + "_abs";
-    private final static String TIP_PER_VAL_TAG = DbTableBillContract.COLUMN_NAME_TIP_VAL + "_per";
-    private final static String TOTAL_TAG = DbTableBillContract.COLUMN_NAME_BILL_NAME + "_total";
+    private final static String NAME_TAG = DbTableBillsContract.COLUMN_NAME_BILL_NAME;
+    private final static String SUBTOTAL_TAG = DbTableBillsContract.COLUMN_NAME_BILL_NAME + "_subtotal";
+    private final static String TAX_TYPE_TAG = DbTableBillsContract.COLUMN_NAME_TAX_TYPE;
+    private final static String TAX_ABS_VAL_TAG = DbTableBillsContract.COLUMN_NAME_TAX_VAL + "_abs";
+    private final static String TAX_PER_VAL_TAG = DbTableBillsContract.COLUMN_NAME_TAX_VAL + "_per";
+    private final static String TIP_TYPE_TAG = DbTableBillsContract.COLUMN_NAME_TIP_TYPE;
+    private final static String TIP_ABS_VAL_TAG = DbTableBillsContract.COLUMN_NAME_TIP_VAL + "_abs";
+    private final static String TIP_PER_VAL_TAG = DbTableBillsContract.COLUMN_NAME_TIP_VAL + "_per";
+    private final static String TOTAL_TAG = DbTableBillsContract.COLUMN_NAME_BILL_NAME + "_total";
 
     private final static long UPDATE_BILL_TIMER_TASK_DELAY_MILLIS = 1500L;
 

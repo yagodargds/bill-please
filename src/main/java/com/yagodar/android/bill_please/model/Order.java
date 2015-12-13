@@ -8,12 +8,12 @@ import java.math.BigInteger;
 /**
  * Created by АППДКт78М on 07.11.2014.
  */
-public class BillOrder extends Model {
-    public BillOrder(long id) {
+public class Order extends Model {
+    public Order(long id) {
         this(id, null, null, null);
     }
 
-    public BillOrder(long id, String name, String cost, String share) {
+    public Order(long id, String name, String cost, String share) {
         super(id, DEF_NAME, name);
         setCost(cost);
         setShare(share);

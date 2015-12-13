@@ -1,4 +1,4 @@
-package com.yagodar.android.bill_please.activity.bill_list;
+package com.yagodar.android.bill_please.activity;
 
 import android.app.SearchManager;
 import android.app.SearchableInfo;
