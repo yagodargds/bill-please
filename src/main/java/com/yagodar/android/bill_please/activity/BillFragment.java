@@ -1,7 +1,6 @@
 package com.yagodar.android.bill_please.activity;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +24,6 @@ import com.yagodar.android.bill_please.activity.loader.LoaderFactory;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.model.Order;
-import com.yagodar.android.bill_please.store.BillRepository;
 import com.yagodar.android.bill_please.store.db.DbTableBillsContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
 import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListViewFragment;
@@ -216,10 +214,15 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
                 case UPDATE_BILL:
                     break;
                 case LOAD_BILL:
+                    //List<Order> orderList = opResult.getData();
+                    //bill.setModelList(orderList);
                     break;
                 case APPEND_BILL_ORDER:
+                    //long newBillOrderId = opResult.getData();
+                    //bill.putModel(new Order(newBillOrderId));
                     break;
                 case REMOVE_BILL_ORDER:
+                    //bill.removeModel(billOrderId);
                     break;
             }
 
@@ -487,9 +490,13 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
     }
 
     private void startUpdateBillLoader() {
-        ContentValues billContentValues = BillRepository.createContentValues(mBill);
-        getArguments().putParcelable(DbTableBillsContract.TABLE_NAME, billContentValues);
-        startLoading(LoaderFactory.Type.UPDATE_BILL.ordinal(), getArguments());
+        Bundle args = getArguments();
+        args.putString(DbTableBillsContract.COLUMN_NAME_BILL_NAME, mBill.getName());
+        args.putString(DbTableBillsContract.COLUMN_NAME_TAX_TYPE, mBill.getTaxType().toString());
+        args.putString(DbTableBillsContract.COLUMN_NAME_TAX_VAL, mBill.getFormattedTaxVal());
+        args.putString(DbTableBillsContract.COLUMN_NAME_TIP_TYPE, mBill.getTipType().toString());
+        args.putString(DbTableBillsContract.COLUMN_NAME_TIP_VAL, mBill.getFormattedTipVal());
+        startLoading(LoaderFactory.Type.UPDATE_BILL.ordinal(), args);
     }
 
     private class BillOnClickListener implements View.OnClickListener {

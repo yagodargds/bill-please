@@ -160,7 +160,12 @@ public class OrderFragment extends AbsLoaderProgressFragment implements IOnActiv
     }
 
     private void startUpdateBillOrderLoader() {
-        startLoading(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal(), getArguments());
+        Bundle args = getArguments();
+        args.putLong(DbTableOrdersContract.COLUMN_NAME_BILL_ID, mBill.getId());
+        args.putString(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME, mOrder.getName());
+        args.putString(DbTableOrdersContract.COLUMN_NAME_COST, mOrder.getFormattedCost());
+        args.putString(DbTableOrdersContract.COLUMN_NAME_SHARE, mOrder.getFormattedShare());
+        startLoading(LoaderFactory.Type.UPDATE_BILL_ORDER.ordinal(), args);
     }
 
     private class BillOrderOnFocusChangeListener implements View.OnFocusChangeListener {
