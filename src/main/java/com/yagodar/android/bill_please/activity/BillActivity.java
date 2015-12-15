@@ -1,14 +1,14 @@
 package com.yagodar.android.bill_please.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.yagodar.android.bill_please.R;
 
 /**
  * Created by yagodar on 23.06.2015.
  */
-public class BillActivity extends FragmentActivity {
+public class BillActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

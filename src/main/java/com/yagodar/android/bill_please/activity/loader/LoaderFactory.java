@@ -37,7 +37,7 @@ public class LoaderFactory {
         APPEND_BILL(AppendBillLoader.class, IdType.UNIT),
         UPDATE_BILL(UpdateBillLoader.class, IdType.UNIT),
         REMOVE_BILL(RemoveBillLoader.class, IdType.NEXT),
-        LOAD_BILL(LoadBillLoader.class, IdType.UNIT),
+        LOAD_BILL(LoadOrderListLoader.class, IdType.UNIT),
         APPEND_BILL_ORDER(AppendOrderLoader.class, IdType.UNIT),
         UPDATE_BILL_ORDER(UpdateOrderLoader.class, IdType.UNIT),
         REMOVE_BILL_ORDER(RemoveOrderLoader.class, IdType.NEXT),

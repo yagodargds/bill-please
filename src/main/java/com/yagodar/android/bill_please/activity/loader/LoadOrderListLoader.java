@@ -13,15 +13,15 @@ import com.yagodar.essential.operation.OperationResult;
 /**
  * Created by yagodar on 24.06.2015.
  */
-public class AppendOrderLoader extends AbsAsyncTaskLoader {
-    public AppendOrderLoader(Context context, Bundle args) {
+public class LoadOrderListLoader extends AbsAsyncTaskLoader {
+    public LoadOrderListLoader(Context context, Bundle args) {
         super(context, args);
     }
 
     @Override
     public LoaderResult load(CancellationSignal signal) {
         long billId = getArgs().getLong(BaseColumns._ID);
-        OperationResult opResult = OrderRepository.getInstance().insert(billId, signal);
+        OperationResult opResult = OrderRepository.getInstance().loadGroupList(billId, signal);
         return new LoaderResult(opResult);
     }
 }

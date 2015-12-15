@@ -4,8 +4,8 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +16,7 @@ import com.yagodar.android.bill_please.R;
 /**
  * Created by yagodar on 17.06.2015.
  */
-public class BillListActivity extends FragmentActivity {
+public class BillListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

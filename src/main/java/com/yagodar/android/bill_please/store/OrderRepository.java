@@ -1,6 +1,8 @@
 package com.yagodar.android.bill_please.store;
 
 import android.content.ContentValues;
+import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.os.CancellationSignal;
 
 import com.yagodar.android.bill_please.R;
@@ -177,8 +179,7 @@ public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
         }
         OperationResult<Long> opResult;
         synchronized (this) {
-            setContentValues(groupId, model);
-            opResult = mTableManager.insert(mContentValuesHolder);
+            opResult = mTableManager.insert(pack(groupId, model));
         }
         if(!opResult.isSuccessful()) {
             opResult.setFailMessageId(R.string.err_append_failed);
@@ -191,15 +192,7 @@ public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
         if(model == null) {
             throw new IllegalArgumentException("Bill Order must not be null!");
         }
-        OperationResult<Integer> opResult;
-        synchronized (this) {
-            setContentValues(groupId, model);
-            opResult = mTableManager.update(model.getId(), mContentValuesHolder);
-        }
-        if(!opResult.isSuccessful()) {
-            opResult.setFailMessageId(R.string.err_update_failed);
-        }
-        return opResult;
+        return update(model.getId(), pack(groupId, model), signal);
     }
 
     //region Deprecated
@@ -263,11 +256,44 @@ public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
 
     //endregion
 
-    private void setContentValues(long groupId, Order model) {
+    public OperationResult<Integer> update(Bundle modelBundle, CancellationSignal signal) {
+        if(modelBundle == null) {
+            throw new IllegalArgumentException("Bill model bundle must not be null!");
+        }
+        return update(modelBundle.getLong(BaseColumns._ID), pack(modelBundle), signal);
+    }
+
+    private OperationResult<Integer> update(long id, ContentValues modelContentValues, CancellationSignal signal) {
+        OperationResult<Integer> opResult;
+        synchronized (this) {
+            opResult = mTableManager.update(id, modelContentValues);
+        }
+        if(!opResult.isSuccessful()) {
+            opResult.setFailMessageId(R.string.err_update_failed);
+        }
+        return opResult;
+    }
+
+    private ContentValues pack(long groupId, Order model) {
+        return pack(groupId,
+                model.getName(),
+                model.getFormattedCost(),
+                model.getFormattedShare());
+    }
+
+    private ContentValues pack(Bundle modelBundle) {
+        return pack(modelBundle.getLong(DbTableOrdersContract.COLUMN_NAME_BILL_ID),
+                modelBundle.getString(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME),
+                modelBundle.getString(DbTableOrdersContract.COLUMN_NAME_COST),
+                modelBundle.getString(DbTableOrdersContract.COLUMN_NAME_SHARE));
+    }
+
+    private ContentValues pack(long groupId, String name, String cost, String share) {
         mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_BILL_ID, groupId);
-        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME, model.getName());
-        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_COST, model.getFormattedCost());
-        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_SHARE, model.getFormattedShare());
+        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME, name);
+        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_COST, cost);
+        mContentValuesHolder.put(DbTableOrdersContract.COLUMN_NAME_SHARE, share);
+        return mContentValuesHolder;
     }
 
     private final DbTableManager mTableManager;

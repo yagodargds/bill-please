@@ -2,6 +2,7 @@ package com.yagodar.android.bill_please.store;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.os.CancellationSignal;
 import android.support.v4.os.OperationCanceledException;
@@ -230,7 +231,14 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
 
     //endregion
 
-    public OperationResult<Integer> update(long id, ContentValues modelContentValues, CancellationSignal signal) {
+    public OperationResult<Integer> update(Bundle modelBundle, CancellationSignal signal) {
+        if(modelBundle == null) {
+            throw new IllegalArgumentException("Bill model bundle must not be null!");
+        }
+        return update(modelBundle.getLong(BaseColumns._ID), pack(modelBundle), signal);
+    }
+
+    private OperationResult<Integer> update(long id, ContentValues modelContentValues, CancellationSignal signal) {
         OperationResult<Integer> opResult;
         synchronized (this) {
             opResult = mTableManager.update(id, modelContentValues);
@@ -241,25 +249,28 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
         return opResult;
     }
 
-    public static ContentValues createContentValues(Bill model) {
-        if(model == null) {
-            throw new IllegalArgumentException("Bill must not be null!");
-        }
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DbTableBillsContract.COLUMN_NAME_BILL_NAME, model.getName());
-        contentValues.put(DbTableBillsContract.COLUMN_NAME_TAX_TYPE, model.getTaxType().toString());
-        contentValues.put(DbTableBillsContract.COLUMN_NAME_TAX_VAL, model.getFormattedTaxVal());
-        contentValues.put(DbTableBillsContract.COLUMN_NAME_TIP_TYPE, model.getTipType().toString());
-        contentValues.put(DbTableBillsContract.COLUMN_NAME_TIP_VAL, model.getFormattedTipVal());
-        return contentValues;
+    private ContentValues pack(Bill model) {
+        return pack(model.getName(),
+                model.getTaxType().toString(),
+                model.getFormattedTaxVal(),
+                model.getTipType().toString(),
+                model.getFormattedTipVal());
     }
 
-    private ContentValues pack(Bill model) {
-        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_BILL_NAME, model.getName());
-        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TAX_TYPE, model.getTaxType().toString());
-        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TAX_VAL, model.getFormattedTaxVal());
-        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TIP_TYPE, model.getTipType().toString());
-        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TIP_VAL, model.getFormattedTipVal());
+    private ContentValues pack(Bundle modelBundle) {
+        return pack(modelBundle.getString(DbTableBillsContract.COLUMN_NAME_BILL_NAME),
+                modelBundle.getString(DbTableBillsContract.COLUMN_NAME_TAX_TYPE),
+                modelBundle.getString(DbTableBillsContract.COLUMN_NAME_TAX_VAL),
+                modelBundle.getString(DbTableBillsContract.COLUMN_NAME_TIP_TYPE),
+                modelBundle.getString(DbTableBillsContract.COLUMN_NAME_TIP_VAL));
+    }
+
+    private ContentValues pack(String name, String taxType, String taxVal, String tipType, String tipVal) {
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_BILL_NAME, name);
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TAX_TYPE, taxType);
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TAX_VAL, taxVal);
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TIP_TYPE, tipType);
+        mContentValuesHolder.put(DbTableBillsContract.COLUMN_NAME_TIP_VAL, tipVal);
         return mContentValuesHolder;
     }
 

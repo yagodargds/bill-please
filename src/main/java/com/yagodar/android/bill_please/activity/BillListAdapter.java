@@ -27,10 +27,7 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
         return new ViewHolder(getLayoutInflater().inflate(R.layout.bill_row, parent, false), getOnClickListener());
     }
 
-
-
     public static class ViewHolder extends AbsRecyclerViewAdapter.AbsViewHolder<Bill> {
-
         private TextView mTextViewName;
         private TextView mTextViewTaxVal;
         private TextView mTextViewTaxType;
