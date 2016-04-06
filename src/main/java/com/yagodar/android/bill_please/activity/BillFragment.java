@@ -37,7 +37,6 @@ import java.util.LinkedList;
  * Created by yagodar on 23.06.2015.
  */
 public class BillFragment extends AbsLoaderProgressListViewFragment implements IOnActivityBackPressedListener {
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

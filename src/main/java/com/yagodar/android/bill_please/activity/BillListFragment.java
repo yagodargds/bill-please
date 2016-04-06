@@ -50,7 +50,9 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //TODO setEmptyText(getString(R.string.no_data));
+        //TODO
+        //http://stackoverflow.com/a/27801394/2678746
+        //setEmptyText(getString(R.string.no_data));
 
         Activity activity = getActivity();
 
