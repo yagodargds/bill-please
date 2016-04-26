@@ -52,31 +52,25 @@ public class Test {
         int countM = 0;
         int countN = 0;
         Calendar startDate = Calendar.getInstance();
-        startDate.set(Calendar.DATE, 4);
+        startDate.set(Calendar.DATE, 20);
         startDate.set(Calendar.MONTH, 4);
         Calendar endDate = (Calendar) startDate.clone();
-        endDate.set(Calendar.DATE, 4);
+        endDate.set(Calendar.DATE, 20);
         endDate.set(Calendar.MONTH, 5);
         List<Float> satTripProb = new ArrayList<>();
-        satTripProb.add(25.0f);
-        satTripProb.add(75.0f);
+        satTripProb.add(75.0f); //false
+        satTripProb.add(25.0f); //true
 
-        System.out.println("---------------------------------------------------------");
         calcUniform(startDate, countM, countN, endDate, satTripProb, new T_K1_UniformRouteRule());
-        //System.out.println("---------------------------------------------------------");
-        //calcUniformMonthNx(startDate, countM, countN, endDate, getMonthN1Price() / 30.0f, satTripProb, new T_K1_UniformMonthTramRouteRule());
-        System.out.println("---------------------------------------------------------");
+        calcUniform(startDate, countM, countN, endDate, satTripProb, new T_B_UniformRouteRule());
+        calcUniformMonthNx(startDate, countM, countN, endDate, getMonthN1Price() / 30.0f, satTripProb, new T_K1_UniformMonthTramRouteRule());
+        calcUniformMonthNx(startDate, countM, countN, endDate, getMonthN2Price() / 30.0f, satTripProb, new T_B_UniformMonthTramBusRouteRule());
         calcComboMonth(startDate, countM, endDate, satTripProb, new T_K1_ComboMonthRouteRule());
-
-        //System.out.println("---------------------------------------------------------");
-        //calcUniform(startDate, countM, countN, endDate, satTripProb, new T_B_UniformRouteRule());
-        //System.out.println("---------------------------------------------------------");
-        //calcUniformMonthNx(startDate, countM, countN, endDate, getMonthN2Price() / 30.0f, satTripProb,  new T_B_UniformMonthTramBusRouteRule());
-        //System.out.println("---------------------------------------------------------");
-        //calcComboMonth(startDate, countM, endDate, satTripProb, new T_B_ComboMonthRouteRule());
+        calcComboMonth(startDate, countM, endDate, satTripProb, new T_B_ComboMonthRouteRule());
     }
 
     private static void calcUniform(Calendar startDate, int countM, int countN, Calendar endDate, List<Float> satTripProb, AbsUniformRouteRule routeRule) {
+        System.out.println(routeRule.getClass().getSimpleName() + " ---------------------------------------------------------");
         Calendar curDate = (Calendar) startDate.clone();
         boolean satTrip;
         UniformTripInfo tripInfo;
@@ -112,6 +106,7 @@ public class Test {
     }
 
     private static void calcUniformMonthNx(Calendar startDate, int countM, int countN, Calendar endDate, float dayPrice, List<Float> satTripProb, AbsUniformRouteRule routeRule) {
+        System.out.println(routeRule.getClass().getSimpleName() + " ---------------------------------------------------------");
         Calendar curDate = (Calendar) startDate.clone();
         boolean satTrip;
         UniformTripInfo tripInfo;
@@ -149,6 +144,7 @@ public class Test {
     }
 
     private static void calcComboMonth(Calendar startDate, int countM, Calendar endDate, List<Float> satTripProb, AbsCountMRouteRule routeRule) {
+        System.out.println(routeRule.getClass().getSimpleName() + " ---------------------------------------------------------");
         Calendar curDate = (Calendar) startDate.clone();
         boolean satTrip;
         CountMTripInfo tripInfo;
@@ -239,6 +235,64 @@ public class Test {
         return 35.0f;
     }
 
+    private static class T_K1_Bicycle_UniformRouteRule extends AbsUniformRouteRule {
+        @Override
+        public UniformTripInfo getTripInfoTo(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 1;
+                    tripInfo.countN = 1;
+                    tripInfo.price = getUnifromPriceN(countN) + getUniformPriceM(countM) + getPriceK_1();
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 1;
+                        tripInfo.price = getUnifromPriceN(countN) + getUniformPriceM(countM);
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+
+        @Override
+        public UniformTripInfo getTripInfoFrom(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 2;
+                    tripInfo.countN = 2;
+                    tripInfo.price = getUnifromPriceN(countN) + getUniformPriceM(countM) + getUniformPriceM(countM + 1) + getUnifromPriceN(countN + 1);
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 1;
+                        tripInfo.price = getUniformPriceM(countM) + getUnifromPriceN(countN);
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+    }
+
     private static class T_K1_UniformRouteRule extends AbsUniformRouteRule {
         @Override
         public UniformTripInfo getTripInfoTo(Calendar date, int countM, int countN, boolean satTrip) {
@@ -282,6 +336,64 @@ public class Test {
                 tripInfo.countM = 0;
                 tripInfo.countN = 0;
                 tripInfo.price = 0.0f;
+            }
+            return tripInfo;
+        }
+    }
+
+    private static class T_B_Bicycle_UniformRouteRule extends AbsUniformRouteRule {
+        @Override
+        public UniformTripInfo getTripInfoTo(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 1;
+                    tripInfo.countN = 2;
+                    tripInfo.price = getUnifromPriceN(countN) + getUniformPriceM(countM) + getUnifromPriceN(countN + 1);
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 1;
+                        tripInfo.price = getUnifromPriceN(countN) + getUniformPriceM(countM);
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+
+        @Override
+        public UniformTripInfo getTripInfoFrom(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 2;
+                    tripInfo.countN = 2;
+                    tripInfo.price = getUnifromPriceN(countN) + getUniformPriceM(countM) + getUniformPriceM(countM + 1) + getUnifromPriceN(countN + 1);
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 1;
+                        tripInfo.price = getUniformPriceM(countM) + getUnifromPriceN(countN);
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
             }
             return tripInfo;
         }
@@ -335,6 +447,64 @@ public class Test {
         }
     }
 
+    private static class T_K1_Bicycle_UniformMonthTramRouteRule extends AbsUniformRouteRule {
+        @Override
+        public UniformTripInfo getTripInfoTo(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 1;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f + getUniformPriceM(countM) + getPriceK_1();
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 0;
+                        tripInfo.price = 0.0f + getUniformPriceM(countM);
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+
+        @Override
+        public UniformTripInfo getTripInfoFrom(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 2;
+                    tripInfo.countN = 1;
+                    tripInfo.price = getUnifromPriceN(countN) + getUniformPriceM(countM) + getUniformPriceM(countM + 1) + 0.0f;
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 0;
+                        tripInfo.price = getUniformPriceM(countM) + 0.0f;
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+    }
+
     private static class T_K1_UniformMonthTramRouteRule extends AbsUniformRouteRule {
         @Override
         public UniformTripInfo getTripInfoTo(Calendar date, int countM, int countN, boolean satTrip) {
@@ -383,6 +553,64 @@ public class Test {
         }
     }
 
+    private static class T_B_Bicycle_UniformMonthTramBusRouteRule extends AbsUniformRouteRule {
+        @Override
+        public UniformTripInfo getTripInfoTo(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 1;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f + getUniformPriceM(countM) + 0.0f;
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 0;
+                        tripInfo.price = 0.0f + getUniformPriceM(countM);
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+
+        @Override
+        public UniformTripInfo getTripInfoFrom(Calendar date, int countM, int countN, boolean satTrip) {
+            UniformTripInfo tripInfo = new UniformTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 2;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f + getUniformPriceM(countM) + getUniformPriceM(countM + 1) + 0.0f;
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        tripInfo.countN = 0;
+                        tripInfo.price = getUniformPriceM(countM) + 0.0f;
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.countN = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+    }
+
     private static class T_B_UniformMonthTramBusRouteRule extends AbsUniformRouteRule {
         @Override
         public UniformTripInfo getTripInfoTo(Calendar date, int countM, int countN, boolean satTrip) {
@@ -426,6 +654,81 @@ public class Test {
                 tripInfo.countM = 0;
                 tripInfo.countN = 0;
                 tripInfo.price = 0.0f;
+            }
+            return tripInfo;
+        }
+    }
+
+    private static class T_K1_Bicycle_ComboMonthRouteRule extends AbsCountMRouteRule {
+        @Override
+        public CountMTripInfo getTripInfoTo(Calendar date, int countM, boolean satTrip) {
+            CountMTripInfo tripInfo = new CountMTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 1;
+                    if(countM <= 70) {
+                        tripInfo.price = 0.0f + getPriceK_1();
+                    } else {
+                        tripInfo.price = 0.0f + getUniformPriceM(countM - 70) + getPriceK_1();
+                    }
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        if(countM <= 70) {
+                            tripInfo.price = 0.0f;
+                        } else {
+                            tripInfo.price = 0.0f + getUniformPriceM(countM - 70);
+                        }
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+
+        @Override
+        public CountMTripInfo getTripInfoFrom(Calendar date, int countM, boolean satTrip) {
+            CountMTripInfo tripInfo = new CountMTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 2;
+                    if(countM <= 70) {
+                        tripInfo.price = 0.0f;
+                        countM++;
+                        if(countM <= 70) {
+                            tripInfo.price += 0.0f;
+                        } else {
+                            tripInfo.price += getUniformPriceM(countM - 70);
+                        }
+                        tripInfo.price += 0.0f;
+                    } else {
+                        tripInfo.price = 0.0f + getUniformPriceM(countM - 70) + getUniformPriceM(countM + 1 - 70) + 0.0f;
+                    }
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        if(countM <= 70) {
+                            tripInfo.price = 0.0f;
+                        } else {
+                            tripInfo.price = getUniformPriceM(countM - 70) + 0.0f;
+                        }
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.price = 0.0f;
+                    break;
             }
             return tripInfo;
         }
@@ -494,6 +797,81 @@ public class Test {
             } else {
                 tripInfo.countM = 0;
                 tripInfo.price = 0.0f;
+            }
+            return tripInfo;
+        }
+    }
+
+    private static class T_B_Bicycle_ComboMonthRouteRule extends AbsCountMRouteRule {
+        @Override
+        public CountMTripInfo getTripInfoTo(Calendar date, int countM, boolean satTrip) {
+            CountMTripInfo tripInfo = new CountMTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 1;
+                    if(countM <= 70) {
+                        tripInfo.price = 0.0f + 0.0f;
+                    } else {
+                        tripInfo.price = 0.0f + getUniformPriceM(countM - 70) + 0.0f;
+                    }
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        if(countM <= 70) {
+                            tripInfo.price = 0.0f;
+                        } else {
+                            tripInfo.price = 0.0f + getUniformPriceM(countM - 70);
+                        }
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.price = 0.0f;
+                    break;
+            }
+            return tripInfo;
+        }
+
+        @Override
+        public CountMTripInfo getTripInfoFrom(Calendar date, int countM, boolean satTrip) {
+            CountMTripInfo tripInfo = new CountMTripInfo();
+            int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.MONDAY:
+                case Calendar.WEDNESDAY:
+                case Calendar.FRIDAY:
+                    tripInfo.countM = 2;
+                    if(countM <= 70) {
+                        tripInfo.price = 0.0f;
+                        countM++;
+                        if(countM <= 70) {
+                            tripInfo.price += 0.0f;
+                        } else {
+                            tripInfo.price += getUniformPriceM(countM - 70);
+                        }
+                        tripInfo.price += 0.0f;
+                    } else {
+                        tripInfo.price = 0.0f + getUniformPriceM(countM - 70) + getUniformPriceM(countM + 1 - 70) + 0.0f;
+                    }
+                    break;
+                case Calendar.SATURDAY:
+                    if(satTrip) {
+                        tripInfo.countM = 1;
+                        if(countM <= 70) {
+                            tripInfo.price = 0.0f;
+                        } else {
+                            tripInfo.price = getUniformPriceM(countM - 70) + 0.0f;
+                        }
+                    }
+                    break;
+                default:
+                    tripInfo.countM = 0;
+                    tripInfo.price = 0.0f;
+                    break;
             }
             return tripInfo;
         }
