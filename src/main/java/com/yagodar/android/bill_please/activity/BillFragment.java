@@ -26,7 +26,7 @@ import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.model.Order;
 import com.yagodar.android.bill_please.store.db.DbTableBillsContract;
 import com.yagodar.android.custom.fragment.IOnActivityBackPressedListener;
-import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListViewFragment;
+import com.yagodar.android.custom.fragment.progress.list_view.AbsLoaderProgressListFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.model.ListModel;
 import com.yagodar.essential.operation.OperationResult;
@@ -36,7 +36,7 @@ import java.util.LinkedList;
 /**
  * Created by yagodar on 23.06.2015.
  */
-public class BillFragment extends AbsLoaderProgressListViewFragment implements IOnActivityBackPressedListener {
+public class BillFragment extends AbsLoaderProgressListFragment implements IOnActivityBackPressedListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -45,7 +45,8 @@ public class BillFragment extends AbsLoaderProgressListViewFragment implements I
         mBillList = BillList.getInstance();
         initBill(getArguments());
 
-        setEmptyText(getString(R.string.no_data));
+        setEmptyImage(R.drawable.no_data);
+        setEmptyText(R.string.no_data);
 
         mButtonBillOrderAppend = (Button) getActivity().findViewById(R.id.bill_order_append_button);
         mButtonBillOrderAppend.setOnClickListener(mOnClickListener);

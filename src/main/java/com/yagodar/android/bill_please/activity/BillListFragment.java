@@ -13,7 +13,7 @@ import com.yagodar.android.bill_please.activity.loader.LoaderFactory;
 import com.yagodar.android.bill_please.model.Bill;
 import com.yagodar.android.bill_please.model.BillList;
 import com.yagodar.android.bill_please.util.FragmentUtils;
-import com.yagodar.android.custom.fragment.progress.recycler_view.AbsLoaderProgressRecyclerViewFragment;
+import com.yagodar.android.custom.fragment.progress.recycler_view.AbsLoaderProgressRecyclerFragment;
 import com.yagodar.android.custom.loader.LoaderResult;
 import com.yagodar.essential.model.ListModel;
 import com.yagodar.essential.operation.OperationResult;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Created by yagodar on 17.06.2015.
  */
-public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
+public class BillListFragment extends AbsLoaderProgressRecyclerFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
@@ -39,7 +39,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                         getRecycleAdapter().notifyItemChanged(billPos);
                         break;
                 }
-                getRecyclerView().smoothScrollToPosition(billPos);
+                getContentView().smoothScrollToPosition(billPos);
                 break;
             case Activity.RESULT_CANCELED:
                 break;
@@ -50,8 +50,8 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //TODO empty_view
-        //setEmptyText(getString(R.string.no_data));
+        setEmptyImage(R.drawable.no_data);
+        setEmptyText(R.string.no_data);
 
         Activity activity = getActivity();
 
@@ -63,7 +63,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
         mButtonBillAppend.setOnClickListener(onClickListener);
 
         if (savedInstanceState != null) {
-            getRecyclerView().getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable(TAG));
+            getContentView().getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable(TAG));
         }
     }
 
@@ -85,7 +85,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(TAG, getRecyclerView().getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(TAG, getContentView().getLayoutManager().onSaveInstanceState());
     }
 
     @Override
@@ -98,7 +98,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                 break;
             case REMOVE_BILL:
                 long recordId = args.getLong(BaseColumns._ID);
-                BillListAdapter.ViewHolder viewHolder = (BillListAdapter.ViewHolder) getRecyclerView().findViewHolderForItemId(recordId);
+                BillListAdapter.ViewHolder viewHolder = (BillListAdapter.ViewHolder) getContentView().findViewHolderForItemId(recordId);
                 viewHolder.setEnabled(false);
                 break;
         }
@@ -117,7 +117,7 @@ public class BillListFragment extends AbsLoaderProgressRecyclerViewFragment {
                     break;
                 }
                 long recordId = result.getArgs().getLong(BaseColumns._ID);
-                BillListAdapter.ViewHolder viewHolder = (BillListAdapter.ViewHolder) getRecyclerView().findViewHolderForItemId(recordId);
+                BillListAdapter.ViewHolder viewHolder = (BillListAdapter.ViewHolder) getContentView().findViewHolderForItemId(recordId);
                 viewHolder.setEnabled(true);
                 break;
         }
