@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.yagodar.android.bill_please.R;
@@ -86,6 +88,13 @@ public class BillListFragment extends AbsLoaderProgressRecyclerFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(TAG, getContentView().getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    public void onRecyclerItemClick(RecyclerView recyclerView, View view, int position, long id) {
+        //TODO (Bundle) view.getTag()
+        Log.d(TAG, this + " >>> onRecyclerItemClick");
+        FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.UPDATE_BILL, (Bundle) view.getTag());
     }
 
     @Override
