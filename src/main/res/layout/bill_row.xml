@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/view_edge_gap"
-    android:paddingBottom="@dimen/view_edge_gap">
+    android:paddingBottom="@dimen/view_edge_gap"
+    android:clickable="true"
+    android:background="?attr/selectableItemBackground">
 
     <LinearLayout
         android:orientation="vertical"
@@ -135,15 +137,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingLeft="@dimen/view_edge_small_gap" >
-
-        <Button
-            android:id="@+id/bill_edit_button"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:text="@string/button_edit"
-            android:minHeight="@dimen/row_button_min_height"
-            android:layout_weight="0.5" />
 
         <Button
             android:id="@+id/bill_remove_button"

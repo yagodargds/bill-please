@@ -33,7 +33,6 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
         private TextView mTextViewTaxType;
         private TextView mTextViewTipVal;
         private TextView mTextViewTipType;
-        private Button mButtonEdit;
         private Button mButtonRemove;
 
         public ViewHolder(View itemView, View.OnClickListener onClickListener) {
@@ -44,9 +43,6 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
             mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
             mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
             mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
-
-            mButtonEdit = (Button) itemView.findViewById(R.id.bill_edit_button);
-            mButtonEdit.setOnClickListener(onClickListener);
 
             mButtonRemove = (Button) itemView.findViewById(R.id.bill_remove_button);
             mButtonRemove.setOnClickListener(onClickListener);
@@ -63,14 +59,12 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
             Bundle buttonArgs = new Bundle();
             buttonArgs.putLong(BaseColumns._ID, model.getId());
 
-            mButtonEdit.setTag(buttonArgs);
             mButtonRemove.setTag(buttonArgs);
 
             setEnabled(true); //TODO моргает
         }
 
         public void setEnabled(boolean value) {
-            mButtonEdit.setEnabled(value);
             mButtonRemove.setEnabled(value);
         }
     }

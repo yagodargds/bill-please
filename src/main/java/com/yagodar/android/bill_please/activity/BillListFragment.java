@@ -92,9 +92,11 @@ public class BillListFragment extends AbsLoaderProgressRecyclerFragment {
 
     @Override
     public void onRecyclerItemClick(RecyclerView recyclerView, View view, int position, long id) {
-        //TODO (Bundle) view.getTag()
+        //TODO look how it works in buttons or in listviewt
         Log.d(TAG, this + " >>> onRecyclerItemClick");
-        FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.UPDATE_BILL, (Bundle) view.getTag());
+        Bundle buttonArgs = new Bundle();
+        buttonArgs.putLong(BaseColumns._ID, id);
+        FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.UPDATE_BILL, buttonArgs);
     }
 
     @Override
@@ -169,9 +171,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerFragment {
             switch (v.getId()) {
                 case R.id.bill_append_button:
                     FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.APPEND_BILL, null);
-                    break;
-                case R.id.bill_edit_button:
-                    FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.UPDATE_BILL, (Bundle) v.getTag());
                     break;
                 case R.id.bill_remove_button:
                     LoaderFactory.Type.REMOVE_BILL.startLoading(BillListFragment.this, (Bundle) v.getTag());
