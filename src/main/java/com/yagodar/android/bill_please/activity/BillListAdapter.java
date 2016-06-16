@@ -44,6 +44,8 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
             mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
             mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
 
+            this.itemView.setOnClickListener(onClickListener);
+
             mButtonRemove = (Button) itemView.findViewById(R.id.bill_remove_button);
             mButtonRemove.setOnClickListener(onClickListener);
         }
@@ -58,6 +60,8 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
 
             Bundle buttonArgs = new Bundle();
             buttonArgs.putLong(BaseColumns._ID, model.getId());
+
+            this.itemView.setTag(buttonArgs);
 
             mButtonRemove.setTag(buttonArgs);
 

@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.yagodar.android.bill_please.R;
@@ -91,15 +89,6 @@ public class BillListFragment extends AbsLoaderProgressRecyclerFragment {
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView recyclerView, View view, int position, long id) {
-        //TODO look how it works in buttons or in listviewt
-        Log.d(TAG, this + " >>> onRecyclerItemClick");
-        Bundle buttonArgs = new Bundle();
-        buttonArgs.putLong(BaseColumns._ID, id);
-        FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.UPDATE_BILL, buttonArgs);
-    }
-
-    @Override
     public void onStartLoading(int id, Bundle args) {
         LoaderFactory.Type type = LoaderFactory.Type.get(id);
         switch (type) {
@@ -171,6 +160,9 @@ public class BillListFragment extends AbsLoaderProgressRecyclerFragment {
             switch (v.getId()) {
                 case R.id.bill_append_button:
                     FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.APPEND_BILL, null);
+                    break;
+                case R.id.bill_row_view:
+                    FragmentUtils.startActivityForResult(BillListFragment.this, BillActivity.class, LoaderFactory.Type.UPDATE_BILL, (Bundle) v.getTag());
                     break;
                 case R.id.bill_remove_button:
                     LoaderFactory.Type.REMOVE_BILL.startLoading(BillListFragment.this, (Bundle) v.getTag());
