@@ -23,8 +23,13 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(getLayoutInflater().inflate(R.layout.bill_row, parent, false), getOnClickListener());
+    protected ViewHolder onCreateViewHolder(View itemView, View.OnClickListener onClickListener) {
+        return new ViewHolder(itemView, onClickListener);
+    }
+
+    @Override
+    protected View createItemView(ViewGroup parent, int viewType) {
+        return getLayoutInflater().inflate(R.layout.bill_row, parent, false);
     }
 
     public static class ViewHolder extends AbsRecyclerViewAdapter.AbsViewHolder<Bill> {
@@ -38,31 +43,30 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
         public ViewHolder(View itemView, View.OnClickListener onClickListener) {
             super(itemView);
 
+            itemView.setOnClickListener(onClickListener);
+
             mTextViewName = (TextView) itemView.findViewById(R.id.bill_et_name);
             mTextViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
             mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
             mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
             mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
-
-            this.itemView.setOnClickListener(onClickListener);
-
             mButtonRemove = (Button) itemView.findViewById(R.id.bill_remove_button);
+
             mButtonRemove.setOnClickListener(onClickListener);
         }
 
         @Override
         public void onBind(Bill model, int position) {
+            Bundle buttonArgs = new Bundle();
+            buttonArgs.putLong(BaseColumns._ID, model.getId());
+
             mTextViewName.setText(model.getName());
             mTextViewTaxVal.setText(model.getFormattedTaxVal());
             mTextViewTaxType.setText(model.getTaxType().toString());
             mTextViewTipVal.setText(model.getFormattedTipVal());
             mTextViewTipType.setText(model.getTipType().toString());
 
-            Bundle buttonArgs = new Bundle();
-            buttonArgs.putLong(BaseColumns._ID, model.getId());
-
-            this.itemView.setTag(buttonArgs);
-
+            itemView.setTag(buttonArgs);
             mButtonRemove.setTag(buttonArgs);
 
             setEnabled(true); //TODO моргает
