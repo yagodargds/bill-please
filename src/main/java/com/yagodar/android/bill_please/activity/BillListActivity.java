@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,6 +24,8 @@ public class BillListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_bill_list);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.tool_bar));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.bill_list_fragment_container, new BillListFragment()).commit();

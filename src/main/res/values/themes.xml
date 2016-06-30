@@ -1,5 +1,5 @@
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar"> <!--TODO replacing the Actionbar with the Toolbar-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/brown_500</item>
         <item name="colorPrimaryDark">@color/brown_700</item>
         <item name="colorAccent">@color/orange_200</item>

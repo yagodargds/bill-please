@@ -2,6 +2,7 @@ package com.yagodar.android.bill_please.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.yagodar.android.bill_please.R;
 
@@ -15,6 +16,8 @@ public class OrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_bill_order);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.tool_bar));
 
         if (savedInstanceState == null) {
             orderFragment = new OrderFragment();
