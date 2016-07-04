@@ -45,7 +45,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         mBillList = BillList.getInstance();
         initBill(getArguments());
 
-        setEmptyImage(R.drawable.no_data);
+        setEmptyImage(R.drawable.icon_no_data);
         setEmptyText(R.string.no_data);
 
         mButtonBillOrderAppend = (Button) getActivity().findViewById(R.id.bill_order_append_button);

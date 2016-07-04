@@ -1,153 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.yagodar.android.custom.widget.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bill_row_view"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/view_edge_gap"
-    android:paddingBottom="@dimen/view_edge_gap"
+    android:background="@drawable/bp_selectable_item_background"
     android:clickable="true"
-    android:background="?attr/selectableItemBackground">
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/view_edge_gap"
+    android:paddingTop="@dimen/view_edge_gap">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:paddingRight="@dimen/view_edge_small_gap" >
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/view_edge_small_gap"
+        android:paddingTop="@dimen/view_edge_small_gap">
 
-        <TableLayout
+        <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/view_edge_small_gap"
+            android:layout_height="match_parent"
             android:paddingBottom="@dimen/view_edge_small_gap">
 
-            <TableRow
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingBottom="@dimen/view_edge_small_gap">
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:gravity="center_vertical|start"
+                android:text="@string/name"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical|right"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/name"
-                    android:gravity="center_vertical|start"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-                <TextView
-                    android:id="@+id/bill_et_name"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_small_gap"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/bill_et_name"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:paddingTop="@dimen/view_edge_small_gap"
-                android:paddingBottom="@dimen/view_edge_small_gap">
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/view_edge_small_gap"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical|right"
-                    android:gravity="center_vertical|start"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/tax"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/bill_tax_val"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_small_gap"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-                <TextView
-                    android:id="@+id/bill_tax_type"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_small_gap"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="@dimen/view_edge_small_gap">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical|right"
-                    android:gravity="center_vertical|start"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/tip"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-                <TextView
-                    android:id="@+id/bill_tip_val"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_small_gap"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-                <TextView
-                    android:id="@+id/bill_tip_type"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/view_edge_small_gap"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginRight="@dimen/view_edge_small_gap" />
-
-            </TableRow>
-
-        </TableLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingLeft="@dimen/view_edge_small_gap" >
-
-        <Button
-            android:id="@+id/bill_remove_button"
-            style="?android:attr/buttonStyleSmall"
+        <TableRow
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:text="@string/button_remove"
-            android:minHeight="@dimen/row_button_min_height"
-            android:layout_weight="0.5" />
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/view_edge_small_gap"
+            android:paddingTop="@dimen/view_edge_small_gap">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:gravity="center_vertical|start"
+                android:text="@string/tax"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/bill_tax_val"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/view_edge_small_gap"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/bill_tax_type"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/view_edge_small_gap"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/view_edge_small_gap">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:gravity="center_vertical|start"
+                android:text="@string/tip"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/bill_tip_val"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/view_edge_small_gap"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/bill_tip_type"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/view_edge_small_gap"
+                android:layout_marginRight="@dimen/view_edge_small_gap"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </TableRow>
+
+    </TableLayout>
+</com.yagodar.android.custom.widget.CheckableLinearLayout>

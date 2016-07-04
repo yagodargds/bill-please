@@ -1,11 +1,8 @@
 package com.yagodar.android.bill_please.activity;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.yagodar.android.bill_please.R;
@@ -17,14 +14,16 @@ import com.yagodar.essential.model.ListModel;
  * Created by yagodar on 18.06.2015.
  */
 public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapter.ViewHolder> {
-
-    public BillListAdapter(Context context, View.OnClickListener onClickListener, ListModel<Bill> listModel) {
-        super(context, onClickListener, listModel);
+    public BillListAdapter(Context context,
+                           View.OnClickListener onClickListener,
+                           View.OnLongClickListener onLongClickListener,
+                           ListModel<Bill> listModel) {
+        super(context, onClickListener, onLongClickListener, listModel);
     }
 
     @Override
-    protected ViewHolder onCreateViewHolder(View itemView, View.OnClickListener onClickListener) {
-        return new ViewHolder(itemView, onClickListener);
+    protected ViewHolder onCreateViewHolder(View itemView, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener) {
+        return new ViewHolder(itemView, onClickListener, onLongClickListener);
     }
 
     @Override
@@ -38,43 +37,28 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
         private TextView mTextViewTaxType;
         private TextView mTextViewTipVal;
         private TextView mTextViewTipType;
-        private Button mButtonRemove;
 
-        public ViewHolder(View itemView, View.OnClickListener onClickListener) {
+        public ViewHolder(View itemView, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener) {
             super(itemView);
 
             itemView.setOnClickListener(onClickListener);
+            itemView.setOnLongClickListener(onLongClickListener);
 
             mTextViewName = (TextView) itemView.findViewById(R.id.bill_et_name);
             mTextViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
             mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
             mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
             mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
-            mButtonRemove = (Button) itemView.findViewById(R.id.bill_remove_button);
-
-            mButtonRemove.setOnClickListener(onClickListener);
         }
 
         @Override
         public void onBind(Bill model, int position) {
-            Bundle buttonArgs = new Bundle();
-            buttonArgs.putLong(BaseColumns._ID, model.getId());
-
+            itemView.setTag(model.getTag());
             mTextViewName.setText(model.getName());
             mTextViewTaxVal.setText(model.getFormattedTaxVal());
             mTextViewTaxType.setText(model.getTaxType().toString());
             mTextViewTipVal.setText(model.getFormattedTipVal());
             mTextViewTipType.setText(model.getTipType().toString());
-
-            itemView.setTag(buttonArgs);
-            mButtonRemove.setTag(buttonArgs);
-
-            setEnabled(true); //TODO моргает
-        }
-
-        public void setEnabled(boolean value) {
-            mButtonRemove.setEnabled(value);
         }
     }
-
 }

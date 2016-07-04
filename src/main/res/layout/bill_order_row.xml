@@ -173,7 +173,7 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:text="@string/button_remove"
+            android:text="@string/remove_hint"
             android:minHeight="@dimen/row_button_min_height"
             android:layout_weight="1" />
 

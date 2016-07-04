@@ -1,5 +1,8 @@
 package com.yagodar.android.bill_please.model;
 
+import android.os.Bundle;
+import android.provider.BaseColumns;
+
 import com.yagodar.essential.model.ConcurrentListModel;
 
 import java.math.BigDecimal;
@@ -20,6 +23,13 @@ public class Bill extends ConcurrentListModel<Order> {
         super(id, DEF_NAME, name);
         setTaxVal(taxType, taxVal);
         setTipVal(tipType, tipVal);
+    }
+
+    @Override
+    protected Object createTag() {
+        Bundle bundle = new Bundle();
+        bundle.putLong(BaseColumns._ID, getId());
+        return bundle;
     }
 
     public String getFormattedTaxVal() {

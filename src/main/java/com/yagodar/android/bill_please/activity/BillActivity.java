@@ -17,7 +17,7 @@ public class BillActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_bill);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.tool_bar));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         if (savedInstanceState == null) {
             billFragment = new BillFragment();

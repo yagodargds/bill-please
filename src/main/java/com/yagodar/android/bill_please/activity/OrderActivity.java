@@ -17,7 +17,7 @@ public class OrderActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_bill_order);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.tool_bar));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         if (savedInstanceState == null) {
             orderFragment = new OrderFragment();

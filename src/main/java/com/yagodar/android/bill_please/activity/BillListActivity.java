@@ -25,7 +25,7 @@ public class BillListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_bill_list);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.tool_bar));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.bill_list_fragment_container, new BillListFragment()).commit();
@@ -35,9 +35,9 @@ public class BillListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.actions_rest_activity_bill_list, menu);
+        inflater.inflate(R.menu.ab_activity_bill_list, menu);
 
-        MenuItem menuItem = menu.findItem(R.id.action_rest_activiry_bill_list_search);
+        MenuItem menuItem = menu.findItem(R.id.ab_activity_bill_list_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
 
         searchView.setMaxWidth(Integer.MAX_VALUE);

@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">Bill Please</string>
 
     <string name="btn_lbl_add_new_bill_record">Add new record</string>
@@ -15,14 +14,13 @@
     <string name="dlg_confirm">Confirm</string>
     <string name="dlg_cancel">Cancel</string>
 
-
-    <string name="no_data">No data</string>
-
     <string name="search_hint">Search</string>
+    <string name="remove_hint">Remove</string>
 
     <string name="button_append">Append</string>
     <string name="button_edit">Edit</string>
-    <string name="button_remove">Remove</string>
+
+    <string name="no_data">No data</string>
 
     <string name="err_load_failed">load failed</string>
     <string name="err_append_failed">append failed</string>
@@ -40,5 +38,4 @@
 
     <string name="cost">cost</string>
     <string name="share">share</string>
-
 </resources>
