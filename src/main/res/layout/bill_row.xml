@@ -10,8 +10,6 @@
     android:paddingTop="@dimen/view_edge_gap">
 
     <TableLayout style="@style/Row.Item"
-        android:touchscreenBlocksFocus="false"
-        android:transitionGroup="false"
         android:stretchColumns="1">
 
         <TableRow style="@style/Row.Top">
@@ -45,7 +43,7 @@
                 style="@style/Label.BillRow" />
 
             <TextView android:id="@+id/bill_recent_change"
-                android:text="29.08.2015"
+                android:text="29.08.2015 22:00"
                 style="@style/Label.Date.BillRow" />
 
         </TableRow>

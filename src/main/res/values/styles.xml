@@ -3,7 +3,7 @@
 
     <style name="Row">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/view_edge_small_gap</item>
         <item name="android:paddingBottom">@dimen/view_edge_small_gap</item>
     </style>
@@ -16,26 +16,25 @@
         <item name="android:paddingBottom">0dp</item>
     </style>
 
-
-
     <style name="Row.Item">
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
     </style>
 
     <style name="Label">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@color/gray_900</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceListItem</item>
     </style>
 
     <style name="Label.Header" parent="Label">
-        <item name="android:textSize">@dimen/text_size_header</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColor">@color/gray_800</item>
     </style>
 
     <style name="Label.Date" parent="Label">
         <item name="android:textSize">@dimen/text_size_date</item>
-        <item name="android:textColor">?android:attr/textColorTertiary</item>
+        <item name="android:textColor">@color/gray_500</item>
     </style>
 
     <style name="Label.Header.BillRow" parent="Label.Header">
@@ -51,7 +50,7 @@
     </style>
 
     <style name="Label.Date.BillRow" parent="Label.Date">
-        <item name="android:gravity">bottoom|end</item>
+        <item name="android:gravity">bottom|end</item>
         <item name="android:layout_marginLeft">@dimen/view_edge_gap</item>
         <item name="android:layout_marginStart">@dimen/view_edge_gap</item>
     </style>
