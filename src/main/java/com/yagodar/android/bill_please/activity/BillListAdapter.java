@@ -44,21 +44,21 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
             itemView.setOnClickListener(onClickListener);
             itemView.setOnLongClickListener(onLongClickListener);
 
-            mTextViewName = (TextView) itemView.findViewById(R.id.bill_et_name);
-            mTextViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
-            mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
-            mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
-            mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
+            mTextViewName = (TextView) itemView.findViewById(R.id.bill_name);
+            //mTextViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
+            //mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
+            //mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
+           // mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
         }
 
         @Override
         public void onBind(Bill model, int position) {
             itemView.setTag(model.getTag());
             mTextViewName.setText(model.getName());
-            mTextViewTaxVal.setText(model.getFormattedTaxVal());
-            mTextViewTaxType.setText(model.getTaxType().toString());
-            mTextViewTipVal.setText(model.getFormattedTipVal());
-            mTextViewTipType.setText(model.getTipType().toString());
+            //mTextViewTaxVal.setText(model.getFormattedTaxVal());
+            //mTextViewTaxType.setText(model.getTaxType().toString());
+            //mTextViewTipVal.setText(model.getFormattedTipVal());
+           // mTextViewTipType.setText(model.getTipType().toString());
         }
     }
 }

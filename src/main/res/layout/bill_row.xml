@@ -3,121 +3,53 @@
     android:id="@+id/bill_row_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bp_selectable_item_background"
+    android:background="@drawable/selectable_item_background"
     android:clickable="true"
     android:orientation="horizontal"
     android:paddingBottom="@dimen/view_edge_gap"
     android:paddingTop="@dimen/view_edge_gap">
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/view_edge_small_gap"
-        android:paddingTop="@dimen/view_edge_small_gap">
+    <TableLayout style="@style/Row.Item"
+        android:touchscreenBlocksFocus="false"
+        android:transitionGroup="false"
+        android:stretchColumns="1">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/view_edge_small_gap">
+        <TableRow style="@style/Row.Top">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|right"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:gravity="center_vertical|start"
-                android:text="@string/name"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView android:text="@string/bill"
+                style="@style/Label.Header.BillRow" />
 
-            <TextView
-                android:id="@+id/bill_et_name"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/view_edge_small_gap"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView android:id="@+id/bill_name"
+                style="@style/Label.BillRow"
+                android:layout_span="2" />
 
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/view_edge_small_gap"
-            android:paddingTop="@dimen/view_edge_small_gap">
+        <TableRow style="@style/Row">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|right"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:gravity="center_vertical|start"
-                android:text="@string/tax"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView android:text="@string/orders"
+                style="@style/Label.Header.BillRow" />
 
-            <TextView
-                android:id="@+id/bill_tax_val"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/view_edge_small_gap"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/bill_tax_type"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/view_edge_small_gap"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
+            <TextView android:id="@+id/bill_order_count"
+                style="@style/Label.BillRow"
+                android:layout_span="2" />
 
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="@dimen/view_edge_small_gap">
+        <TableRow style="@style/Row" >
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|right"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:gravity="center_vertical|start"
-                android:text="@string/tip"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView android:text="@string/total"
+                style="@style/Label.Header.BillRow" />
 
-            <TextView
-                android:id="@+id/bill_tip_val"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/view_edge_small_gap"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView android:id="@+id/bill_total"
+                style="@style/Label.BillRow" />
 
-            <TextView
-                android:id="@+id/bill_tip_type"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/view_edge_small_gap"
-                android:layout_marginRight="@dimen/view_edge_small_gap"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView android:id="@+id/bill_recent_change"
+                android:text="29.08.2015"
+                style="@style/Label.Date.BillRow" />
+
         </TableRow>
 
     </TableLayout>
+
 </com.yagodar.android.custom.widget.CheckableLinearLayout>

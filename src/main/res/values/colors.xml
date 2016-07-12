@@ -4,4 +4,5 @@
     <color name="orange_50">#FFF3E0</color>
     <color name="orange_100">#FFE0B2</color>
     <color name="orange_200">#FFCC80</color>
+    <color name="gray_900">#212121</color>
 </resources>

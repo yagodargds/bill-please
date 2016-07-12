@@ -31,7 +31,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/bill_et_name"
+                android:id="@+id/bill_name"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="left|center_vertical"

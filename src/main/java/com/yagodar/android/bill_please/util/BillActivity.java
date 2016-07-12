@@ -5,27 +5,22 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-
-import com.yagodar.android.bill_please.R;
 
 public class BillActivity extends Activity {
-    public void onButtonClick(View button) {
+    /*public void onButtonClick(View button) {
         switch(button.getId()) {
             case R.id.btn_share_bill:
-                //hideFocus();
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, getShareText());
-                sendIntent.setType(INTENT_TYPE_SHARE);
-                startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.btn_lbl_share_bill)));
+                sendIntent.setType("text/plain");
+                //startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.btn_lbl_share_bill)));
                 break;
             default:
                 break;
         }
-    }
+    }*/
 
     private String getShareText() {
         //String shareText = "";
@@ -85,10 +80,10 @@ public class BillActivity extends Activity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-            builder.setTitle(R.string.btn_lbl_create_new_bill);
-            builder.setView(getActivity().getLayoutInflater().inflate(R.layout.dlg_create_new_bill_llv, null));
-            builder.setNegativeButton(R.string.dlg_cancel, onClickListener);
-            builder.setPositiveButton(R.string.dlg_confirm, onClickListener);
+            //builder.setTitle(R.string.btn_lbl_create_new_bill);
+            //builder.setView(getActivity().getLayoutInflater().inflate(R.layout.dlg_create_new_bill_llv, null));
+            //builder.setNegativeButton(R.string.dlg_cancel, onClickListener);
+            //builder.setPositiveButton(R.string.dlg_confirm, onClickListener);
 
             return builder.create();
         }
@@ -98,7 +93,6 @@ public class BillActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 switch(which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        //createNewBill();
                         dialog.dismiss();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -112,6 +106,4 @@ public class BillActivity extends Activity {
 
         private DialogInterface.OnClickListener onClickListener = new CreateNewBillDialogOnClickListener();
     }
-
-    private static final String INTENT_TYPE_SHARE = "text/plain";
 }

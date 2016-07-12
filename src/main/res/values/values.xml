@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Bill Please</string>
     <string name="app_tag">#BillPlease</string>
     <string name="on_btn_click_method_name">onButtonClick</string>
 </resources>

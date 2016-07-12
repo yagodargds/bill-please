@@ -51,7 +51,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         mButtonBillOrderAppend = (Button) getActivity().findViewById(R.id.bill_order_append_button);
         mButtonBillOrderAppend.setOnClickListener(mOnClickListener);
 
-        mEditTextName = (EditText) getActivity().findViewById(R.id.bill_et_name);
+        mEditTextName = (EditText) getActivity().findViewById(R.id.bill_name);
         mTextViewSubtotal = (TextView) getActivity().findViewById(R.id.bill_subtotal);
         mToggleTax = (ToggleButton) getActivity().findViewById(R.id.bill_toggle_tax);
         mEditTextTaxPer = (EditText) getActivity().findViewById(R.id.bill_et_tax_per_val);
@@ -524,7 +524,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             switch(v.getId()) {
-                case R.id.bill_et_name:
+                case R.id.bill_name:
                     if(hasFocus) {
                         mLastEditText = (EditText) v;
                     } else {
@@ -688,7 +688,7 @@ public class BillFragment extends AbsLoaderProgressListFragment implements IOnAc
         public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
             if(actionId == EditorInfo.IME_ACTION_NEXT) {
                 switch(textView.getId()) {
-                    case R.id.bill_et_name:
+                    case R.id.bill_name:
                         if(mToggleTax.isChecked()) {
                             mEditTextTaxAbs.requestFocus();
                         } else {

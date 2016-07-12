@@ -1,19 +1,6 @@
 <resources>
-    <string name="app_name">Bill Please</string>
+
     <string name="app_description">Bill Please Description</string> <!-- TODO -->
-
-    <string name="btn_lbl_add_new_bill_record">Add new record</string>
-    <string name="btn_lbl_del_bill_record">Delete record</string>
-    <string name="btn_lbl_create_new_bill">Create new bill...</string>
-    <string name="btn_lbl_share_bill">Share bill...</string>
-
-    <string name="lbl_def_share">default share</string>
-
-    <string name="share_no_items">no items</string>
-
-    <string name="dlg_current_bill_will_be_deleted">Current bill will be deleted!</string>
-    <string name="dlg_confirm">Confirm</string>
-    <string name="dlg_cancel">Cancel</string>
 
     <string name="search_hint">Search</string>
     <string name="remove_hint">Remove</string>
@@ -30,13 +17,17 @@
 
     <string name="name">name</string>
 
+    <string name="bill">Bill</string>
+    <string name="orders">Orders</string>
+    <string name="total">Total</string>
+
     <string name="subtotal">subtotal</string>
     <string name="tax">tax</string>
     <string name="tip">tip</string>
     <string name="tax_tip_val_percent">%</string>
     <string name="tax_tip_val_absolute">const</string>
-    <string name="total">total</string>
 
     <string name="cost">cost</string>
     <string name="share">share</string>
+
 </resources>
