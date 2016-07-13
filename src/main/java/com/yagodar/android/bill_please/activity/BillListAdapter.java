@@ -32,11 +32,10 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
     }
 
     public static class ViewHolder extends AbsRecyclerViewAdapter.AbsViewHolder<Bill> {
-        private TextView mTextViewName;
-        private TextView mTextViewTaxVal;
-        private TextView mTextViewTaxType;
-        private TextView mTextViewTipVal;
-        private TextView mTextViewTipType;
+        private TextView mName;
+        private TextView mOrders;
+        private TextView mTotal;
+        private TextView mDate;
 
         public ViewHolder(View itemView, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener) {
             super(itemView);
@@ -44,21 +43,18 @@ public class BillListAdapter extends AbsRecyclerViewAdapter<Bill, BillListAdapte
             itemView.setOnClickListener(onClickListener);
             itemView.setOnLongClickListener(onLongClickListener);
 
-            mTextViewName = (TextView) itemView.findViewById(R.id.bill_name);
-            //mTextViewTaxVal = (TextView) itemView.findViewById(R.id.bill_tax_val);
-            //mTextViewTaxType = (TextView) itemView.findViewById(R.id.bill_tax_type);
-            //mTextViewTipVal = (TextView) itemView.findViewById(R.id.bill_tip_val);
-           // mTextViewTipType = (TextView) itemView.findViewById(R.id.bill_tip_type);
+            mName = (TextView) itemView.findViewById(R.id.bill_name);
+            mOrders = (TextView) itemView.findViewById(R.id.bill_orders);
+            mTotal = (TextView) itemView.findViewById(R.id.bill_total);
+            mDate = (TextView) itemView.findViewById(R.id.bill_date);
         }
 
         @Override
         public void onBind(Bill model, int position) {
             itemView.setTag(model.getTag());
-            mTextViewName.setText(model.getName());
-            //mTextViewTaxVal.setText(model.getFormattedTaxVal());
-            //mTextViewTaxType.setText(model.getTaxType().toString());
-            //mTextViewTipVal.setText(model.getFormattedTipVal());
-           // mTextViewTipType.setText(model.getTipType().toString());
+            mName.setText(model.getName());
+            mOrders.setText(String.valueOf(model.getCount()));
+            mTotal.setText(model.getFormattedTotal());
         }
     }
 }

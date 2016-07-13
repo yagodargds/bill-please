@@ -28,7 +28,7 @@
             <TextView android:text="@string/orders"
                 style="@style/Label.Header.BillRow" />
 
-            <TextView android:id="@+id/bill_order_count"
+            <TextView android:id="@+id/bill_orders"
                 style="@style/Label.BillRow"
                 android:layout_span="2" />
 
@@ -42,8 +42,7 @@
             <TextView android:id="@+id/bill_total"
                 style="@style/Label.BillRow" />
 
-            <TextView android:id="@+id/bill_recent_change"
-                android:text="29.08.2015 22:00"
+            <TextView android:id="@+id/bill_date"
                 style="@style/Label.Date.BillRow" />
 
         </TableRow>

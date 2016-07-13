@@ -137,11 +137,23 @@ public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
                 name = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME);
                 cost = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_COST);
                 share = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_SHARE);
+
+
+                //TODO
+                loadGroupCount(groupId, signal);
+
+
                 orderList.add(new Order(id, name, cost, share));
             }
             opResult.setData(orderList);
         }
         return opResult;
+    }
+
+    @Override
+    public OperationResult<Integer> loadGroupCount(long groupId, CancellationSignal signal) {
+        //TODO
+        return null;
     }
 
     //region Deprecated
@@ -156,6 +168,12 @@ public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
     @Override
     public OperationResult<Map<Long, List<Order>>> loadAllList(CancellationSignal signal) {
         throw new UnsupportedOperationException("Load bill order all list not supported!");
+    }
+
+    @Deprecated
+    @Override
+    public OperationResult<Map<Long, Integer>> loadAllCount(CancellationSignal signal) {
+        throw new UnsupportedOperationException("Load bill order all count not supported!");
     }
 
     //endregion

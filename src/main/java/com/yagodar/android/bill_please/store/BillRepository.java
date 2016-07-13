@@ -111,6 +111,7 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
             Bill.TaxTipType tipType;
             String dbTipType;
             String dbTipVal;
+            int orderCount;
             for (DbTableManager.DbTableRecord record : getAllRecordsResult.getData()) {
                 id = record.getId();
                 name = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_BILL_NAME);
@@ -126,11 +127,23 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
                     tipType = Bill.TaxTipType.valueOf(dbTipType);
                 }
                 dbTipVal = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_TIP_VAL);
+
+
+                //TODO
+                loadCount(signal);
+
+
                 billList.add(new Bill(id, name, taxType, dbTaxVal, tipType, dbTipVal));
             }
             opResult.setData(billList);
         }
         return opResult;
+    }
+
+    @Override
+    public OperationResult<Integer> loadCount(CancellationSignal signal) {
+        //TODO
+        return null;
     }
 
     @Override

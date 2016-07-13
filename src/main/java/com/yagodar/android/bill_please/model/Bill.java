@@ -20,7 +20,7 @@ public class Bill extends ConcurrentListModel<Order> {
     }
 
     public Bill(long id, String name, TaxTipType taxType, String taxVal, TaxTipType tipType, String tipVal) {
-        super(id, DEF_NAME, name);
+        super(id, null, name);
         setTaxVal(taxType, taxVal);
         setTipVal(tipType, tipVal);
     }
@@ -201,7 +201,6 @@ public class Bill extends ConcurrentListModel<Order> {
         DECIMAL_FORMAT.setDecimalFormatSymbols(custom);
     }
 
-    private static final String DEF_NAME = "bill";
     private static final BigDecimal MIN_TAX_TIP_VAL = BigDecimal.ZERO;
     private static final BigDecimal FULL_TAX_TIP_PERCENT_VAL = BigDecimal.valueOf(100.0);
     private static final TaxTipType DEF_TAX_TIP_TYPE = TaxTipType.PERCENT;

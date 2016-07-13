@@ -14,7 +14,7 @@ public class Order extends Model {
     }
 
     public Order(long id, String name, String cost, String share) {
-        super(id, DEF_NAME, name);
+        super(id, null, name);
         setCost(cost);
         setShare(share);
     }
@@ -84,7 +84,6 @@ public class Order extends Model {
     private BigDecimal mCost;
     private BigInteger mShare;
 
-    private static final String DEF_NAME = "order";
     private static final BigInteger MIN_SHARE = BigInteger.ONE;
     private static final BigDecimal MIN_COST = BigDecimal.ZERO;
 }

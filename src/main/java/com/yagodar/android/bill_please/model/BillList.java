@@ -8,7 +8,7 @@ import com.yagodar.essential.model.ListModel;
 public class BillList extends ListModel<Bill> {
 
     public BillList() {
-        super(0L, "bill_list");
+        super(0L);
     }
 
     public static BillList getInstance() {
