@@ -137,12 +137,6 @@ public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
                 name = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_ORDER_NAME);
                 cost = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_COST);
                 share = (String) record.getValue(DbTableOrdersContract.COLUMN_NAME_SHARE);
-
-
-                //TODO
-                loadGroupCount(groupId, signal);
-
-
                 orderList.add(new Order(id, name, cost, share));
             }
             opResult.setData(orderList);
@@ -152,8 +146,11 @@ public class OrderRepository extends AbsMultGroupCancelRepository<Order> {
 
     @Override
     public OperationResult<Integer> loadGroupCount(long groupId, CancellationSignal signal) {
-        //TODO
-        return null;
+        OperationResult<Integer> opResult;
+        synchronized (this) {
+            opResult = mTableManager.getGroupRecordsCount(DbTableOrdersContract.COLUMN_NAME_BILL_ID, groupId);
+        }
+        return opResult;
     }
 
     //region Deprecated

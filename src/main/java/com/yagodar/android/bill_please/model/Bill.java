@@ -16,11 +16,11 @@ import java.text.DecimalFormatSymbols;
  */
 public class Bill extends ConcurrentListModel<Order> {
     public Bill(long id) {
-        this(id, null, null, null, null, null);
+        this(id, null, null, null, null, null, 0);
     }
 
-    public Bill(long id, String name, TaxTipType taxType, String taxVal, TaxTipType tipType, String tipVal) {
-        super(id, null, name);
+    public Bill(long id, String name, TaxTipType taxType, String taxVal, TaxTipType tipType, String tipVal, int orderCount) {
+        super(id, null, name, orderCount);
         setTaxVal(taxType, taxVal);
         setTipVal(tipType, tipVal);
     }

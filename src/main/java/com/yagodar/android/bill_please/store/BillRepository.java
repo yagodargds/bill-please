@@ -111,6 +111,7 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
             Bill.TaxTipType tipType;
             String dbTipType;
             String dbTipVal;
+            OperationResult<Integer> loadOrderCountResult;
             int orderCount;
             for (DbTableManager.DbTableRecord record : getAllRecordsResult.getData()) {
                 id = record.getId();
@@ -127,24 +128,30 @@ public class BillRepository extends AbsMultCancelRepository<Bill> {
                     tipType = Bill.TaxTipType.valueOf(dbTipType);
                 }
                 dbTipVal = (String) record.getValue(DbTableBillsContract.COLUMN_NAME_TIP_VAL);
-
-
-                //TODO
-                loadCount(signal);
-
-
-                billList.add(new Bill(id, name, taxType, dbTaxVal, tipType, dbTipVal));
+                loadOrderCountResult = OrderRepository.getInstance().loadGroupCount(id);
+                if(!loadOrderCountResult.isSuccessful()) {
+                    opResult.setFailMessage(loadOrderCountResult.getFailMessage());
+                    opResult.setFailMessageId(loadOrderCountResult.getFailMessageId());
+                    opResult.setFailThrowable(loadOrderCountResult.getFailThrowable());
+                } else {
+                    orderCount = loadOrderCountResult.getData();
+                    billList.add(new Bill(id, name, taxType, dbTaxVal, tipType, dbTipVal, orderCount));
+                }
+                if(!opResult.isSuccessful()) {
+                    break;
+                }
             }
             opResult.setData(billList);
         }
         return opResult;
     }
 
+    //region Deprecated
     @Override
     public OperationResult<Integer> loadCount(CancellationSignal signal) {
-        //TODO
-        return null;
+        throw new UnsupportedOperationException("Load count not supported!");
     }
+    //endregion
 
     @Override
     public OperationResult<Long> insert(CancellationSignal signal) {
